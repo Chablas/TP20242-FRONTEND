@@ -1,13 +1,59 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + React</title>
+  <!-- (INICIO) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- (FIN) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN -->
+</head>
+
+<body>
+  <div id="root"></div>
+  
+  <script>
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+      // (INICIO) ABRIR Y CERRAR COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER
+      const slideOver = document.getElementById('slide-over');
+      const closeButton = document.getElementById('close-button');
+      const openButton = document.getElementById('open-button');
+      slideOver.classList.remove('block');
+      slideOver.classList.add('hidden');
+
+      function openSlideOver() {
+        slideOver.classList.remove('hidden');
+        slideOver.classList.add('block');
+      }
+
+      function closeSlideOver() {
+        slideOver.classList.remove('block');
+        slideOver.classList.add('hidden');
+      }
+
+      openButton.addEventListener('click', openSlideOver);
+      closeButton.addEventListener('click', closeSlideOver);
+      // (FIN) ABRIR Y CERRAR COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER
+
+    });
+
+  </script>
+  <script type="module" src="src/assets/templates/index.jsx"></script>
+</body>
+
 </html>
