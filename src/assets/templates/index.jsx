@@ -29,7 +29,7 @@ function Index() {
                                 <div class="ml-4 flex lg:ml-0">
                                     <a href="{% url 'inicio' %}">
                                         <span class="sr-only">Your Company</span>
-                                        <img class="h-8 w-auto" src="{% static 'images/logo.jpg' %}" alt="" />
+                                        <img class="h-8 w-auto" src="src/assets/images/logo.jpg" alt="" />
                                     </a>
                                 </div>
 
@@ -122,35 +122,35 @@ function Index() {
                                         <div class="flex items-center space-x-6 lg:space-x-8">
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
-                                                    <img src="{% static 'images/inicio/headphone.jpg' %}"
+                                                    <img src="src/assets/images/inicio/headphone.jpg"
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/laptop.jpg' %}" alt=""
+                                                    <img src="src/assets/images/inicio/laptop.jpg" alt=""
                                                         class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/monitor.jfif' %}"
+                                                    <img src="src/assets/images/inicio/monitor.jfif"
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/tarjeta_grafica.jpg' %}"
+                                                    <img src="src/assets/images/inicio/tarjeta_grafica.jpg"
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/teclado.jfif' %}"
+                                                    <img src="src/assets/images/inicio/teclado.jfif"
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/cpu.png' %}"
+                                                    <img src="src/assets/images/inicio/cpu.png"
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="{% static 'images/inicio/ram.jpg' %}" alt=""
+                                                    <img src="src/assets/images/inicio/ram.jpg" alt=""
                                                         class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
@@ -222,7 +222,7 @@ function Index() {
                                                     <li class="flex py-6">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src="{% static 'images/productos/1/12.jpg' %}"
+                                                            <img src="src/assets/images/productos/1/12.jpg"
                                                                 alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
                                                                 class="h-full w-full object-cover object-center" />
                                                         </div>
@@ -251,7 +251,7 @@ function Index() {
                                                     <li class="flex py-6">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src="{% static 'images/productos/2/21.jpg' %}"
+                                                            <img src="src/assets/images/productos/2/21.jpg"
                                                                 alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
                                                                 class="h-full w-full object-cover object-center" />
                                                         </div>
@@ -317,9 +317,4 @@ function Index() {
         </div>
     )
 }
-createRoot(document.getElementById('root')).render(
-    <StrictMode>
-      <Index />
-    </StrictMode>,
-  )
-  
+ReactDOM.render(<Index />, document.getElementById("root"));
