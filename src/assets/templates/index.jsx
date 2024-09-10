@@ -1,5 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import imagen1 from "../images/inicio/headphone.jpg"
+
 function Index() {
     return (
         <div>
@@ -122,7 +124,7 @@ function Index() {
                                         <div class="flex items-center space-x-6 lg:space-x-8">
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
-                                                    <img src="src/assets/images/inicio/headphone.jpg"
+                                                    <img src={imagen1}
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
