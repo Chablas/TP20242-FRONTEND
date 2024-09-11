@@ -1,4 +1,7 @@
+/* Cosas de React */
 import React from "react"
+
+/* Imágenes */
 import imagen8 from "../images/productos/1/12.jpg"
 import imagen9 from "../images/productos/2/21.jpg"
 
