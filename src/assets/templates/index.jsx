@@ -1,6 +1,14 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import imagen1 from "../images/inicio/headphone.jpg"
+import imagen2 from "../images/inicio/laptop.jpg"
+import imagen3 from "../images/inicio/monitor.jfif"
+import imagen4 from "../images/inicio/tarjeta_grafica.jpg"
+import imagen5 from "../images/inicio/teclado.jfif"
+import imagen6 from "../images/inicio/cpu.png"
+import imagen7 from "../images/inicio/ram.jpg"
+import imagen8 from "../images/productos/1/12.jpg"
+import imagen9 from "../images/productos/2/21.jpg"
 
 function Index() {
     return (
@@ -128,31 +136,31 @@ function Index() {
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/laptop.jpg" alt=""
+                                                    <img src={imagen2} alt=""
                                                         class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/monitor.jfif"
+                                                    <img src={imagen3}
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/tarjeta_grafica.jpg"
+                                                    <img src={imagen4}
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/teclado.jfif"
+                                                    <img src={imagen5}
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
                                             <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/cpu.png"
+                                                    <img src={imagen6}
                                                         alt="" class="h-full w-full object-cover object-center" />
                                                 </div>
                                                 <div class="h-64 w-44 overflow-hidden rounded-lg">
-                                                    <img src="src/assets/images/inicio/ram.jpg" alt=""
+                                                    <img src={imagen7} alt=""
                                                         class="h-full w-full object-cover object-center" />
                                                 </div>
                                             </div>
@@ -224,7 +232,7 @@ function Index() {
                                                     <li class="flex py-6">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src="src/assets/images/productos/1/12.jpg"
+                                                            <img src={imagen8}
                                                                 alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
                                                                 class="h-full w-full object-cover object-center" />
                                                         </div>
@@ -253,7 +261,7 @@ function Index() {
                                                     <li class="flex py-6">
                                                         <div
                                                             class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src="src/assets/images/productos/2/21.jpg"
+                                                            <img src={imagen9}
                                                                 alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
                                                                 class="h-full w-full object-cover object-center" />
                                                         </div>
