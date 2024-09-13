@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -6,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {/* (INICIO) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN */}
+    <!-- (INICIO) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,14 +18,13 @@
             }
         }
     </script>
-    {/* (FIN) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN */}
+    <!-- (FIN) CONFIGURACIÓN PARA TAILWIND CSS USANDO CDN -->
 
 </head>
 
 <body>
-
-    
-
+    <div id="root"></div>
+    <script src="./productos_categorias.jsx" type="module"></script>
 </body>
 
 </html>

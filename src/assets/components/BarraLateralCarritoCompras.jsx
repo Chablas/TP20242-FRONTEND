@@ -5,9 +5,9 @@ import React from "react"
 import imagen8 from "../images/productos/1/12.jpg"
 import imagen9 from "../images/productos/2/21.jpg"
 
-export default function BarraLateral_CarritoCompras() {
+export default function BarraLateralCarritoCompras() {
     return (
-        <div>
+        <>
             {/* (INICIO) COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER */}
             <div id="slide-over" class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
                 {/*
@@ -150,7 +150,8 @@ export default function BarraLateral_CarritoCompras() {
                     </div>
                 </div>
             </div>
+            
             {/* (FIN) COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER */}
-        </div>
+        </>
     )
 }
