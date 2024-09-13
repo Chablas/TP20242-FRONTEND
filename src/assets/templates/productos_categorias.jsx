@@ -1,13 +1,13 @@
 /* Cosas de React */
 import React from "react"
-import ReactDOM from "react-dom"
+import ReactDOM, { createRoot } from "react-dom/client"
 
 /* Componentes */
 import BarraLateralCarritoCompras from "../components/BarraLateralCarritoCompras.jsx"
 import StoreNavigation from "../components/StoreNavigation.jsx"
 import CategoryPreviews from "../components/CategoryPreviews"
 
-function Productos_Categorias() {
+export default function Productos_Categorias() {
     return (
         <>
             <StoreNavigation />
@@ -17,4 +17,7 @@ function Productos_Categorias() {
     )
 }
 
-ReactDOM.render(<Productos_Categorias />, document.getElementById("root"))
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+    <Productos_Categorias />
+);
