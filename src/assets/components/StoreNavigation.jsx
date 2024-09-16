@@ -1,5 +1,6 @@
 /* Cosas de React */
 import React from "react"
+import { Link } from "react-router-dom"
 
 /* Imágenes */
 import logo from "../images/logo.jpg"
@@ -37,17 +38,17 @@ export default function StoreNavigation() {
 
                                 {/* Logo */}
                                 <div className="ml-4 flex lg:ml-0">
-                                    <a href="/inicio">
+                                    <Link to="/">
                                         <span className="sr-only">Your Company</span>
                                         <img className="h-8 w-auto" src={logo} alt="" />
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 {/* Flyout menus */}
                                 <div className="hidden lg:ml-8 lg:block lg:self-stretch">
                                     <div className="flex h-full space-x-8">
-                                        <a href="src/assets/templates/productos_categorias.html"
-                                            className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Productos</a>
+                                        <Link to="/categorias"
+                                            className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Productos</Link>
                                         <a href="#"
                                             className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Servicios</a>
                                         <a href="#"
@@ -57,11 +58,11 @@ export default function StoreNavigation() {
 
                                 <div className="ml-auto flex items-center">
                                     <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                        <a href="/login/usuario"
+                                        <a href="#"
                                             className="text-sm font-medium text-gray-700 hover:text-gray-800">Iniciar
                                             Sesión</a>
                                         <span className="h-6 w-px bg-gray-200" aria-hidden="true"></span>
-                                        <a href="/register"
+                                        <a href="#"
                                             className="text-sm font-medium text-gray-700 hover:text-gray-800">Crear
                                             cuenta</a>
                                     </div>

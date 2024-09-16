@@ -65,7 +65,7 @@ export default function CategoryPreviews() {
                                         class="h-full w-full object-cover object-center" />
                                 </div>
                                 <h3 class="mt-6 text-sm text-gray-500">
-                                    <a href="/productos/categorias/teclados">
+                                    <a href="#">
                                         <span class="absolute inset-0"></span>
                                         Teclados
                                     </a>

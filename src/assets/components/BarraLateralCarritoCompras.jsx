@@ -86,7 +86,7 @@ export default function BarraLateralCarritoCompras() {
                                                                 <div
                                                                     className="flex justify-between text-base font-medium text-gray-900">
                                                                     <h3>
-                                                                        <a href="{% url 'Detalles Generales de un Producto' %}">Teclado Gamer Xtrike Me Kb-306 Sp Rgb Backlit</a>
+                                                                        <a href="#">Teclado Gamer Xtrike Me Kb-306 Sp Rgb Backlit</a>
                                                                     </h3>
                                                                     <p className="ml-4">S/69.90</p>
                                                                 </div>

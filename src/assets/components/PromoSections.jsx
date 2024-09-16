@@ -1,6 +1,6 @@
 /* Cosas de React */
 import React from "react"
-import ReactDOM from "react-dom"
+import { Link } from "react-router-dom"
 
 /* Imágenes */
 import imagen1 from "../images/inicio/headphone.jpg"
@@ -72,9 +72,9 @@ export default function PromoSections() {
                                     </div>
                                 </div>
 
-                                <a href="{% url 'Categorías de los Productos' %}"
+                                <Link to="/categorias"
                                     className="inline-block rounded-md border border-transparent bg-purple-600 px-8 py-3 text-center font-medium text-white hover:bg-indigo-700">Mirar
-                                    Colección</a>
+                                    Colección</Link>
                             </div>
                         </div>
                     </div>
