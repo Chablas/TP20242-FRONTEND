@@ -5,7 +5,7 @@ import ReactDOM, { createRoot } from "react-dom/client"
 /* Componentes */
 import BarraLateralCarritoCompras from "../components/BarraLateralCarritoCompras.jsx"
 import StoreNavigation from "../components/StoreNavigation.jsx"
-import CategoryPreviews from "../components/CategoryPreviews"
+import CategoryPreviews from "../components/CategoryPreviews.jsx"
 
 export default function Productos_Categorias() {
     return (
