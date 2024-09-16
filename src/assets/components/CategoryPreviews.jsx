@@ -1,4 +1,7 @@
 import React from "react"
+import imagen1 from "../images/categorias/audifonos.jfif"
+import imagen2 from "../images/categorias/laptops.jpg"
+import imagen3 from "../images/categorias/teclados.jfif"
 
 export default function CategoryPreviews() {
     return (
@@ -27,7 +30,7 @@ export default function CategoryPreviews() {
                             <div class="group relative">
                                 <div
                                     class="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                                    <img src="/static/images/categorias/audifonos.jfif"
+                                    <img src={imagen1}
                                         alt="Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug."
                                         class="h-full w-full object-cover object-center" />
                                 </div>
@@ -42,7 +45,7 @@ export default function CategoryPreviews() {
                             <div class="group relative">
                                 <div
                                     class="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                                    <img src="/static/images/categorias/laptops.jpg"
+                                    <img src={imagen2}
                                         alt="Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant."
                                         class="h-full w-full object-cover object-center" />
                                 </div>
@@ -57,7 +60,7 @@ export default function CategoryPreviews() {
                             <div class="group relative">
                                 <div
                                     class="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                                    <img src="/static/images/categorias/teclados.jfif"
+                                    <img src={imagen3}
                                         alt="Collection of four insulated travel bottles on wooden shelf."
                                         class="h-full w-full object-cover object-center" />
                                 </div>
