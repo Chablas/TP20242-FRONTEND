@@ -7,15 +7,25 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import BarraLateralCarritoCompras from "../components/BarraLateralCarritoCompras.jsx"
 import StoreNavigation from "../components/StoreNavigation.jsx"
 import PromoSections from "../components/PromoSections.jsx"
+import CategoryPreviews from "../components/CategoryPreviews.jsx"
 
 // Páginas
-import Productos_Categorias from "./productos_categorias.jsx"
 
 function Index() {
     return (
         <>
             <StoreNavigation />
             <PromoSections />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
+function Productos_Categorias() {
+    return (
+        <>
+            <StoreNavigation />
+            <CategoryPreviews />
             <BarraLateralCarritoCompras />
         </>
     )
