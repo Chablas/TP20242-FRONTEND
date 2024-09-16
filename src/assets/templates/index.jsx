@@ -35,8 +35,8 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/categorias" element={<Index />} />
-                <Route path="/" element={<Productos_Categorias />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/categorias" element={<Productos_Categorias />} />
             </Routes>
         </BrowserRouter>
     )
