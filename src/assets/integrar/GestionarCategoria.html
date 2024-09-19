@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías de Productos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<script>
+    // Abre el modal
+    function abrirModal() {
+        document.getElementById('modal').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Registrar Categoría';
+    }
+
+    // Cierra el modal
+    function cerrarModal() {
+        document.getElementById('modal').classList.add('hidden');
+    }
+
+    // Abre el modal para editar categoría
+    function abrirModalEdicion(id) {
+        document.getElementById('modal').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Editar Categoría ' + id;
+    }
+
+    // Simulación de eliminar categoría
+    function eliminarCategoria(id) {
+        if (confirm('¿Estás seguro de eliminar la categoría ' + id + '?')) {
+            alert('Categoría ' + id + ' eliminada.');
+            // Aquí iría el código para eliminar la categoría en tu sistema
+        }
+    }
+
+    // Manejador del formulario
+    document.getElementById('formularioCategoria').addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Categoría registrada o editada');
+        cerrarModal();
+    });
+</script>
+
+<div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 id="tituloModal" class="text-xl font-bold mb-4">Registrar Categoría</h2>
+        <form id="formularioCategoria">
+            <div class="mb-4">
+                <label for="nombreCategoria" class="block text-gray-700">Nombre de Categoría</label>
+                <input type="text" id="nombreCategoria" class="w-full px-4 py-2 border rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label for="descripcionCategoria" class="block text-gray-700">Descripción</label>
+                <textarea id="descripcionCategoria" class="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+            </div>
+            <div class="flex justify-end space-x-4">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<body class="bg-gray-100">
+
+    <header class="bg-[#212936] shadow-lg py-4 px-6">
+        <div class="flex justify-between items-center ">
+            <nav class="flex space-x-6">
+                <a class="text-gray-300 pt-3 text-center text-xs rounded-md font-light hover:text-[#9432e9]">logo.png</a>
+                <a href="#" class="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Dashboard</a>
+                <a href="#" class="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Productos</a>
+                <a href="#" class="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Servicios</a>
+                <a href="#" class="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Usuarios</a>
+                <a href="#" class="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Otros</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <button class="relative">
+                    <svg class="w-6 h-6 text-gray-300 hover:text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.054-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                        </path>
+                    </svg>
+                    <span class="absolute top-0 right-0 inline-block w-2 h-2 bg-red-600 rounded-full ring-2 ring-white"></span>
+                </button>
+                <button>
+                    <svg class="w-6 h-6 text-gray-300 hover:text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 7a3 3 0 11-6 0 3 3 0 016 0zm4 10a7 7 0 10-14 0"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-6">
+        <h1 class="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Categorías de Productos</h1>
+        <div class="mt-5" >
+            <button class="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onclick="abrirModal()">
+                Agregar nueva categoría
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-[#212936] shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-[#394050]">
+                    <tr>
+                        <th class="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
+                        <th class="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
+                        <th class="py-3 px-4 text-center font-semibold text-gray-300">DESCRIPCIÓN</th>
+                        <th class="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-b-[#394050]">
+                        <td class="text-white font-light py-2 px-4">1</td>
+                        <td class="text-white font-light py-2 px-4">Electrónica</td>
+                        <td class="text-white font-light text-center py-2 px-4">Dispositivos electrónicos y gadgets</td>
+                        <td class="text-white font-light text-center py-2 px-4">
+                            <button class="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onclick="abrirModalEdicion(1)">Editar</button>
+                            <button class="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onclick="eliminarCategoria(1)">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-b-[#394050]">
+                        <td class="text-white font-light py-2 px-4">2</td>
+                        <td class="text-white font-light py-2 px-4">Ropa</td>
+                        <td class="text-white font-light text-center py-2 px-4">Prendas de vestir y accesorios</td>
+                        <td class="text-white font-light text-center py-2 px-4">
+                            <button class="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onclick="abrirModalEdicion(2)">Editar</button>
+                            <button class="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onclick="eliminarCategoria(2)">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Productos</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      color: #9432E9;
+    }
+    nav {
+      background-color: #212921;
+      padding: 15px;
+      text-align: center;
+      color: white;
+      font-size: 1.5em;
+    }
+    h1 {
+      text-align: left;
+      color: #000000;
+      margin: 20px 0;
+    }
+    .container {
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #212921;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #0000001a;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #394050;
+      text-align: left;
+    }
+    th {
+      background-color: #394050;
+      color: #5a6c84;
+    }
+    td {
+      color: #ffffff;
+    }
+    button {
+      padding: 8px 12px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .view-button {
+      background-color: #007bff; /* Color para "Ver detalle" */
+    }
+    .edit-button {
+      background-color: #c3ba14; /* Color para "Editar producto" */
+    }
+    .delete-button {
+      background-color: #dc3545; /* Color para "Eliminar producto" */
+    }
+
+    button:hover {
+      opacity: 0.8; /* Cambia el comportamiento del hover para todos los botones */
+    }
+    #add-product {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease;
+    }
+    dialog {
+      border: none;
+      border-radius: 8px;
+      padding: 20px;
+      background: white;
+    }
+    .dialog-header {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+    .dialog-content {
+      margin-bottom: 20px;
+    }
+    .dialog-buttons button {
+      margin-left: 10px;
+      background-color: #9432E9;
+      color: white;
+    }
+    .dialog-buttons {
+      text-align: right;
+    }
+    .dialog-buttons button {
+      margin-left: 10px;
+    }
+    .edit-dialog input, .add-dialog input, .add-dialog textarea {
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    .status-button {
+      background-color: #ff9800;
+      color: #ffffff;
+    }
+    .status-button.active {
+      background-color: #4caf50;
+    }
+    .status-button.inactive {
+      background-color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <nav>Gestión de Productos</nav>
+  
+  <div class="container">
+    <h1>Lista de Productos</h1>
+    <button id="add-product" onclick="showAddDialog()">Agregar Producto</button>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="product-list">
+        <!-- Aquí se generarán las filas de los productos -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Dialogo para ver detalles -->
+  <dialog id="view-dialog">
+    <div class="dialog-header">Detalles del Producto</div>
+    <div class="dialog-content" id="view-content">
+      <!-- Contenido de los detalles del producto -->
+    </div>
+    <div class="dialog-buttons">
+      <button onclick="closeDialog('view-dialog')">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- Dialogo para editar producto -->
+  <dialog id="edit-dialog" class="edit-dialog">
+    <div class="dialog-header">Editar Producto</div>
+    <div class="dialog-content">
+      <label for="edit-name">Nombre:</label>
+      <input type="text" id="edit-name">
+      <label for="edit-price">Precio:</label>
+      <input type="text" id="edit-price">
+      <label for="edit-description">Descripción:</label>
+      <input type="text" id="edit-description">
+      <label for="edit-status">Estado:</label>
+      <select id="edit-status">
+        <option value="Disponible">Disponible</option>
+        <option value="No Disponible">No Disponible</option>
+      </select>
+    </div>
+    <div class="dialog-buttons">
+      <button onclick="saveEdit()">Guardar</button>
+      <button onclick="closeDialog('edit-dialog')">Cancelar</button>
+    </div>
+  </dialog>
+
+  <!-- Dialogo de confirmación para eliminar producto -->
+  <dialog id="delete-dialog">
+    <div class="dialog-header">Eliminar Producto</div>
+    <div class="dialog-content">
+      <p>¿Estás seguro de que deseas eliminar este producto?</p>
+    </div>
+    <div class="dialog-buttons">
+      <button onclick="confirmDelete()">Sí, eliminar</button>
+      <button onclick="closeDialog('delete-dialog')">Cancelar</button>
+    </div>
+  </dialog>
+
+  <!-- Dialogo para agregar producto -->
+  <dialog id="add-dialog" class="add-dialog">
+    <div class="dialog-header">Agregar Producto</div>
+    <div class="dialog-content">
+      <label for="add-name">Nombre:</label>
+      <input type="text" id="add-name">
+      <label for="add-price">Precio:</label>
+      <input type="text" id="add-price">
+      <label for="add-description">Descripción:</label>
+      <textarea id="add-description"></textarea>
+    </div>
+    <div class="dialog-buttons">
+      <button onclick="addNewProduct()">Agregar</button>
+      <button onclick="closeDialog('add-dialog')">Cancelar</button>
+    </div>
+  </dialog>
+
+  <script>
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    let deleteIndex = -1; // Para almacenar el índice del producto a eliminar
+
+    // Función para obtener el próximo ID
+    function getNextId() {
+      const lastId = localStorage.getItem('lastId') || '000';
+      const newId = (parseInt(lastId, 10) + 1).toString().padStart(3, '0');
+      localStorage.setItem('lastId', newId);
+      return newId;
+    }
+
+    function renderProducts() {
+      const productList = document.getElementById('product-list');
+      productList.innerHTML = '';
+      products.forEach((product, index) => {
+        productList.innerHTML += `
+          <tr>
+            <td>${product.id}</td>
+            <td>${product.name}</td>
+            <td>S/.${product.price}</td>
+            <td>${product.description}</td>
+            <td>
+              <button class="status-button ${product.status === 'Disponible' ? 'active' : 'inactive'}" onclick="toggleStatus(${index})">
+                ${product.status}
+              </button>
+            </td>
+            <td>
+              <button class="view-button" onclick="viewProduct(${index})">Ver detalles</button>
+             <button class="edit-button" onclick="editProduct(${index})">Editar producto</button>
+             <button class="delete-button" onclick="openDeleteDialog(${index})">Eliminar producto</button>
+            </td>
+         </tr>
+        `;
+      });
+    }
+
+    function viewProduct(index) {
+      const product = products[index];
+      const viewContent = document.getElementById('view-content');
+      viewContent.innerHTML = `
+        <p><strong>ID:</strong> ${product.id}</p>
+        <p><strong>Nombre:</strong> ${product.name}</p>
+        <p><strong>Precio:</strong> S/.${product.price}</p>
+        <p><strong>Descripción:</strong> ${product.description}</p>
+        <p><strong>Estado:</strong> ${product.status}</p>
+      `;
+      document.getElementById('view-dialog').showModal();
+    }
+
+    function editProduct(index) {
+      const product = products[index];
+      document.getElementById('edit-name').value = product.name;
+      document.getElementById('edit-price').value = product.price;
+      document.getElementById('edit-description').value = product.description;
+      document.getElementById('edit-status').value = product.status;
+      document.getElementById('edit-dialog').dataset.index = index;
+      document.getElementById('edit-dialog').showModal();
+    }
+
+    function saveEdit() {
+      const index = document.getElementById('edit-dialog').dataset.index;
+      const newName = document.getElementById('edit-name').value;
+      const newPrice = document.getElementById('edit-price').value;
+      const newDescription = document.getElementById('edit-description').value;
+      const newStatus = document.getElementById('edit-status').value;
+      if (newName && newPrice) {
+        products[index] = { ...products[index], name: newName, price: newPrice, description: newDescription, status: newStatus };
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts();
+        closeDialog('edit-dialog');
+      }
+    }
+
+    function toggleStatus(index) {
+      products[index].status = products[index].status === 'Disponible' ? 'No Disponible' : 'Disponible';
+      localStorage.setItem('products', JSON.stringify(products));
+      renderProducts();
+    }
+
+    function openDeleteDialog(index) {
+      deleteIndex = index;
+      document.getElementById('delete-dialog').showModal();
+    }
+
+    function confirmDelete() {
+      if (deleteIndex >= 0) {
+        products.splice(deleteIndex, 1);
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts();
+        deleteIndex = -1; // Resetear el índice después de eliminar
+      }
+      closeDialog('delete-dialog');
+    }
+
+    function closeDialog(dialogId) {
+      document.getElementById(dialogId).close();
+    }
+
+    function showAddDialog() {
+      document.getElementById('add-dialog').showModal();
+    }
+
+    function addNewProduct() {
+      const name = document.getElementById('add-name').value;
+      const price = document.getElementById('add-price').value;
+      const description = document.getElementById('add-description').value;
+      if (name && price) {
+        const newProduct = {
+          id: getNextId(),
+          name: name,
+          price: price,
+          description: description,
+          status: 'Disponible'
+        };
+        products.push(newProduct);
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts();
+        closeDialog('add-dialog');
+      }
+    }
+
+    // Inicializa la lista de productos
+    renderProducts();
+  </script>
+</body>
+</html>

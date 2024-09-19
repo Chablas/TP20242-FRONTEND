@@ -150,7 +150,7 @@ export default function BarraLateralCarritoCompras() {
                                         </div>
                                         <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                                             <p>
-                                                o
+                                                o&nbsp;
                                                 <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
                                                     Continua Comprando
                                                     <span aria-hidden="true"> &rarr;</span>
