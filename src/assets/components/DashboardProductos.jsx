@@ -121,7 +121,7 @@ export default function Productos() {
     }
 
     // Inicializa la lista de productos
-    renderProducts();
+    // renderProducts();
     return (
         <div className="font-sans bg-gray-100 text-purple-700 m-0 p-0">
             <nav className="bg-gray-900 p-4 text-center text-white text-xl">Gestión de Productos</nav>
