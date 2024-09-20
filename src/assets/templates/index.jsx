@@ -12,10 +12,12 @@ import Categoria from "../components/DashboardCategoria.jsx"
 import DashboardNav from "../components/DashboardNav.jsx";
 import DashboardProductos from "../components/DashboardProductos.jsx"
 import DashboardRoles from "../components/DashboardRoles.jsx";
+import StoreProductOverview from "../components/StoreProductOverview.jsx";
+import StoreProductAll from "../components/StoreProductAll.jsx";
 
 // Páginas
 
-function P_Index() {
+function P_Store_Index() {
     return (
         <>
             <StoreNavigation />
@@ -25,11 +27,31 @@ function P_Index() {
     )
 }
 
-function P_Productos_Categorias() {
+function P_Store_Productos_Categorias() {
     return (
         <>
             <StoreNavigation />
             <CategoryPreviews />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
+function P_Store_Product_Overview() {
+    return (
+        <>
+            <StoreNavigation />
+            <StoreProductOverview />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
+function P_Store_Product_All() {
+    return (
+        <>
+            <StoreNavigation />
+            <StoreProductAll />
             <BarraLateralCarritoCompras />
         </>
     )
@@ -66,8 +88,11 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<P_Index />} />
-                <Route path="/categorias" element={<P_Productos_Categorias />} />
+                <Route path="/" element={<P_Store_Index />} />
+                <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
+                <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
+                <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
+
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>

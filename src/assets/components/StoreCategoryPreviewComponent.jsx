@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 export default function StoreCategoryPreviewComponent(props) {
     return (
         <div className="group relative">
@@ -8,10 +10,10 @@ export default function StoreCategoryPreviewComponent(props) {
                     className="h-full w-full object-cover object-center" />
             </div>
             <h3 className="mt-6 text-sm text-gray-500">
-                <a href="#">
+                <Link to="/categorias/teclados">
                     <span className="absolute inset-0"></span>
                     {props.nombre}
-                </a>
+                </Link>
             </h3>
             <p className="text-base font-semibold text-gray-900">{props.descripcion}</p>
         </div>
