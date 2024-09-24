@@ -59,6 +59,8 @@ export default function Categoria() {
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
+                // Cierra modal
+                cerrarModal();
             } else {
                 console.error('Error en el envío:', resultado);
             }
