@@ -1,68 +1,196 @@
-import { Link } from "react-router-dom"
-import logo from "../images/logo.jpg"
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import logo from "../images/logo.jpg";
+import successImage from "../images/success-26.png";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material"; // Importa componentes de Dialog
 
 export default function Register() {
-    return (
-<div class="bg-gray-50 font-[sans-serif]">
-      <div class="min-h-screen flex flex-col items-center justify-center py-6 px-4">
-        <div class="max-w-md w-full">
-        <Link to="/"><img
-            src={logo} alt="logo" class='w-20 mb-8 mx-auto block' />
-        </Link>
-          <div class="p-8 rounded-2xl bg-white shadow">
-            <h2 class="text-gray-800 text-center text-2xl font-bold">Crear una cuenta</h2>
-            <form class="mt-8 space-y-4">
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false); // Para controlar el diálogo
+  const navigate = useNavigate();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleSubmit = async () => {
+    setError("");
+
+    if (!emailRegex.test(email)) {
+      setError("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError("Debes aceptar los Términos y Condiciones para registrarte.");
+      return;
+    }
+
+    const userData = { email, password };
+
+    try {
+      const response = await fetch("https://compusave-backend.onrender.com/post/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.status === 200) {
+        setDialogOpen(true); // Abrir el diálogo en caso de éxito
+      } else if (response.status === 400) {
+        setError("Ya existe una cuenta asociada a este correo.");
+      } else {
+        setError("Error al registrar el usuario. Inténtalo de nuevo.");
+      }
+    } catch (error) {
+      setError("Error al registrar el usuario. Inténtalo de nuevo.");
+      console.error("Error al registrar el usuario:", error);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    navigate("/login"); // Redirigir a login
+  };
+
+  const handleTestDialogOpen = () => {
+    setDialogOpen(true); // Abre el diálogo solo para prueba
+  };
+
+  return (
+    <div className="bg-gray-50 font-[sans-serif]">
+      <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
+        <div className="max-w-md w-full">
+          <Link to="/">
+            <img src={logo} alt="logo" className="w-20 mb-8 mx-auto block" />
+          </Link>
+          <div className="p-8 rounded-2xl bg-white shadow">
+            <h2 className="text-gray-800 text-center text-2xl font-bold">Crear una cuenta</h2>
+            <form className="mt-8 space-y-4">
               <div>
-                <label class="text-gray-800 text-sm mb-2 block">Correo</label>
-                <div class="relative flex items-center">
-                  <input name="username" type="text" required class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="Ingresa tu correo electrónico" />
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-4 h-4 absolute right-4" viewBox="0 0 24 24">
-                    <circle cx="10" cy="7" r="6" data-original="#000000"></circle>
-                    <path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z" data-original="#000000"></path>
-                  </svg>
-                </div>
+                <label className="text-gray-800 text-sm mb-2 block">Correo</label>
+                <input
+                  name="email"
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
+                  placeholder="Ingresa tu correo electrónico"
+                />
               </div>
 
               <div>
-                <label class="text-gray-800 text-sm mb-2 block">Contraseña</label>
-                <div class="relative flex items-center">
-                  <input name="password" type="password" required class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="••••••••" />
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-4 h-4 absolute right-4 cursor-pointer" viewBox="0 0 128 128">
-                    <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
-                  </svg>
-                </div>
+                <label className="text-gray-800 text-sm mb-2 block">Contraseña</label>
+                <input
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
+                  placeholder="••••••••"
+                />
               </div>
 
               <div>
-                <label class="text-gray-800 text-sm mb-2 block">Confirmar Contraseña</label>
-                <div class="relative flex items-center">
-                  <input name="confirm-password" type="confirm-password" required class="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="••••••••" />
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-4 h-4 absolute right-4 cursor-pointer" viewBox="0 0 128 128">
-                    <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
-                  </svg>
-                </div>
+                <label className="text-gray-800 text-sm mb-2 block">Confirmar Contraseña</label>
+                <input
+                  name="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600"
+                  placeholder="••••••••"
+                />
               </div>
-              
 
-              <div class="flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center">
-                  <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                  <label for="remember-me" class="ml-3 block text-sm text-gray-800">
-                    Aceptas los <Link to="/" class="text-purple-600 hover:underline font-semibold">Términos y Condiciones</Link> y la <Link to="/" class="text-purple-600 hover:underline font-semibold">Política de Privacidad</Link>.
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-800">
+                    Aceptas los <Link to="/" className="text-purple-600 hover:underline font-semibold">Términos y Condiciones</Link> y la <Link to="/" className="text-purple-600 hover:underline font-semibold">Política de Privacidad</Link>.
                   </label>
                 </div>
               </div>
 
-              <div class="!mt-8">
-                <button type="button" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none">
+              <div className="!mt-8">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none"
+                >
                   Ingresar
                 </button>
               </div>
-              <p class="text-gray-800 text-sm !mt-8 text-center">Ya tienes una cuenta? <Link to="/login" class="text-purple-600 hover:underline ml-1 whitespace-nowrap font-semibold">Inicia sesión aquí</Link></p>
+              <p className="text-gray-800 text-sm !mt-8 text-center">
+                Ya tienes una cuenta? <Link to="/login" className="text-purple-600 hover:underline ml-1 whitespace-nowrap font-semibold">Inicia sesión aquí</Link>
+              </p>
             </form>
+
+            {/* Botón adicional para probar el modal */}
+            <div className="!mt-4">
+              <button
+                type="button"
+                onClick={handleTestDialogOpen}
+                className="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+              >
+                Probar Modal
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Diálogo de éxito con Material-UI */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="xs">
+        <DialogTitle style={{ textAlign: "center", fontWeight: "bold" }}>
+          Registro existoso
+        </DialogTitle>
+        <DialogContent>
+          <Typography align="center" variant="body2" style={{ marginBottom: "1rem" }}>
+            Se ha registrado exitosamente el usuario con el correo: <strong>{email}</strong>.
+          </Typography>
+        </DialogContent>
+        <DialogActions style={{ justifyContent: "center" }}>
+          <Button
+            onClick={handleDialogClose}
+            style={{
+              backgroundColor: "#9B51E0",
+              color: "#fff",
+              width: "100%",
+              padding: "10px 0",
+              borderRadius: "8px",
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
-    )
+  );
 }

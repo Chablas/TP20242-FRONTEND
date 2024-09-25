@@ -16,6 +16,7 @@ import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
 import Login from "../components/Login.jsx";
 import Register from "../components/Register.jsx";
+import RestorePassword from "../components/RestorePassword.jsx";
 
 // Páginas
 
@@ -102,6 +103,14 @@ function P_Register() {
     )
 }
 
+function P_RestorePassword() {
+    return (
+        <>
+            <RestorePassword />
+        </>
+    )
+}
+
 function App() {
     return (
         <BrowserRouter>
@@ -112,6 +121,7 @@ function App() {
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
                 <Route path="/login" element={<P_Login />} />
                 <Route path="/register" element={<P_Register/>} />
+                <Route path="/restore-password" element={<P_RestorePassword/>} />
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
