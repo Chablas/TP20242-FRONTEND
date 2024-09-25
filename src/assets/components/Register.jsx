@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../images/logo.jpg";
-import successImage from "../images/success-26.png";
 import {
   Dialog,
   DialogTitle,
@@ -9,7 +8,7 @@ import {
   DialogActions,
   Button,
   Typography,
-} from "@mui/material"; // Importa componentes de Dialog
+} from "@mui/material";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -17,7 +16,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false); // Para controlar el diálogo
+  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,7 +49,7 @@ export default function Register() {
       });
 
       if (response.status === 200) {
-        setDialogOpen(true); // Abrir el diálogo en caso de éxito
+        setDialogOpen(true);
       } else if (response.status === 400) {
         setError("Ya existe una cuenta asociada a este correo.");
       } else {
@@ -64,11 +63,11 @@ export default function Register() {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    navigate("/login"); // Redirigir a login
+    navigate("/login");
   };
 
   const handleTestDialogOpen = () => {
-    setDialogOpen(true); // Abre el diálogo solo para prueba
+    setDialogOpen(true);
   };
 
   return (
@@ -152,7 +151,7 @@ export default function Register() {
               </p>
             </form>
 
-            {/* Botón adicional para probar el modal */}
+            {/*
             <div className="!mt-4">
               <button
                 type="button"
@@ -161,12 +160,11 @@ export default function Register() {
               >
                 Probar Modal
               </button>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>
 
-      {/* Diálogo de éxito con Material-UI */}
       <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="xs">
         <DialogTitle style={{ textAlign: "center", fontWeight: "bold" }}>
           Registro existoso
