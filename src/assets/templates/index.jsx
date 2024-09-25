@@ -9,7 +9,7 @@ import StoreNavigation from "../components/StoreNavigation.jsx"
 import PromoSections from "../components/StorePromoSections.jsx"
 import CategoryPreviews from "../components/StoreCategoryPreviews.jsx"
 
-import Proveedores from "../components/DashboardProveedores.jsx";
+import Proveedor from "../components/DashboardProveedores.jsx";
 import Categoria from "../components/DashboardCategoria.jsx";
 import DashboardNav from "../components/DashboardNav.jsx";
 import DashboardProductos from "../components/DashboardProductos.jsx"
@@ -63,7 +63,7 @@ function P_Dashboard_Proveedores() {
     return (
         <>
             <DashboardNav />
-            <Proveedores />
+            <Proveedor />
         </>
     )
 }
