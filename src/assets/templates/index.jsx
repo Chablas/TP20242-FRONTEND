@@ -14,6 +14,8 @@ import DashboardProductos from "../components/DashboardProductos.jsx"
 import DashboardRoles from "../components/DashboardRoles.jsx";
 import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
+import Login from "../components/Login.jsx";
+import Register from "../components/Register.jsx";
 
 // Páginas
 
@@ -84,6 +86,22 @@ function P_Dashboard_Usuarios() {
     )
 }
 
+function P_Login() {
+    return (
+        <>
+            <Login />
+        </>
+    )
+}
+
+function P_Register() {
+    return (
+        <>
+            <Register />
+        </>
+    )
+}
+
 function App() {
     return (
         <BrowserRouter>
@@ -92,7 +110,8 @@ function App() {
                 <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
                 <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
-
+                <Route path="/login" element={<P_Login />} />
+                <Route path="/register" element={<P_Register/>} />
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>

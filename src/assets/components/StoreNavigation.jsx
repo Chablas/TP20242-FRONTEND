@@ -58,13 +58,13 @@ export default function StoreNavigation() {
 
                                 <div className="ml-auto flex items-center">
                                     <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                        <a href="#"
+                                        <Link to="/login"
                                             className="text-sm font-medium text-gray-700 hover:text-gray-800">Iniciar
-                                            Sesión</a>
+                                            Sesión</Link>
                                         <span className="h-6 w-px bg-gray-200" aria-hidden="true"></span>
-                                        <a href="#"
+                                        <Link to="/register"
                                             className="text-sm font-medium text-gray-700 hover:text-gray-800">Crear
-                                            cuenta</a>
+                                            cuenta</Link>
                                     </div>
 
                                     <div className="hidden lg:ml-8 lg:flex">
