@@ -1,213 +1,394 @@
-export default function Productos() {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-    let deleteIndex = -1; // Para almacenar el índice del producto a eliminar
+import React, { useEffect, useState } from 'react';
 
-    // Función para obtener el próximo ID
-    const getNextId = () => {
-        const lastId = localStorage.getItem('lastId') || '000';
-        const newId = (parseInt(lastId, 10) + 1).toString().padStart(3, '0');
-        localStorage.setItem('lastId', newId);
-        return newId;
-    }
+export default function DashboardProductos() {
+    const abrirModal = () => {
+        document.getElementById('modalAgregar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Registrar Bien';
+    };
 
-    const renderProducts = () => {
-        const productList = document.getElementById('product-list');
-        productList.innerHTML = '';
-        products.forEach((product, index) => {
-          productList.innerHTML += `
-            <tr>
-              <td>${product.id}</td>
-              <td>${product.name}</td>
-              <td>S/.${product.price}</td>
-              <td>${product.description}</td>
-              <td>
-                <button class="status-button ${product.status === 'Disponible' ? 'active' : 'inactive'}" onclick="toggleStatus(${index})">
-                  ${product.status}
-                </button>
-              </td>
-              <td>
-                <button class="view-button" onclick="viewProduct(${index})">Ver detalles</button>
-               <button class="edit-button" onclick="editProduct(${index})">Editar producto</button>
-               <button class="delete-button" onclick="openDeleteDialog(${index})">Eliminar producto</button>
-              </td>
-           </tr>
-          `;
-        });
-    }
+    const cerrarModal = () => {
+        const modales = document.querySelectorAll("div.btnCerrarModal");
+        for (const modal of modales) {
+            modal.classList.add('hidden');
+        }
+    };
 
-    const viewProduct = () => {
-        const product = products[index];
-        const viewContent = document.getElementById('view-content');
-        viewContent.innerHTML = `
-          <p><strong>ID:</strong> ${product.id}</p>
-          <p><strong>Nombre:</strong> ${product.name}</p>
-          <p><strong>Precio:</strong> S/.${product.price}</p>
-          <p><strong>Descripción:</strong> ${product.description}</p>
-          <p><strong>Estado:</strong> ${product.status}</p>
-        `;
-        document.getElementById('view-dialog').showModal();
-    }
+    const [id, setId] = useState('');
+    const [nombre, setNombre] = useState('');
+    const [informacion_general, setInformacionGeneral] = useState('');
+    const [precio, setPrecio] = useState('');
+    const [garantia, setGarantia] = useState('');
+    const [estado, setEstado] = useState('');
+    const [imagen, setImagen] = useState('');
+    const [marca, setMarca] = useState('');
+    const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
+    const [categoria_id, setCategoriaId] = useState('');
 
-    const editProduct = () => {
-        const product = products[index];
-        document.getElementById('edit-name').value = product.name;
-        document.getElementById('edit-price').value = product.price;
-        document.getElementById('edit-description').value = product.description;
-        document.getElementById('edit-status').value = product.status;
-        document.getElementById('edit-dialog').dataset.index = index;
-        document.getElementById('edit-dialog').showModal();
-    }
 
-    const saveEdit = () => {
-        const index = document.getElementById('edit-dialog').dataset.index;
-        const newName = document.getElementById('edit-name').value;
-        const newPrice = document.getElementById('edit-price').value;
-        const newDescription = document.getElementById('edit-description').value;
-        const newStatus = document.getElementById('edit-status').value;
-        if (newName && newPrice) {
-          products[index] = { ...products[index], name: newName, price: newPrice, description: newDescription, status: newStatus };
-          localStorage.setItem('products', JSON.stringify(products));
-          renderProducts();
-          closeDialog('edit-dialog');
+    const enviarDatos = async (e) => {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            // Cuerpo del POST request
+            const cuerpo = JSON.stringify({
+                nombre: nombre,
+                informacion_general: informacion_general,
+                precio: precio,
+                garantia: garantia,
+                estado: estado,
+                imagen: imagen,
+                marca: marca,
+                especificaciones_tecnicas: especificaciones_tecnicas,
+                categoria_id: categoria_id,
+            });
+
+            const request = new Request("https://compusave-backend.onrender.com/post/bien", {
+                method: "POST",
+                headers: headers,
+                body: cuerpo,
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                console.log('Datos enviados correctamente:', resultado);
+                // Aquí puedes resetear el formulario o mostrar una notificación
+                setId('');
+                setNombre('');
+                setInformacionGeneral('');
+                setPrecio('');
+                setGarantia('');
+                setEstado('');
+                setImagen('');
+                setMarca('');
+                setEspecificacionesTecnicas('');
+                setCategoriaId('');
+                // Cierra modal
+                cerrarModal();
+            } else {
+                console.error('Error en el envío:', resultado);
+            }
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
+        }
+    };
+
+    const editarDatos = async (e) => {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            // Cuerpo del request
+            const cuerpo = JSON.stringify({
+                nombre: nombre,
+                informacion_general: informacion_general,
+                precio: precio,
+                garantia: garantia,
+                estado: estado,
+                imagen: imagen,
+                marca: marca,
+                especificaciones_tecnicas: especificaciones_tecnicas,
+                categoria_id: categoria_id,
+            });
+            
+            const request = new Request(`https://compusave-backend.onrender.com/put/bien/${id}`, {
+                method: "PUT",
+                headers: headers,
+                body: cuerpo,
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                console.log('Datos enviados correctamente:', resultado);
+                // Aquí puedes resetear el formulario o mostrar una notificación
+                setId('');
+                setNombre('');
+                setInformacionGeneral('');
+                setPrecio('');
+                setGarantia('');
+                setEstado('');
+                setImagen('');
+                setMarca('');
+                setEspecificacionesTecnicas('');
+                setCategoriaId('');
+                // Cierra modal
+                cerrarModal();
+            } else {
+                console.error('Error en el envío:', resultado);
+            }
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
         }
     }
 
-    const toggleStatus = () => {
-        products[index].status = products[index].status === 'Disponible' ? 'No Disponible' : 'Disponible';
-      localStorage.setItem('products', JSON.stringify(products));
-      renderProducts();
-    }
+    const eliminarDatos = async (id) => {
 
-    const openDeleteDialog = (index=1) => {
-        deleteIndex = index;
-      document.getElementById('delete-dialog').showModal();
-    }
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            console.log("asdasd");
+            console.log(id);
+            const request = new Request(`https://compusave-backend.onrender.com/delete/bien/${id}`, {
+                method: "DELETE",
+                headers: headers,
+            });
 
-    const confirmDelete = () => {
-        if (deleteIndex >= 0) {
-            products.splice(deleteIndex, 1);
-            localStorage.setItem('products', JSON.stringify(products));
-            renderProducts();
-            deleteIndex = -1; // Resetear el índice después de eliminar
-          }
-          closeDialog('delete-dialog');
-    }
-
-    const closeDialog = (dialogId=1) => {
-        document.getElementById(dialogId).close();
-    }
-
-    const showAddDialog = () => {
-        document.getElementById('add-dialog').showModal();
-    }
-
-    const addNewProduct = () => {
-        const name = document.getElementById('add-name').value;
-        const price = document.getElementById('add-price').value;
-        const description = document.getElementById('add-description').value;
-        if (name && price) {
-          const newProduct = {
-            id: getNextId(),
-            name: name,
-            price: price,
-            description: description,
-            status: 'Disponible'
-          };
-          products.push(newProduct);
-          localStorage.setItem('products', JSON.stringify(products));
-          renderProducts();
-          closeDialog('add-dialog');
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                console.log('Datos enviados correctamente:', resultado);
+                // Aquí puedes resetear el formulario o mostrar una notificación
+                setId('');
+                setNombre('');
+                setInformacionGeneral('');
+                setPrecio('');
+                setGarantia('');
+                setEstado('');
+                setImagen('');
+                setMarca('');
+                setEspecificacionesTecnicas('');
+                setCategoriaId('');
+                // Cierra modal
+                cerrarModal();
+            } else {
+                console.error('Error en el envío:', resultado);
+            }
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
         }
     }
 
-    // Inicializa la lista de productos
-    // renderProducts();
+
+    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+
+    useEffect(() => {
+        const obtenerDatos = async () => {
+            
+            try {
+                const headers = new Headers();
+                headers.append("Content-Type", "application/json");
+                const request = new Request("https://compusave-backend.onrender.com/get/bienes", {
+                    method: "GET",
+                    headers: headers,
+                });
+                const response = await fetch(request);
+                const datos = await response.json();
+
+                const bienes = datos.map((x) => {
+                    return <DashboardProductosFila key={x.id}
+                    {...x}
+                    setId={setId}
+                    setNombre={setNombre}
+                    setInformacionGeneral={setInformacionGeneral}
+                    setPrecio={setPrecio}
+                    setGarantia={setGarantia}
+                    setEstado={setEstado}
+                    setImagen={setImagen}
+                    setMarca={setMarca}
+                    setEspecificacionesTecnicas={setEspecificacionesTecnicas}
+                    setCategoriaId={setCategoriaId}
+                    eliminarDatos={eliminarDatos}
+                    />
+                });
+
+                setMostrar(bienes);
+            } catch (error) {
+                console.error("Error al obtener los datos:", error);
+            }
+        };
+
+        obtenerDatos();
+
+        
+    }, []);
+
     return (
-        <div className="font-sans bg-gray-100 text-purple-700 m-0 p-0">
-            <nav className="bg-gray-900 p-4 text-center text-white text-xl">Gestión de Productos</nav>
-
-            <div className="container p-6">
-                <h1 className="text-left text-black my-5">Lista de Productos</h1>
-                <button id="add-product" className="inline-block py-2 px-4 bg-green-500 text-white rounded transition duration-300 ease-in-out mb-5 hover:bg-green-600" onClick={showAddDialog}>Agregar Producto</button>
-
-                <table className="w-full border-collapse mb-5 bg-gray-900 rounded-lg shadow-lg">
-                    <thead>
-                        <tr>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">ID</th>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">Nombre</th>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">Precio</th>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">Descripción</th>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">Estado</th>
-                            <th className="p-3 bg-gray-700 text-blue-gray-300 border-b border-gray-600 text-left">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="product-list" className="text-white">
-                        {/* Aquí se generarán las filas de los productos */}
-                    </tbody>
-                </table>
+        <>
+            <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Bien</h2>
+                    <form id="formularioBienPOST">
+                        <div className="mb-4">
+                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
+                            <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="informacionGeneralBien" className="block text-gray-700">Información General</label>
+                            <textarea id="informacionGeneralBien" value={informacion_general} onChange={(e) => setInformacionGeneral(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="precioBien" className="block text-gray-700">Precio</label>
+                            <input id="precioBien" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="garantiaBien" className="block text-gray-700">Garantía</label>
+                            <input id="garantiaBien" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
+                            <input id="estadoBien" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
+                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <input id="marcaBien" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="especificacionesTecnicasBien" className="block text-gray-700">Especificaciones Técnicas</label>
+                            <input id="especificacionesTecnicasBien" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
+                            <input id="categoriaIdBien" type="text" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="flex justify-end space-x-4">
+                            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            {/* Dialogo para ver detalles */}
-            <dialog id="view-dialog" className="rounded-lg p-5 bg-white">
-                <div className="text-xl mb-3">Detalles del Producto</div>
-                <div className="mb-5" id="view-content">
-                    {/* Contenido de los detalles del producto */}
+            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
+                    <form id="formularioBienPUT">
+                    <div className="mb-4">
+                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
+                            <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="informacionGeneralBien" className="block text-gray-700">Información General</label>
+                            <textarea id="informacionGeneralBien" value={informacion_general} onChange={(e) => setInformacionGeneral(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="precioBien" className="block text-gray-700">Precio</label>
+                            <input id="precioBien" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="garantiaBien" className="block text-gray-700">Garantía</label>
+                            <input id="garantiaBien" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
+                            <input id="estadoBien" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
+                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <input id="marcaBien" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="especificacionesTecnicasBien" className="block text-gray-700">Especificaciones Técnicas</label>
+                            <input id="especificacionesTecnicasBien" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
+                            <input id="categoriaIdBien" type="text" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="flex justify-end space-x-4">
+                            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
+                        </div>
+                    </form>
                 </div>
-                <div className="text-right">
-                    <button className="ml-2 bg-purple-600 text-white py-2 px-4 rounded" onClick={closeDialog}>Cerrar</button>
-                </div>
-            </dialog>
+            </div>
 
-            {/* Dialogo para editar producto */}
-            <dialog id="edit-dialog" className="edit-dialog rounded-lg p-5 bg-white">
-                <div className="text-xl mb-3">Editar Producto</div>
-                <div className="mb-5">
-                    <label for="edit-name">Nombre:</label>
-                    <input type="text" id="edit-name" className="block mb-2 w-full" />
-                    <label for="edit-price">Precio:</label>
-                    <input type="text" id="edit-price" className="block mb-2 w-full" />
-                    <label for="edit-description">Descripción:</label>
-                    <input type="text" id="edit-description" className="block mb-2 w-full" />
-                    <label for="edit-status">Estado:</label>
-                    <select id="edit-status" className="block mb-2 w-full">
-                        <option value="Disponible">Disponible</option>
-                        <option value="No Disponible">No Disponible</option>
-                    </select>
+            <main className="p-6">
+                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Bienes</h1>
+                <div className="mt-5" >
+                    <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
+                        Agregar nuevo Bien
+                    </button>
                 </div>
-                <div className="text-right">
-                    <button className="ml-2 bg-purple-600 text-white py-2 px-4 rounded" onClick={saveEdit}>Guardar</button>
-                    <button className="ml-2 bg-gray-600 text-white py-2 px-4 rounded" onClick={closeDialog}>Cancelar</button>
-                </div>
-            </dialog>
 
-            {/* Dialogo de confirmación para eliminar producto */}
-            <dialog id="delete-dialog" className="rounded-lg p-5 bg-white">
-                <div className="text-xl mb-3">Eliminar Producto</div>
-                <div className="mb-5">
-                    <p>¿Estás seguro de que deseas eliminar este producto?</p>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-[#212936] shadow-md rounded-lg overflow-hidden">
+                        <thead className="bg-[#394050]">
+                            <tr>
+                                <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
+                                <th className="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">INFORMACIÓN GENERAL</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">PRECIO</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">GARANTIA</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ESTADO</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">IMAGEN</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">MARCA</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ESPECIFICACIONES TÉCNICAS</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">CATEGORÍA</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {mostrar}
+                        </tbody>
+                    </table>
                 </div>
-                <div className="text-right">
-                    <button className="ml-2 bg-purple-600 text-white py-2 px-4 rounded" onClick={confirmDelete}>Sí, eliminar</button>
-                    <button className="ml-2 bg-gray-600 text-white py-2 px-4 rounded" onClick={closeDialog}>Cancelar</button>
-                </div>
-            </dialog>
+            </main>
+        </>
+    )
+}
 
-            {/* Dialogo para agregar producto */}
-            <dialog id="add-dialog" className="add-dialog rounded-lg p-5 bg-white">
-                <div className="text-xl mb-3">Agregar Producto</div>
-                <div className="mb-5">
-                    <label for="add-name">Nombre:</label>
-                    <input type="text" id="add-name" className="block mb-2 w-full" />
-                    <label for="add-price">Precio:</label>
-                    <input type="text" id="add-price" className="block mb-2 w-full" />
-                    <label for="add-description">Descripción:</label>
-                    <textarea id="add-description" className="block mb-2 w-full"></textarea>
-                </div>
-                <div className="text-right">
-                    <button className="ml-2 bg-purple-600 text-white py-2 px-4 rounded" onClick={addNewProduct}>Agregar</button>
-                    <button className="ml-2 bg-gray-600 text-white py-2 px-4 rounded" onClick={closeDialog}>Cancelar</button>
-                </div>
-            </dialog>
-        </div>
+function DashboardProductosFila(props) {
+    const abrirModalEdicion = () => {
+        document.getElementById('modalEditar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Editar Bien ';
+        props.setId(props.id);
+        props.setNombre(props.nombre);
+        props.setInformacionGeneral(props.informacion_general);
+        props.setPrecio(props.precio);
+        props.setGarantia(props.garantia);
+        props.setEstado(props.estado);
+        props.setImagen(props.imagen);
+        props.setMarca(props.marca);
+        props.setEspecificacionesTecnicas(props.especificaciones_tecnicas);
+        props.setCategoriaId(props.categoria_id);
+    };
+
+    // Simulación de eliminar categoría
+    const eliminarDato = () => {
+        props.setId(props.id);
+        if (confirm('¿Estás seguro de eliminar el bien ' + props.id + '?')) {
+            props.eliminarDatos(props.id);
+            alert('Bien ' + props.id + ' eliminada.');
+            // Aquí iría el código para eliminar la categoría en tu sistema
+        }
+    };
+
+    return (
+        <>
+        <tr className="border-b border-b-[#394050]">
+            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.nombre}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.informacion_general}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.precio}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.garantia}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.estado}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.imagen}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.marca}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.especificaciones_tecnicas}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.categoria_id}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
+                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarDato}>Eliminar</button>
+            </td>
+        </tr>
+        
+        </>
     )
 }
