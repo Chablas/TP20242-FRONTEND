@@ -23,6 +23,7 @@ export default function DashboardProductos() {
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
+    const [categoria_nombre, setCategoriaNombre] = useState('');
 
 
     const enviarDatos = async (e) => {
@@ -181,9 +182,16 @@ export default function DashboardProductos() {
                     headers: headers,
                 });
                 const response = await fetch(request);
-                const datos = await response.json();
+                const bienesJS = await response.json();
 
-                const bienes = datos.map((x) => {
+                request = new Request("https://compusave-backend.onrender.com/get/categorias", {
+                    method: "GET",
+                    headers: headers,
+                });
+                response = await fetch(request);
+                const categoriaJS = await response.json();
+
+                const bienes = bienesJS.map((x) => {
                     return <DashboardProductosFila key={x.id}
                     {...x}
                     setId={setId}
