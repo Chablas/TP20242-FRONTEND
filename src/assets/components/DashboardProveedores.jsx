@@ -44,12 +44,16 @@ export default function Proveedor() {
             // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
-                descripcion: descripcion,
-                imagen: url
+                ruc: ruc,
+                direccion: direccion,
+                correo: correo,
+                telefono: telefono,
+              /*   descripcion: descripcion, */
+                /* imagen: url */
                 //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/post/categoria", {
+            const request = new Request("https://compusave-backend.onrender.com/post/proveedores", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
@@ -87,7 +91,7 @@ export default function Proveedor() {
             try {
                 const headers = new Headers();
                 headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/categorias", {
+                const request = new Request("https://compusave-backend.onrender.com/get/proveedores", {
                     method: "GET",
                     headers: headers,
                 });
@@ -161,6 +165,7 @@ export default function Proveedor() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">DIRECCION</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">CORREO</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">TELEFONO</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
