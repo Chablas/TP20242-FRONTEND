@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
 export default function DashboardProductos() {
+    let categoriasJS, categoriaOpciones;
     const abrirModal = () => {
+        setId('');
+        setNombre('');
+        setInformacionGeneral('');
+        setPrecio('');
+        setGarantia('');
+        setEstado('');
+        setImagen('');
+        setMarca('');
+        setEspecificacionesTecnicas('');
+        setCategoriaId('');
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Bien';
     };
@@ -23,13 +34,21 @@ export default function DashboardProductos() {
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
-    const [categoria_nombre, setCategoriaNombre] = useState('');
+    const [categoriaJS, setCategoriaJS] = useState([]);
 
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
         try {
+            for (const categorianombre of categoriaJS) {
+                console.log(categorianombre);
+                if (categorianombre.nombre == categoria_id) {
+                    setCategoriaId(categorianombre.id);
+                    console.log(categoria_id);
+                }
+            }
+
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
@@ -135,8 +154,6 @@ export default function DashboardProductos() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            console.log("asdasd");
-            console.log(id);
             const request = new Request(`https://compusave-backend.onrender.com/delete/bien/${id}`, {
                 method: "DELETE",
                 headers: headers,
@@ -170,28 +187,49 @@ export default function DashboardProductos() {
 
 
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+    const [mostrarCategorias, setMostrarCategorias] = useState([]);
+
+    async function obtenerDatos() {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
+            method: "GET",
+            headers: headers,
+        });
+        const requestCategorias = new Request(`https://compusave-backend.onrender.com/get/categorias`, {
+            method: "GET",
+            headers: headers,
+        });
+        Promise.all([requestBienes, requestCategorias])
+            .then((responses) => {
+                for (const response of responses) {
+                    console.log
+                }
+            })
+            .catch((error)=>{
+                console.error(error)
+            })
+
+        let response = await fetch(request);
+        const bienesJS = await response.json();
+
+        
+        response = await fetch(request);
+        categorias = await response.json();
+    }
 
     useEffect(() => {
-        const obtenerDatos = async () => {
+        const mostrarDatos = async () => {
             
             try {
-                const headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/bienes", {
-                    method: "GET",
-                    headers: headers,
-                });
-                const response = await fetch(request);
-                const bienesJS = await response.json();
+                let categorias;
+                
 
-                request = new Request("https://compusave-backend.onrender.com/get/categorias", {
-                    method: "GET",
-                    headers: headers,
-                });
-                response = await fetch(request);
-                const categoriaJS = await response.json();
+                setCategoriaJS(categorias);
 
                 const bienes = bienesJS.map((x) => {
+                    
                     return <DashboardProductosFila key={x.id}
                     {...x}
                     setId={setId}
@@ -205,23 +243,29 @@ export default function DashboardProductos() {
                     setEspecificacionesTecnicas={setEspecificacionesTecnicas}
                     setCategoriaId={setCategoriaId}
                     eliminarDatos={eliminarDatos}
+                    categoriasJS={categorias}
                     />
                 });
+                
+                categoriaOpciones = categoriaJS.map((x)=>{
+                    return <CategoriaOption key={x.id} {...x} />
+                })
 
                 setMostrar(bienes);
+                setMostrarCategorias(categoriaOpciones)
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
             }
         };
 
-        obtenerDatos();
+        mostrarDatos();
 
         
     }, []);
 
     return (
         <>
-            <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
+            <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Bien</h2>
                     <form id="formularioBienPOST">
@@ -259,7 +303,9 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
-                            <input id="categoriaIdBien" type="text" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
+                                {mostrarCategorias}
+                            </select>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -269,45 +315,45 @@ export default function DashboardProductos() {
                 </div>
             </div>
 
-            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
+            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
+                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
                     <form id="formularioBienPUT">
                     <div className="mb-4">
-                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
-                            <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Bien</label>
+                            <input id="nombreBienPUT" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="informacionGeneralBien" className="block text-gray-700">Información General</label>
-                            <textarea id="informacionGeneralBien" value={informacion_general} onChange={(e) => setInformacionGeneral(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <label htmlFor="informacionGeneralBienPUT" className="block text-gray-700">Información General</label>
+                            <textarea id="informacionGeneralBienPUT" value={informacion_general} onChange={(e) => setInformacionGeneral(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="precioBien" className="block text-gray-700">Precio</label>
-                            <input id="precioBien" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="precioBienPUT" className="block text-gray-700">Precio</label>
+                            <input id="precioBienPUT" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="garantiaBien" className="block text-gray-700">Garantía</label>
-                            <input id="garantiaBien" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="garantiaBienPUT" className="block text-gray-700">Garantía</label>
+                            <input id="garantiaBienPUT" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
-                            <input id="estadoBien" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="estadoBienPUT" className="block text-gray-700">Estado</label>
+                            <input id="estadoBienPUT" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
+                            <input id="imagenBienPUT" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
-                            <input id="marcaBien" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <input id="marcaBienPUT" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="especificacionesTecnicasBien" className="block text-gray-700">Especificaciones Técnicas</label>
-                            <input id="especificacionesTecnicasBien" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="especificacionesTecnicasBienPUT" className="block text-gray-700">Especificaciones Técnicas</label>
+                            <input id="especificacionesTecnicasBienPUT" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
-                            <input id="categoriaIdBien" type="text" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
+                            <select></select>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -353,9 +399,10 @@ export default function DashboardProductos() {
 }
 
 function DashboardProductosFila(props) {
+    let n_categoria;
     const abrirModalEdicion = () => {
         document.getElementById('modalEditar').classList.remove('hidden');
-        document.getElementById('tituloModal').textContent = 'Editar Bien ';
+        document.getElementById('tituloModalEditar').textContent = 'Editar Bien ';
         props.setId(props.id);
         props.setNombre(props.nombre);
         props.setInformacionGeneral(props.informacion_general);
@@ -377,6 +424,12 @@ function DashboardProductosFila(props) {
             // Aquí iría el código para eliminar la categoría en tu sistema
         }
     };
+    
+    for (const categoria of props.categoriasJS) {
+        if (categoria.id == props.categoria_id) {
+            n_categoria = categoria.nombre
+        }
+    }
 
     return (
         <>
@@ -390,7 +443,7 @@ function DashboardProductosFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{props.imagen}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.marca}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.especificaciones_tecnicas}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.categoria_id}</td>
+            <td className="text-white font-light text-center py-2 px-4">{n_categoria}</td>
             <td className="text-white font-light text-center py-2 px-4">
                 <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarDato}>Eliminar</button>
@@ -398,5 +451,11 @@ function DashboardProductosFila(props) {
         </tr>
         
         </>
+    )
+}
+
+function CategoriaOption(props) {
+    return (
+        <option>{props.nombre}</option>
     )
 }
