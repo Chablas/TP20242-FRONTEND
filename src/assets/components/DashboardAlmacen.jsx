@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import DashboardAlmacenFila from "./DashboardAlmacenFila";
 
 export default function Almacen() {
     const abrirModal = () => {
@@ -15,7 +16,7 @@ export default function Almacen() {
 
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
-    const [direccion, setDireccion] = useState('');
+    const [ubicacion, setUbicacion] = useState('');
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -27,7 +28,7 @@ export default function Almacen() {
             // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
-                direccion: direccion
+                ubicacion: ubicacion
             });
 
             const request = new Request("https://compusave-backend.onrender.com/post/almacen", {
@@ -44,7 +45,7 @@ export default function Almacen() {
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
-                setDireccion('');
+                setUbicacion('');
                 // Cierra modal
                 cerrarModal();
             } else {
@@ -65,7 +66,7 @@ export default function Almacen() {
             // Cuerpo del request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
-                direccion: direccion
+                ubicacion: ubicacion
             });
             
             const request = new Request(`https://compusave-backend.onrender.com/put/almacen/${id}`, {
@@ -82,7 +83,7 @@ export default function Almacen() {
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
-                setDireccion('');
+                setUbicacion('');
                 // Cierra modal
                 cerrarModal();
             } else {
@@ -112,7 +113,7 @@ export default function Almacen() {
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
-                setDireccion('');
+                setUbicacion('');
                 // Cierra modal
                 cerrarModal();
             } else {
@@ -139,7 +140,7 @@ export default function Almacen() {
                 const datos = await response.json();
 
                 const almacenes = datos.map((x) => {
-                    return <DashboardAlmacenFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDireccion={setDireccion} eliminarDatos={eliminarDatos} />
+                    return <DashboardAlmacenFila key={x.id} {...x} setId={setId} setNombre={setNombre} setUbicacion={setUbicacion} eliminarDatos={eliminarDatos} />
                 });
 
                 setMostrar(almacenes);
@@ -163,8 +164,8 @@ export default function Almacen() {
                             <input type="text" id="nombreAlmacen" onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="direccionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea id="direccionAlmacen" onChange={(e) => setDireccion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
+                            <textarea id="ubicacionAlmacen" onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -183,8 +184,8 @@ export default function Almacen() {
                             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="direccionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea value={direccion} onChange={(e) => setDireccion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
+                            <textarea value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -208,7 +209,7 @@ export default function Almacen() {
                             <tr>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">DIRECCIÓN</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">UBICACIÓN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
