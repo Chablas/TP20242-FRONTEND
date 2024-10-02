@@ -6,7 +6,7 @@ export default function DashboardAlmacenFila(props) {
         document.getElementById('tituloModal').textContent = 'Editar Almacén ';
         props.setId(props.id);
         props.setNombre(props.nombre);
-        props.setDireccion(props.direccion);
+        props.setUbicacion(props.ubicacion);
     };
 
     const eliminarAlmacen = () => {
