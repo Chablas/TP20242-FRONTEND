@@ -26,6 +26,7 @@ export default function Proveedor() {
         
     });
     */
+    const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [url, setUrl] = useState('');
@@ -34,7 +35,15 @@ export default function Proveedor() {
     const [correo, setCorreo] = useState('');
     const [telefono, setTelefono] = useState('');
 
-    const enviarDatos = async (e) => {
+    const enviar=(e)=>{
+        if(id == ''){
+            registrarDatos(e)
+        }else{
+        editarDatos(e)
+        }
+    }
+
+    const registrarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
         try {
@@ -53,7 +62,7 @@ export default function Proveedor() {
                 //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/post/proveedores", {
+            const request = new Request("https://compusave-backend.onrender.com/post/proveedor", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
@@ -74,6 +83,96 @@ export default function Proveedor() {
                 setTelefono('');
                 // Cierra modal
                 cerrarModal();
+                 //Recarga la tabla
+                 obtenerDatos();
+            } else {
+                console.error('Error en el envío:', resultado);
+            }
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
+        }
+    };
+
+    const editarDatos = async (e) => {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            // Cuerpo del POST request
+            const cuerpo = JSON.stringify({
+                nombre: nombre,
+                ruc: ruc,
+                direccion: direccion,
+                correo: correo,
+                telefono: telefono,
+              /*   descripcion: descripcion, */
+                /* imagen: url */
+                //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
+            });
+
+            const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
+                method: "PUT",
+                headers: headers,
+                body: cuerpo,
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                console.log('Datos enviados correctamente:', resultado);
+                // Aquí puedes resetear el formulario o mostrar una notificación
+                setNombre('');
+                setDescripcion('');
+                setUrl('');
+                setRuc('');
+                setDireccion('');
+                setCorreo('');
+                setTelefono('');
+                // Cierra modal
+              
+                cerrarModal();
+                //Recarga la tabla
+                obtenerDatos();
+            } else {
+                console.error('Error en el envío:', resultado);
+            }
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
+        }
+    };
+
+    const eliminar = async (id) => {
+      
+
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+        
+
+            const request = new Request(`https://compusave-backend.onrender.com/delete/proveedor/${id}`, {
+                method: "DELETE",
+                headers: headers,
+      
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                console.log('Datos enviados correctamente:', resultado);
+                // Aquí puedes resetear el formulario o mostrar una notificación
+                setNombre('');
+                setDescripcion('');
+                setUrl('');
+                setRuc('');
+                setDireccion('');
+                setCorreo('');
+                setTelefono('');
+                obtenerDatos();
             } else {
                 console.error('Error en el envío:', resultado);
             }
@@ -85,32 +184,32 @@ export default function Proveedor() {
 
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
 
-    useEffect(() => {
-        const obtenerDatos = async () => {
+    const obtenerDatos = async () => {
             
-            try {
-                const headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/proveedores", {
-                    method: "GET",
-                    headers: headers,
-                });
-                const response = await fetch(request);
-                const datos = await response.json();
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request("https://compusave-backend.onrender.com/get/proveedores", {
+                method: "GET",
+                headers: headers,
+            });
+            const response = await fetch(request);
+            const datos = await response.json();
 
-                const proveedores = datos.map((x) => {
-                    return <DashboardProveedoresFila key={x.id} {...x} />
-                });
+            const proveedores = datos.map((x) => {
+                return <DashboardProveedoresFila setId={setId} eliminar={eliminar} key={x.id} {...x} />
+            });
 
-                setMostrar(proveedores);
-            } catch (error) {
-                console.error("Error al obtener los datos:", error);
-            }
-        };
+            setMostrar(proveedores);
+        } catch (error) {
+            console.error("Error al obtener los datos:", error);
+        }
+    };
 
+    useEffect(() => {
+        
         obtenerDatos();
 
-        
     }, []);
 
     return (
@@ -141,7 +240,7 @@ export default function Proveedor() {
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviar}>Guardar</button>
                         </div>
                     </form>
                 </div>
