@@ -35,6 +35,7 @@ export default function DashboardProductos() {
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
     const [categoriaJS, setCategoriaJS] = useState([]);
+    const [bienesDatos, setBienesDatos] = useState([]);
 
 
     const enviarDatos = async (e) => {
@@ -201,34 +202,26 @@ export default function DashboardProductos() {
             method: "GET",
             headers: headers,
         });
-        Promise.all([requestBienes, requestCategorias])
-            .then((responses) => {
-                for (const response of responses) {
-                    console.log
-                }
-            })
-            .catch((error)=>{
-                console.error(error)
-            })
 
-        let response = await fetch(request);
-        const bienesJS = await response.json();
+        const responseCategorias = await fetch(requestCategorias);
+        const datosCategorias = await responseCategorias.json();
+        setCategoriaJS(datosCategorias);
 
-        
-        response = await fetch(request);
-        categorias = await response.json();
+        const responseBienes = await fetch(requestBienes);
+        const datosBienes = await responseBienes.json();
+        setBienesDatos(datosBienes);
+        console.log(datosCategorias);
+        console.log(datosBienes);
+        console.log(categoriaJS);
+        console.log(bienesDatos);
     }
 
     useEffect(() => {
         const mostrarDatos = async () => {
             
             try {
-                let categorias;
-                
-
-                setCategoriaJS(categorias);
-
-                const bienes = bienesJS.map((x) => {
+                await obtenerDatos();
+                const bienes = bienesDatos.map((x) => {
                     
                     return <DashboardProductosFila key={x.id}
                     {...x}
