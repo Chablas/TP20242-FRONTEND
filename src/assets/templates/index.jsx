@@ -16,6 +16,9 @@ import DashboardProductos from "../components/DashboardProductos.jsx"
 import DashboardRoles from "../components/DashboardRoles.jsx";
 import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
+import Login from "../components/Login.jsx";
+import Register from "../components/Register.jsx";
+import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 
 // Páginas
@@ -96,6 +99,30 @@ function P_Dashboard_Usuarios() {
     )
 }
 
+function P_Login() {
+    return (
+        <>
+            <Login />
+        </>
+    )
+}
+
+function P_Register() {
+    return (
+        <>
+            <Register />
+        </>
+    )
+}
+
+function P_RestorePassword() {
+    return (
+        <>
+            <RestorePassword />
+        </>
+    )
+}
+
 function P_Dashboard_Almacen() {
     return (
         <>
@@ -115,7 +142,9 @@ function App() {
                 <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
                 <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
-
+                <Route path="/login" element={<P_Login />} />
+                <Route path="/register" element={<P_Register/>} />
+                <Route path="/restore-password" element={<P_RestorePassword/>} />
                 <Route path="/dashboard/proveedores" element={<P_Dashboard_Proveedores />}/>
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
