@@ -14,6 +14,7 @@ import DashboardProductos from "../components/DashboardProductos.jsx"
 import DashboardRoles from "../components/DashboardRoles.jsx";
 import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
+import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 
 // Páginas
 
@@ -84,6 +85,17 @@ function P_Dashboard_Usuarios() {
     )
 }
 
+function P_Dashboard_Almacen() {
+    return (
+        <>
+            <DashboardNav />
+            <DashboardAlmacen/>
+        </>
+    )
+}
+
+
+
 function App() {
     return (
         <BrowserRouter>
@@ -96,6 +108,8 @@ function App() {
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
+
+                <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
             </Routes>
         </BrowserRouter>
     )
