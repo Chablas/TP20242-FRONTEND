@@ -8,7 +8,9 @@ import BarraLateralCarritoCompras from "../components/StoreBarraLateralCarritoCo
 import StoreNavigation from "../components/StoreNavigation.jsx"
 import PromoSections from "../components/StorePromoSections.jsx"
 import CategoryPreviews from "../components/StoreCategoryPreviews.jsx"
-import Categoria from "../components/DashboardCategoria.jsx"
+
+import Proveedor from "../components/DashboardProveedores.jsx";
+import Categoria from "../components/DashboardCategoria.jsx";
 import DashboardNav from "../components/DashboardNav.jsx";
 import DashboardProductos from "../components/DashboardProductos.jsx"
 import DashboardRoles from "../components/DashboardRoles.jsx";
@@ -54,6 +56,15 @@ function P_Store_Product_All() {
             <StoreNavigation />
             <StoreProductAll />
             <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
+function P_Dashboard_Proveedores() {
+    return (
+        <>
+            <DashboardNav />
+            <Proveedor />
         </>
     )
 }
@@ -105,6 +116,7 @@ function App() {
                 <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
 
+                <Route path="/dashboard/proveedores" element={<P_Dashboard_Proveedores />}/>
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
