@@ -193,7 +193,7 @@ export default function DashboardProductos() {
     async function obtenerDatos() {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
-
+    
         const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
             method: "GET",
             headers: headers,
@@ -202,28 +202,21 @@ export default function DashboardProductos() {
             method: "GET",
             headers: headers,
         });
-
+    
         const responseCategorias = await fetch(requestCategorias);
         const datosCategorias = await responseCategorias.json();
         setCategoriaJS(datosCategorias);
-
+    
         const responseBienes = await fetch(requestBienes);
         const datosBienes = await responseBienes.json();
         setBienesDatos(datosBienes);
-        console.log(datosCategorias);
-        console.log(datosBienes);
-        console.log(categoriaJS);
-        console.log(bienesDatos);
     }
-
+    
     useEffect(() => {
-        const mostrarDatos = async () => {
-            
-            try {
-                await obtenerDatos();
-                const bienes = bienesDatos.map((x) => {
-                    
-                    return <DashboardProductosFila key={x.id}
+        if (bienesDatos.length > 0 && categoriaJS.length > 0) {
+            const bienes = bienesDatos.map((x) => (
+                <DashboardProductosFila 
+                    key={x.id}
                     {...x}
                     setId={setId}
                     setNombre={setNombre}
@@ -236,24 +229,29 @@ export default function DashboardProductos() {
                     setEspecificacionesTecnicas={setEspecificacionesTecnicas}
                     setCategoriaId={setCategoriaId}
                     eliminarDatos={eliminarDatos}
-                    categoriasJS={categorias}
-                    />
-                });
-                
-                categoriaOpciones = categoriaJS.map((x)=>{
-                    return <CategoriaOption key={x.id} {...x} />
-                })
-
-                setMostrar(bienes);
-                setMostrarCategorias(categoriaOpciones)
+                    categoriasJS={categoriaJS}
+                />
+            ));
+    
+            const categoriaOpciones = categoriaJS.map((x) => (
+                <CategoriaOption key={x.id} {...x} />
+            ));
+    
+            setMostrar(bienes);
+            setMostrarCategorias(categoriaOpciones);
+        }
+    }, [bienesDatos, categoriaJS]);
+    
+    useEffect(() => {
+        const mostrarDatos = async () => {
+            try {
+                await obtenerDatos();
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
             }
         };
-
+    
         mostrarDatos();
-
-        
     }, []);
 
     return (
@@ -346,7 +344,9 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
-                            <select></select>
+                            <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
+                                {mostrarCategorias}
+                            </select>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
