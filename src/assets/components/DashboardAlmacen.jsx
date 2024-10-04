@@ -13,6 +13,7 @@ export default function Almacen() {
             modal.classList.add('hidden');
         }
     };
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
@@ -21,22 +22,34 @@ export default function Almacen() {
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
+        if (!nombre || !ubicacion) {
+            setErrorMessage('Todos los campos son obligatorios.');
+            return; // Salir si hay campos vacíos
+        }
+    
+        try {
+            // El resto de tu código para enviar datos...
+        } catch (error) {
+            console.error('Error en la conexión con el servidor:', error);
+        }
+
+
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
+    
             // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 ubicacion: ubicacion
             });
-
+    
             const request = new Request("https://compusave-backend.onrender.com/post/almacen", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
             
@@ -50,11 +63,18 @@ export default function Almacen() {
                 cerrarModal();
             } else {
                 console.error('Error en el envío:', resultado);
+                alert(`${resultado.detail}`)
             }
+
+            
         } catch (error) {
             console.error('Error en la conexión con el servidor:', error);
         }
     };
+
+    
+    
+
 
     const editarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -128,7 +148,6 @@ export default function Almacen() {
 
     useEffect(() => {
         const obtenerDatos = async () => {
-            
             try {
                 const headers = new Headers();
                 headers.append("Content-Type", "application/json");
@@ -138,11 +157,21 @@ export default function Almacen() {
                 });
                 const response = await fetch(request);
                 const datos = await response.json();
-
-                const almacenes = datos.map((x) => {
-                    return <DashboardAlmacenFila key={x.id} {...x} setId={setId} setNombre={setNombre} setUbicacion={setUbicacion} eliminarDatos={eliminarDatos} />
+        
+                const almacenes = datos.map((x, index) => {
+                    return (
+                        <DashboardAlmacenFila 
+                            key={x.id} 
+                            {...x} 
+                            setId={setId} 
+                            setNombre={setNombre} 
+                            setUbicacion={setUbicacion} 
+                            eliminarDatos={eliminarDatos} 
+                            index={index + 1} // Pasar el índice como prop
+                        />
+                    );
                 });
-
+        
                 setMostrar(almacenes);
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
@@ -151,10 +180,27 @@ export default function Almacen() {
 
         obtenerDatos();
 
+
     }, []);
 
     return (
         <>
+        {/* Diálogo de error */}
+        <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+            <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                <p className="text-white">{errorMessage}</p>
+                <div className="flex justify-end">
+                    <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <main className="p-6">
+            {/* Resto del componente... */}
+        </main>
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Almacén</h2>
@@ -213,6 +259,18 @@ export default function Almacen() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
+                <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                        <p className="text-white">{errorMessage}</p>
+                <div className="flex justify-end">
+                                <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
+                                    Cerrar
+                                </button>
+                </div>
+                </div>
+                </div>
+
                         <tbody>
                             {mostrar}
                         </tbody>
