@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from "sweetalert2"
 
 export default function DashboardProductos() {
     let categoriasJS, categoriaOpciones;
@@ -34,15 +35,18 @@ export default function DashboardProductos() {
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
-    const [categoriaJS, setCategoriaJS] = useState([]);
-    const [bienesDatos, setBienesDatos] = useState([]);
+
+    const [bienes, setBienes] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+    const [mostrarFilas, setMostrarFilas] = useState([]);
+    const [categoriasOpciones, setCategoriasOpciones] = useState([]);
 
 
     const enviarDatos = async (e) => {
         e.preventDefault();
 
         try {
-            for (const categorianombre of categoriaJS) {
+            for (const categorianombre of categorias) {
                 console.log(categorianombre);
                 if (categorianombre.nombre == categoria_id) {
                     setCategoriaId(categorianombre.id);
@@ -179,36 +183,30 @@ export default function DashboardProductos() {
             console.error('Error en la conexión con el servidor:', error);
         }
     }
+      
+    const obtenerDatosYActualizarFilas = async () => {
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const requestCategorias = new Request("https://compusave-backend.onrender.com/get/categorias", {
+                method: "GET",
+                headers: headers,
+            });
+            const responseCategorias = await fetch(requestCategorias);
+            const datosCategorias = await responseCategorias.json();
+            const categoriaOpciones = datosCategorias.map((x) => (
+                <CategoriaOption key={x.id} {...x} />
+            ));
+            setCategorias(datosCategorias);
+            setCategoriasOpciones(categoriaOpciones);
 
-
-    const [mostrar, setMostrar] = useState([]);
-    const [mostrarCategorias, setMostrarCategorias] = useState([]);
-
-    async function obtenerDatos() {
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-    
-        const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
-            method: "GET",
-            headers: headers,
-        });
-        const requestCategorias = new Request(`https://compusave-backend.onrender.com/get/categorias`, {
-            method: "GET",
-            headers: headers,
-        });
-    
-        const responseCategorias = await fetch(requestCategorias);
-        const datosCategorias = await responseCategorias.json();
-        setCategoriaJS(datosCategorias);
-    
-        const responseBienes = await fetch(requestBienes);
-        const datosBienes = await responseBienes.json();
-        setBienesDatos(datosBienes);
-    }
-    
-    useEffect(() => {
-        if (bienesDatos.length > 0 && categoriaJS.length > 0) {
-            const bienes = bienesDatos.map((x) => (
+            const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
+                method: "GET",
+                headers: headers,
+            });
+            const responseBienes = await fetch(requestBienes);
+            const datosBienes = await responseBienes.json();
+            const bienesFilas = datosBienes.map((x) => (
                 <DashboardProductosFila 
                     key={x.id}
                     {...x}
@@ -223,29 +221,22 @@ export default function DashboardProductos() {
                     setEspecificacionesTecnicas={setEspecificacionesTecnicas}
                     setCategoriaId={setCategoriaId}
                     eliminarDatos={eliminarDatos}
-                    categoriasJS={categoriaJS}
+                    categorias={categorias}
                 />
             ));
-    
-            const categoriaOpciones = categoriaJS.map((x) => (
-                <CategoriaOption key={x.id} {...x} />
-            ));
-    
-            setMostrar(bienes);
-            setMostrarCategorias(categoriaOpciones);
+            setBienes(datosBienes);
+            setMostrarFilas(bienesFilas);
+
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
         }
-    }, [bienesDatos, categoriaJS]);
-    
+    };
+
     useEffect(() => {
-        const mostrarDatos = async () => {
-            try {
-                await obtenerDatos();
-            } catch (error) {
-                console.error("Error al obtener los datos:", error);
-            }
-        };
-    
-        mostrarDatos();
+        obtenerDatosYActualizarFilas();
     }, []);
 
     return (
@@ -289,7 +280,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
-                                {mostrarCategorias}
+                                
                             </select>
                         </div>
                         <div className="flex justify-end space-x-4">
@@ -339,7 +330,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
-                                {mostrarCategorias}
+                                
                             </select>
                         </div>
                         <div className="flex justify-end space-x-4">
@@ -376,7 +367,7 @@ export default function DashboardProductos() {
                             </tr>
                         </thead>
                         <tbody>
-                            {mostrar}
+                            {mostrarFilas}
                         </tbody>
                     </table>
                 </div>
@@ -387,6 +378,7 @@ export default function DashboardProductos() {
 
 function DashboardProductosFila(props) {
     let n_categoria;
+    console.log(props.categorias);
     const abrirModalEdicion = () => {
         document.getElementById('modalEditar').classList.remove('hidden');
         document.getElementById('tituloModalEditar').textContent = 'Editar Bien ';
@@ -410,9 +402,10 @@ function DashboardProductosFila(props) {
         }
     };
     
-    for (const categoria of props.categoriasJS) {
+    for (const categoria of props.categorias) {
         if (categoria.id == props.categoria_id) {
-            n_categoria = categoria.nombre
+            n_categoria = categoria.nombre;
+            console.log(`asd ${categoria.nombre}`);
         }
     }
 
