@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from "sweetalert2"
 
 export default function Categoria() {
     const abrirModal = () => {
@@ -42,6 +43,10 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
+                Swal.fire({
+                    title: "Categoría creada exitosamente",
+                    icon: "success"
+                })
                 console.log('Datos enviados correctamente:', resultado);
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
@@ -114,6 +119,7 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
+
                 console.log('Datos enviados correctamente:', resultado);
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
