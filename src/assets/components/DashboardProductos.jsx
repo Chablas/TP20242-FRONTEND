@@ -39,7 +39,7 @@ export default function DashboardProductos() {
 
 
     const enviarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
 
         try {
             for (const categorianombre of categoriaJS) {
@@ -53,7 +53,6 @@ export default function DashboardProductos() {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
@@ -77,7 +76,6 @@ export default function DashboardProductos() {
             
             if (response.ok) {
                 console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -99,13 +97,12 @@ export default function DashboardProductos() {
     };
 
     const editarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
 
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            // Cuerpo del request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
@@ -129,7 +126,6 @@ export default function DashboardProductos() {
             
             if (response.ok) {
                 console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -140,7 +136,7 @@ export default function DashboardProductos() {
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                // Cierra modal
+
                 cerrarModal();
             } else {
                 console.error('Error en el envío:', resultado);
@@ -165,7 +161,6 @@ export default function DashboardProductos() {
             
             if (response.ok) {
                 console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -176,7 +171,6 @@ export default function DashboardProductos() {
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                // Cierra modal
                 cerrarModal();
             } else {
                 console.error('Error en el envío:', resultado);
@@ -187,7 +181,7 @@ export default function DashboardProductos() {
     }
 
 
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+    const [mostrar, setMostrar] = useState([]);
     const [mostrarCategorias, setMostrarCategorias] = useState([]);
 
     async function obtenerDatos() {
@@ -408,13 +402,11 @@ function DashboardProductosFila(props) {
         props.setCategoriaId(props.categoria_id);
     };
 
-    // Simulación de eliminar categoría
     const eliminarDato = () => {
         props.setId(props.id);
         if (confirm('¿Estás seguro de eliminar el bien ' + props.id + '?')) {
             props.eliminarDatos(props.id);
             alert('Bien ' + props.id + ' eliminada.');
-            // Aquí iría el código para eliminar la categoría en tu sistema
         }
     };
     
