@@ -18,6 +18,7 @@ export default function Categoria() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [url, setUrl] = useState('');
+    const [mostrarFilas, setMostrarFilas] = useState([]);
 
     const enviarDatos = async (e) => {
         e.preventDefault();
@@ -50,6 +51,7 @@ export default function Categoria() {
                 setDescripcion('');
                 setUrl('');
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -96,6 +98,7 @@ export default function Categoria() {
                 setDescripcion('');
                 setUrl('');
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -115,8 +118,6 @@ export default function Categoria() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            console.log("asdasd");
-            console.log(id);
             const request = new Request(`https://compusave-backend.onrender.com/delete/categoria/${id}`, {
                 method: "DELETE",
                 headers: headers,
@@ -136,6 +137,7 @@ export default function Categoria() {
                 setDescripcion('');
                 setUrl('');
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -150,38 +152,33 @@ export default function Categoria() {
         }
     }
 
-
-    const [mostrar, setMostrar] = useState([]);
-
-    useEffect(() => {
-        const obtenerDatos = async () => {
+    const obtenerDatosYActualizarFilas = async () => {
             
-            try {
-                const headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/categorias", {
-                    method: "GET",
-                    headers: headers,
-                });
-                const response = await fetch(request);
-                const datos = await response.json();
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request("https://compusave-backend.onrender.com/get/categorias", {
+                method: "GET",
+                headers: headers,
+            });
+            const response = await fetch(request);
+            const datos = await response.json();
 
-                const categorias = datos.map((x) => {
-                    return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
-                });
+            const categorias = datos.map((x) => {
+                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
+            });
 
-                setMostrar(categorias);
-            } catch (error) {
-                Swal.fire({
-                    title: `Hubo un error...`,
-                    icon: "error"
-                })
-            }
-        };
-
-        obtenerDatos();
-
-        
+            setMostrarFilas(categorias);
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
+        }
+    };
+    // Se ejecuta al cargar inicialmente la página
+    useEffect(() => {
+        obtenerDatosYActualizarFilas();
     }, []);
 
     return (
@@ -253,7 +250,7 @@ export default function Categoria() {
                             </tr>
                         </thead>
                         <tbody>
-                            {mostrar}
+                            {mostrarFilas}
                         </tbody>
                     </table>
                 </div>
