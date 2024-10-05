@@ -44,10 +44,9 @@ export default function Categoria() {
             
             if (response.ok) {
                 Swal.fire({
-                    title: "Categoría creada exitosamente",
+                    title: `${resultado.detail}`,
                     icon: "success"
                 })
-                console.log('Datos enviados correctamente:', resultado);
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
@@ -56,10 +55,16 @@ export default function Categoria() {
                 // Cierra modal
                 cerrarModal();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                })
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
         }
     };
 
@@ -87,7 +92,10 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                })
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
@@ -96,10 +104,16 @@ export default function Categoria() {
                 // Cierra modal
                 cerrarModal();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                })
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
         }
     }
 
@@ -120,7 +134,10 @@ export default function Categoria() {
             
             if (response.ok) {
 
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                })
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
@@ -129,10 +146,16 @@ export default function Categoria() {
                 // Cierra modal
                 cerrarModal();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                })
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
         }
     }
 
@@ -158,7 +181,10 @@ export default function Categoria() {
 
                 setMostrar(categorias);
             } catch (error) {
-                console.error("Error al obtener los datos:", error);
+                Swal.fire({
+                    title: `Hubo un error...`,
+                    icon: "error"
+                })
             }
         };
 
@@ -258,11 +284,19 @@ function DashboardCategoriaFila(props) {
     // Simulación de eliminar categoría
     const eliminarCategoria = () => {
         props.setId(props.id);
-        if (confirm('¿Estás seguro de eliminar la categoría ' + props.id + '?')) {
-            props.eliminarDatos(props.id);
-            alert('Categoría ' + props.id + ' eliminada.');
-            // Aquí iría el código para eliminar la categoría en tu sistema
-        }
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "No se podrá rehacer una vez eliminado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, elimínalo"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                props.eliminarDatos(props.id);
+            }
+        });
     };
 
     return (
