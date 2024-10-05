@@ -20,13 +20,11 @@ export default function Categoria() {
     const [url, setUrl] = useState('');
 
     const enviarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
 
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-            // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
@@ -47,12 +45,10 @@ export default function Categoria() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 })
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                // Cierra modal
                 cerrarModal();
             } else {
                 Swal.fire({
@@ -69,13 +65,12 @@ export default function Categoria() {
     };
 
     const editarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
 
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            // Cuerpo del request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
@@ -96,12 +91,10 @@ export default function Categoria() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 })
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                // Cierra modal
                 cerrarModal();
             } else {
                 Swal.fire({
@@ -138,12 +131,10 @@ export default function Categoria() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 })
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                // Cierra modal
                 cerrarModal();
             } else {
                 Swal.fire({
@@ -160,7 +151,7 @@ export default function Categoria() {
     }
 
 
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+    const [mostrar, setMostrar] = useState([]);
 
     useEffect(() => {
         const obtenerDatos = async () => {
@@ -281,7 +272,6 @@ function DashboardCategoriaFila(props) {
         props.setUrl(props.imagen);
     };
 
-    // Simulación de eliminar categoría
     const eliminarCategoria = () => {
         props.setId(props.id);
         Swal.fire({
