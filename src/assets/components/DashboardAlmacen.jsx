@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DashboardAlmacenFila from "./DashboardAlmacenFila";
+import Swal from "sweetalert2"
 
 export default function Almacen() {
     const abrirModal = () => {
@@ -21,19 +22,7 @@ export default function Almacen() {
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
-        if (!nombre || !ubicacion) {
-            setErrorMessage('Todos los campos son obligatorios.');
-            return; // Salir si hay campos vacíos
-        }
-    
-        try {
-            // El resto de tu código para enviar datos...
-        } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
-        }
-
-
+            
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -53,22 +42,48 @@ export default function Almacen() {
             const response = await fetch(request);
             const resultado = await response.json();
             
+            //Validacion SweerAlert NO DEBE TENER CAMPOS VACIOS
+            if (!nombre || !ubicacion) {
+                setErrorMessage('Todos los campos son obligatorios.');
+                return; // Salir si hay campos vacíos
+            }
+        
+            try {
+                // El resto de tu código para enviar datos...
+            } catch (error) {
+                console.error('Error en la conexión con el servidor:', error);
+            }
+
+
+
+            //Validacion SweetAlert NO SE REPITE ALMACEN
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon:"success"
+            
+                })
+
                 setId('');
                 setNombre('');
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
             } else {
-                console.error('Error en el envío:', resultado);
-                alert(`${resultado.detail}`)
-            }
-
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon:"error"
             
-        } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+                })
+
+            }
+        } 
+        catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon:"error"
+        
+            })
         }
     };
 

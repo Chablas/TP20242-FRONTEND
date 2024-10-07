@@ -10,6 +10,9 @@ export default function DashboardNav() {
                     <Link to="/dashboard/productos" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Productos</Link>
                     <Link to="/dashboard/categorias" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Categorías</Link>
                     <a href="#" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Servicios</a>
+
+                    <Link to="/dashboard/almacen" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Almacenes</Link>
+
                     <Link to="/dashboard/usuarios" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Usuarios</Link>
                     <a href="#" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Otros</a>
                 </nav>
