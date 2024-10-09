@@ -49,6 +49,15 @@ function P_Store_Product_Overview() {
     )
 }
 
+function P_Carrito_Compras() {
+    return (
+        <>
+            <StoreNavigation />
+            
+        </>
+    )
+}
+
 function P_Store_Product_All() {
     return (
         <>
@@ -103,6 +112,8 @@ function App() {
                 <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
                 <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
+                <Route path="/carritoCompras" element={<P_Carrito_Compras />} />
+                
 
                 <Route path="/dashboard/proveedores" element={<P_Dashboard_Proveedores />}/>
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
