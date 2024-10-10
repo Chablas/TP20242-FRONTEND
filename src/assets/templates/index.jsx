@@ -20,6 +20,7 @@ import Login from "../components/Login.jsx";
 import Register from "../components/Register.jsx";
 import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
+import DashboardServicios from "../components/DashboardServicios.jsx";
 
 // Páginas
 
@@ -90,6 +91,15 @@ function P_Dashboard_Productos() {
     )
 }
 
+function P_Dashboard_Servicios() {
+    return (
+        <>
+            <DashboardNav />
+            <DashboardServicios />
+        </>
+    )
+}
+
 function P_Dashboard_Usuarios() {
     return (
         <>
@@ -149,7 +159,7 @@ function App() {
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
-
+                <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
             </Routes>
         </BrowserRouter>
