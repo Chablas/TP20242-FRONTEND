@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
 
 export default function DashboardProductos() {
-    let categoriasJS, categoriaOpciones;
     const abrirModal = () => {
         setId('');
         setNombre('');
@@ -40,19 +39,12 @@ export default function DashboardProductos() {
     const [categorias, setCategorias] = useState([]);
     const [mostrarFilas, setMostrarFilas] = useState([]);
     const [categoriasOpciones, setCategoriasOpciones] = useState([]);
+    const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
 
 
     const enviarDatos = async (e) => {
         e.preventDefault();
-
         try {
-            for (const categorianombre of categorias) {
-                console.log(categorianombre);
-                if (categorianombre.nombre == categoria_id) {
-                    setCategoriaId(categorianombre.id);
-                    console.log(categoria_id);
-                }
-            }
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -66,8 +58,10 @@ export default function DashboardProductos() {
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
-                categoria_id: categoria_id,
+                categoria_id: opcionSeleccionada,
             });
+
+            console.log(cuerpo);
 
             const request = new Request("https://compusave-backend.onrender.com/post/bien", {
                 method: "POST",
@@ -79,7 +73,10 @@ export default function DashboardProductos() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                })
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -90,13 +87,19 @@ export default function DashboardProductos() {
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                // Cierra modal
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                })
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
         }
     };
 
@@ -116,8 +119,10 @@ export default function DashboardProductos() {
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
-                categoria_id: categoria_id,
+                categoria_id: categoria_id
             });
+
+            console.log(cuerpo);
             
             const request = new Request(`https://compusave-backend.onrender.com/put/bien/${id}`, {
                 method: "PUT",
@@ -129,7 +134,10 @@ export default function DashboardProductos() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -140,13 +148,19 @@ export default function DashboardProductos() {
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
         }
     }
 
@@ -164,7 +178,10 @@ export default function DashboardProductos() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -176,11 +193,18 @@ export default function DashboardProductos() {
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
         }
     }
       
@@ -195,7 +219,7 @@ export default function DashboardProductos() {
             const responseCategorias = await fetch(requestCategorias);
             const datosCategorias = await responseCategorias.json();
             const categoriaOpciones = datosCategorias.map((x) => (
-                <CategoriaOption key={x.id} {...x} />
+                <CategoriaOption key={x.id} {...x} setCategoriaId={setCategoriaId} />
             ));
             setCategorias(datosCategorias);
             setCategoriasOpciones(categoriaOpciones);
@@ -207,7 +231,7 @@ export default function DashboardProductos() {
             const responseBienes = await fetch(requestBienes);
             const datosBienes = await responseBienes.json();
             const bienesFilas = datosBienes.map((x) => (
-                <DashboardProductosFila 
+                <DashboardProductosFila
                     key={x.id}
                     {...x}
                     setId={setId}
@@ -221,7 +245,7 @@ export default function DashboardProductos() {
                     setEspecificacionesTecnicas={setEspecificacionesTecnicas}
                     setCategoriaId={setCategoriaId}
                     eliminarDatos={eliminarDatos}
-                    categorias={categorias}
+                    categorias={datosCategorias}
                 />
             ));
             setBienes(datosBienes);
@@ -231,7 +255,7 @@ export default function DashboardProductos() {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
-            })
+            });
         }
     };
 
@@ -279,8 +303,8 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
-                            <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
-                                
+                            <select id="categoriaIdBien" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                {categoriasOpciones}
                             </select>
                         </div>
                         <div className="flex justify-end space-x-4">
@@ -329,8 +353,8 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
-                            <select id="categoriaIdBien" onChange={(e) => setCategoriaId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
-                                
+                            <select id="categoriaIdBienPUT" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                {categoriasOpciones}
                             </select>
                         </div>
                         <div className="flex justify-end space-x-4">
@@ -378,7 +402,6 @@ export default function DashboardProductos() {
 
 function DashboardProductosFila(props) {
     let n_categoria;
-    console.log(props.categorias);
     const abrirModalEdicion = () => {
         document.getElementById('modalEditar').classList.remove('hidden');
         document.getElementById('tituloModalEditar').textContent = 'Editar Bien ';
@@ -396,16 +419,24 @@ function DashboardProductosFila(props) {
 
     const eliminarDato = () => {
         props.setId(props.id);
-        if (confirm('¿Estás seguro de eliminar el bien ' + props.id + '?')) {
-            props.eliminarDatos(props.id);
-            alert('Bien ' + props.id + ' eliminada.');
-        }
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "No se podrá rehacer una vez eliminado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, elimínalo"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                props.eliminarDatos(props.id);
+            }
+        });
     };
     
     for (const categoria of props.categorias) {
         if (categoria.id == props.categoria_id) {
             n_categoria = categoria.nombre;
-            console.log(`asd ${categoria.nombre}`);
         }
     }
 
@@ -434,6 +465,6 @@ function DashboardProductosFila(props) {
 
 function CategoriaOption(props) {
     return (
-        <option>{props.nombre}</option>
+        <option value={props.id} >{props.nombre}</option>
     )
 }

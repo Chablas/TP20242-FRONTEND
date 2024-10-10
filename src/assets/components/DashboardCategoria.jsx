@@ -45,7 +45,7 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "success"
-                })
+                });
                 setId('');
                 setNombre('');
                 setDescripcion('');
@@ -56,13 +56,13 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "error"
-                })
+                });
             }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
-            })
+            });
         }
     };
 
@@ -92,7 +92,7 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "success"
-                })
+                });
                 setId('');
                 setNombre('');
                 setDescripcion('');
@@ -103,13 +103,13 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "error"
-                })
+                });
             }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
-            })
+            });
         }
     }
 
@@ -131,7 +131,7 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "success"
-                })
+                });
                 setId('');
                 setNombre('');
                 setDescripcion('');
@@ -142,13 +142,13 @@ export default function Categoria() {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "error"
-                })
+                });
             }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
-            })
+            });
         }
     }
 
@@ -173,7 +173,7 @@ export default function Categoria() {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
-            })
+            });
         }
     };
     // Se ejecuta al cargar inicialmente la página
