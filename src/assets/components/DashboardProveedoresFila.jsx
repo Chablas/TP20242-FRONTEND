@@ -1,4 +1,5 @@
 import React from "react"
+import Swal from 'sweetalert2'
 
 export default function DashboardProveedoresFila(props) {
     const abrirModalEdicion = (id = 1) => {
@@ -11,10 +12,32 @@ export default function DashboardProveedoresFila(props) {
 
     // Simulación de eliminar categoría
     const eliminarProveedor = (id = 1) => {
-        if (confirm('¿Estás seguro de eliminar al Proveedor ' + id + '?')) {
-            alert('Proveedor ' + id + ' eliminado.');
-            props.eliminar(id)
-        }
+        // if (confirm('¿Estás seguro de eliminar al Proveedor ' + id + '?')) {
+            
+            // Swal.fire({
+            //     title: `${resultado.detail}`,
+            //     icon: 'success',
+            //   })
+              Swal.fire({
+                title: "¿Estás seguro de eliminar al Proveedor ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Eliminar"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                //   Swal.fire({
+                //     title: `${resultado.detail}`,
+                //     icon: "success"
+                //   });
+                  props.eliminar(id)
+                }
+            });
+
+            // alert('Proveedor ' + id + ' eliminado.');
+            // props.eliminar(id)
+        // }
     };
 
     return (

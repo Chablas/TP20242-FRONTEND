@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DashboardProveedoresFila from "./DashboardProveedoresFila";
+import Swal from 'sweetalert2';
 
 export default function Proveedor() {
     // Abre el modal
@@ -72,7 +73,13 @@ export default function Proveedor() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: 'success',
+                  })
+
+                // console.log('Datos enviados correctamente:', resultado);
+                
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setNombre('');
                 setDescripcion('');
@@ -86,10 +93,19 @@ export default function Proveedor() {
                  //Recarga la tabla
                  obtenerDatos();
             } else {
-                console.error('Error en el envío:', resultado);
+                // console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: 'error',
+                  })
+
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            // console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `${resultado.detail}`,
+                icon: 'error',
+            })
         }
     };
 
@@ -122,7 +138,11 @@ export default function Proveedor() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: 'success',
+                  })
+                // console.log('Datos enviados correctamente:', resultado);
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setNombre('');
                 setDescripcion('');
@@ -137,10 +157,18 @@ export default function Proveedor() {
                 //Recarga la tabla
                 obtenerDatos();
             } else {
-                console.error('Error en el envío:', resultado);
+                // console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: 'error',
+                })
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            // console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `${resultado.detail}`,
+                icon: 'error',
+            })
         }
     };
 
@@ -163,7 +191,11 @@ export default function Proveedor() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                        title: `${resultado.detail}`,
+                        icon: "success"
+                      });
+                // console.log('Datos enviados correctamente:', resultado);
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setNombre('');
                 setDescripcion('');
