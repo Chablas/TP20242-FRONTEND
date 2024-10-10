@@ -8,6 +8,7 @@ import BarraLateralCarritoCompras from "../components/StoreBarraLateralCarritoCo
 import StoreNavigation from "../components/StoreNavigation.jsx"
 import PromoSections from "../components/StorePromoSections.jsx"
 import CategoryPreviews from "../components/StoreCategoryPreviews.jsx"
+import CarritoCompras from "../components/CarritoCompras.jsx"
 
 import Proveedor from "../components/DashboardProveedores.jsx";
 import Categoria from "../components/DashboardCategoria.jsx";
@@ -53,6 +54,7 @@ function P_Carrito_Compras() {
     return (
         <>
             <StoreNavigation />
+            <CarritoCompras />
             
         </>
     )
