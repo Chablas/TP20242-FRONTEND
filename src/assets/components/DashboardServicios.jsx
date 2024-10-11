@@ -282,19 +282,19 @@ export default function DashboardServicios() {
                             <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBien" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBien" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBien" className="block text-gray-700">Incluye</label>
                             <input id="marcaBien" type="text" value={servicio_incluye} onChange={(e) => setServicioIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBien" className="block text-gray-700">No incluye</label>
                             <input id="marcaBien" type="text" value={servicio_no_incluye} onChange={(e) => setServicioNoIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBien" className="block text-gray-700">Restricciones</label>
                             <input id="marcaBien" type="text" value={restricciones} onChange={(e) => setRestricciones(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
@@ -334,19 +334,19 @@ export default function DashboardServicios() {
                             <input id="imagenBienPUT" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBienPUT" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Incluye</label>
                             <input id="marcaBienPUT" type="text" value={servicio_incluye} onChange={(e) => setServicioIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">No incluye</label>
                             <input id="marcaBienPUT" type="text" value={servicio_no_incluye} onChange={(e) => setServicioNoIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Restricciones</label>
                             <input id="marcaBienPUT" type="text" value={restricciones} onChange={(e) => setRestricciones(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
