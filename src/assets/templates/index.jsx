@@ -13,7 +13,7 @@ import Proveedor from "../components/DashboardProveedores.jsx";
 import Categoria from "../components/DashboardCategoria.jsx";
 import DashboardNav from "../components/DashboardNav.jsx";
 import DashboardProductos from "../components/DashboardProductos.jsx"
-import DashboardRoles from "../components/DashboardRoles.jsx";
+import DashboardUsuarios from "../components/DashboardUsuarios.jsx";
 import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
 import Login from "../components/Login.jsx";
@@ -104,7 +104,7 @@ function P_Dashboard_Usuarios() {
     return (
         <>
             <DashboardNav />
-            <DashboardRoles />
+            <DashboardUsuarios />
         </>
     )
 }
