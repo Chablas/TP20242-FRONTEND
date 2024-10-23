@@ -144,7 +144,11 @@ export default function Almacen() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos eliminados correctamente:', resultado);
+
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                })
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
@@ -152,10 +156,15 @@ export default function Almacen() {
                 // Cierra modal
                 cerrarModal();
             } else {
-                console.error('Error en el envío:', resultado);
-            }
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });            }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });        
         }
     }
 
