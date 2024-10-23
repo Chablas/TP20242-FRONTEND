@@ -205,7 +205,6 @@ export default function Almacen() {
                 console.error("Error al obtener los datos:", error);
             }
         };
-        
     useEffect(() => {
         obtenerDatos();
     }, []);
