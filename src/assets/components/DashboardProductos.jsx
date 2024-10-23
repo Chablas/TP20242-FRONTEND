@@ -49,6 +49,14 @@ export default function DashboardProductos() {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
+            if (opcionSeleccionada == "") {
+                Swal.fire({
+                    title: `Por favor seleccione una categoría.`,
+                    icon: "error"
+                })
+                return;
+            }
+
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
@@ -263,10 +271,10 @@ export default function DashboardProductos() {
         <>
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Bien</h2>
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Producto</h2>
                     <form id="formularioBienPOST">
                         <div className="mb-4">
-                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
+                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Producto</label>
                             <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
@@ -300,6 +308,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBien" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                <option value="">Seleccionar una categoría</option>
                                 {categoriasOpciones}
                             </select>
                         </div>
@@ -313,10 +322,10 @@ export default function DashboardProductos() {
 
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
+                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Producto {nombre}</h2>
                     <form id="formularioBienPUT">
                     <div className="mb-4">
-                            <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Bien</label>
+                            <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Producto</label>
                             <input id="nombreBienPUT" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
@@ -350,6 +359,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBienPUT" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                <option value="">Seleccionar una categoría</option>
                                 {categoriasOpciones}
                             </select>
                         </div>
@@ -362,10 +372,10 @@ export default function DashboardProductos() {
             </div>
 
             <main className="p-6">
-                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Bienes</h1>
+                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Productos</h1>
                 <div className="mt-5" >
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
-                        Agregar nuevo Bien
+                        Agregar nuevo Producto
                     </button>
                 </div>
 

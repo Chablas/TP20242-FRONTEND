@@ -189,15 +189,15 @@ export default function Categoria() {
                     <form id="formularioCategoria">
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Nombre de Categoría</label>
-                            <input type="text" id="nombreCategoria" onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreCategoria" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="descripcionCategoria" className="block text-gray-700">Descripción</label>
-                            <textarea id="descripcionCategoria" onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="descripcionCategoria" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
-                            <input type="text" id="nombreCategoria" onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreCategoria" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
