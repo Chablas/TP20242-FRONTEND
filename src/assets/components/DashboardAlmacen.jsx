@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DashboardAlmacenFila from "./DashboardAlmacenFila";
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
 
 export default function Almacen() {
     const abrirModal = () => {
