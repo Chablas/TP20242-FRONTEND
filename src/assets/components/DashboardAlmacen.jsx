@@ -19,6 +19,7 @@ export default function Almacen() {
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [ubicacion, setUbicacion] = useState('');
+    const [almacenes, setAlmacenes] = useState([]); // Estado para almacenar la lista de almacenes
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -69,6 +70,7 @@ export default function Almacen() {
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -86,10 +88,6 @@ export default function Almacen() {
             })
         }
     };
-
-    
-    
-
 
     const editarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -114,18 +112,29 @@ export default function Almacen() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });                
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
+
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });            
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });        
         }
     }
 
@@ -144,24 +153,28 @@ export default function Almacen() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos eliminados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });                
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
             } else {
-                console.error('Error en el envío:', resultado);
-            }
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });            }
         } catch (error) {
             console.error('Error en la conexión con el servidor:', error);
         }
     }
 
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
-
-    useEffect(() => {
+    
         const obtenerDatos = async () => {
             try {
                 const headers = new Headers();
@@ -173,7 +186,7 @@ export default function Almacen() {
                 const response = await fetch(request);
                 const datos = await response.json();
         
-                const almacenes = datos.map((x, index) => {
+                const filas = datos.map((x, index) => {
                     return (
                         <DashboardAlmacenFila 
                             key={x.id} 
@@ -187,74 +200,74 @@ export default function Almacen() {
                     );
                 });
         
-                setMostrar(almacenes);
+                setAlmacenes(filas);
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
             }
         };
-
+        
+    useEffect(() => {
         obtenerDatos();
-
-
     }, []);
 
     return (
         <>
-        {/* Diálogo de error */}
-        <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-            <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                <p className="text-white">{errorMessage}</p>
-                <div className="flex justify-end">
-                    <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
-                        Cerrar
-                    </button>
+            {/* Diálogo de error */}
+            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                    <p className="text-white">{errorMessage}</p>
+                    <div className="flex justify-end">
+                        <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <main className="p-6">
-            {/* Resto del componente... */}
-        </main>
+    
+            {/* Modal para agregar almacén */}
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Almacén</h2>
-                    <form id="formularioAlmacen">
+                    <h2 className="text-xl font-bold mb-4">Registrar Almacén</h2>
+                    <form onSubmit={enviarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
-                            <input type="text" id="nombreAlmacen" onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreAlmacen" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea id="ubicacionAlmacen" onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="ubicacionAlmacen" value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
-
+    
+            {/* Modal para editar almacén */}
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Almacén {nombre}</h2>
-                    <form id="formularioAlmacen">
+                    <h2 className="text-xl font-bold mb-4">Editar Almacén {nombre}</h2>
+                    <form onSubmit={editarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
-                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreAlmacen" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="ubicacionAlmacen" value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
+    
+            {/* Sección principal */}
 
             <main className="p-6">
                 <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Almacenes</h1>
@@ -266,29 +279,27 @@ export default function Almacen() {
 
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-[#212936] shadow-md rounded-lg overflow-hidden">
-                        <thead className="bg-[#394050]">
-                            <tr>
+                            <thead className="bg-[#394050]">
+                              <tr>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">UBICACIÓN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
-                            </tr>
-                        </thead>
-                <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                        <p className="text-white">{errorMessage}</p>
-                <div className="flex justify-end">
-                                <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
-                                    Cerrar
-                                </button>
-                </div>
-                </div>
-                </div>
+                              </tr>
+                            </thead>
+                            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                               <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                                   <p className="text-white">{errorMessage}</p>
+                                    <div className="flex justify-end">
+                                      <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}> Cerrar </button>
+                                    </div>
+                                </div>
+                             </div>
 
-                        <tbody>
-                            {mostrar}
-                        </tbody>
+                          <tbody>
+                            {almacenes}
+                          </tbody>
                     </table>
                 </div>
             </main>
