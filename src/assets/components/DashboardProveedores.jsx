@@ -10,9 +10,6 @@ export default function Proveedor() {
         setDireccion('');
         setCorreo('');
         setTelefono('');
-
-
-        
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Proveedor';
     };
@@ -39,7 +36,6 @@ export default function Proveedor() {
     });
     */
     const [errorMessage, setErrorMessage] = useState('');
-
 
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
