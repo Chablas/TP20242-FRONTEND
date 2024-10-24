@@ -21,6 +21,7 @@ export default function Almacen() {
     const [nombre, setNombre] = useState('');
     const [ubicacion, setUbicacion] = useState('');
     const [almacenes, setAlmacenes] = useState([]); // Estado para almacenar la lista de almacenes
+    const [errorMessage, setErrorMessage] = useState('');
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -217,6 +218,19 @@ export default function Almacen() {
 
     return (
         <>
+         {/* Diálogo de error */}
+         <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                    <p className="text-white">{errorMessage}</p>
+                    <div className="flex justify-end">
+                        <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Modal para agregar almacén */}
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -241,7 +255,7 @@ export default function Almacen() {
             {/* Modal para editar almacén */}
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-xl font-bold mb-4">Editar Almacén {nombre}</h2>
+                    <h2 className="text-xl font-bold mb-4">Editar Almacén</h2>
                     <form onSubmit={editarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
@@ -279,6 +293,16 @@ export default function Almacen() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                               </tr>
                             </thead>
+                            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                               <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                                   <p className="text-white">{errorMessage}</p>
+                                    <div className="flex justify-end">
+                                      <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}> Cerrar </button>
+                                    </div>
+                                </div>
+                             </div>
+                            
                           <tbody>
                             {almacenes}
                           </tbody>
