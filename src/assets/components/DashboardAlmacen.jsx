@@ -3,6 +3,9 @@ import Swal from "sweetalert2";
 
 export default function Almacen() {
     const abrirModal = () => {
+        setId('');
+        setNombre('');
+        setUbicacion('');
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Almacén';
     };
@@ -13,7 +16,6 @@ export default function Almacen() {
             modal.classList.add('hidden');
         }
     };
-    const [errorMessage, setErrorMessage] = useState('');
 
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
@@ -187,7 +189,6 @@ export default function Almacen() {
                 });
                 const response = await fetch(request);
                 const datos = await response.json();
-        
                 const filas = datos.map((x, index) => {
                     return (
                         <DashboardAlmacenFila 
@@ -201,11 +202,14 @@ export default function Almacen() {
                         />
                     );
                 });
-        
                 setAlmacenes(filas);
+
             } catch (error) {
-                console.error("Error al obtener los datos:", error);
-            }
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
+        }
         };
     useEffect(() => {
         obtenerDatos();
@@ -213,23 +217,10 @@ export default function Almacen() {
 
     return (
         <>
-            {/* Diálogo de error */}
-            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                    <p className="text-white">{errorMessage}</p>
-                    <div className="flex justify-end">
-                        <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
-                            Cerrar
-                        </button>
-                    </div>
-                </div>
-            </div>
-    
             {/* Modal para agregar almacén */}
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-xl font-bold mb-4">Registrar Almacén</h2>
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Almacén</h2>
                     <form onSubmit={enviarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
@@ -241,7 +232,7 @@ export default function Almacen() {
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -262,7 +253,7 @@ export default function Almacen() {
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"onClick={editarDatos}>Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -288,16 +279,6 @@ export default function Almacen() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                               </tr>
                             </thead>
-                            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-                               <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                                   <p className="text-white">{errorMessage}</p>
-                                    <div className="flex justify-end">
-                                      <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}> Cerrar </button>
-                                    </div>
-                                </div>
-                             </div>
-
                           <tbody>
                             {almacenes}
                           </tbody>
