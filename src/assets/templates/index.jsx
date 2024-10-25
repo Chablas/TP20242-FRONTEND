@@ -166,6 +166,12 @@ function App() {
     )
 }
 
+function RutasProductos() {
+    const header = new Headers();
+    header.append("Content-Type", "application/json")
+    return 
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <App />
