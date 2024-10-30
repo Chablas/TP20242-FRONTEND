@@ -2,6 +2,12 @@ import React from "react";
 import Gps from "../icons/Gps";
 import Telefono from "../icons/Telefono";
 import Correo from "../icons/Correo";
+import Nosotros from "../icons/Nosotros";
+import Facebook from "../icons/Facebook";
+import Twitter from "../icons/Twitter";
+import Instagram from "../icons/Instagram";
+import Contactos from "../icons/Contactos";
+import Clientes from "../icons/Clientes";
 
 const Footer = () => {
     return (
@@ -37,12 +43,23 @@ const Footer = () => {
 
     
                     <div>
+                
                         <p className="text-black text-xl font-medium">ACERCA DE</p>
                         <hr className="border-black my-4" /> 
                         <ol className="space-y-2">
-                            <li className="text-black">Nosotros</li>
-                            <li className="text-black">Contactos</li>
-                            <li className="text-black">Clientes</li>
+                            <div className="flex items-center"> 
+                                <Nosotros />
+                                <li className="text-black ml-1">Nosotros</li>
+                            </div> 
+                            <div className="flex items-center"> 
+                                <Contactos />
+                                <li className="text-black ml-1">Contactos</li>
+                            </div> 
+                            <div className="flex items-center"> 
+                                <Clientes />
+                                <li className="text-black ml-1">Clientes</li>
+                            </div> 
+
                         </ol>
                     </div>     
 
@@ -51,9 +68,18 @@ const Footer = () => {
                         <p className="text-xl font-medium text-black">REDES SOCIALES</p>
                         <hr className="border-black my-4" />
                         <ol className="space-y-2">
-                            <li className="text-black">Facebook</li>
-                            <li className="text-black">Twitter</li>
-                            <li className="text-black">Instagram</li>
+                            <div className="flex items-center"> 
+                                <Facebook />
+                                <li className="text-black ml-1">Facebook</li>
+                            </div> 
+                            <div className="flex items-center"> 
+                                <Twitter />
+                                <li className="text-black ml-1">Twitter</li>
+                            </div>
+                            <div className="flex items-center"> 
+                                <Instagram />
+                                <li className="text-black ml-1">Instagram</li>
+                            </div>
                         </ol>
                     </div>
                 </div>
