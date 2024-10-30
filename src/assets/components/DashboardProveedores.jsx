@@ -1,15 +1,12 @@
+
+
 import React, { useEffect, useState } from 'react';
 import DashboardProveedoresFila from "./DashboardProveedoresFila";
 import Swal from "sweetalert2";
 
 export default function Proveedor() {
-    // Abre el modal
-    const abrirModal = () => {
-        setNombre('');
-        setRuc('');
-        setDireccion('');
-        setCorreo('');
-        setTelefono('');
+    // Abre el modal para agregar
+    const abrirModalAgregar = () => {
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Proveedor';
     };
@@ -36,7 +33,6 @@ export default function Proveedor() {
     });
     */
     const [errorMessage, setErrorMessage] = useState('');
-
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [ruc, setRuc] = useState('');
@@ -47,6 +43,7 @@ export default function Proveedor() {
 
     const registrarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        
 
         try {
             const headers = new Headers();
@@ -83,6 +80,7 @@ export default function Proveedor() {
 
                 return; // Salir si hay campos vacíos
          }
+         
 
     // Validación de que RUC sea un número
     if (isNaN(ruc)) {
@@ -106,6 +104,14 @@ export default function Proveedor() {
           });
         return; // Salir si RUC no es un número
     }    
+
+    if (!correo.includes('@')) {
+        Swal.fire({
+            title: "El correo electrónico debe contener un '@'.",
+            icon: "error"
+        });
+        return; // Salir si el correo no contiene '@'
+    }
 
 
             if (response.ok) {
@@ -133,17 +139,20 @@ export default function Proveedor() {
                 })
             }
         } catch (error) {
+
+            
            // console.error('Error en la conexión con el servidor:', error);
            Swal.fire({
             title: `Hubo un error...`,
             icon:"error"
     
-        })
+            })
         }
     };
 
-    const editarDatos = async (e) => {
+    const editar =  async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+    
 
         try {
             const headers = new Headers();
@@ -167,6 +176,21 @@ export default function Proveedor() {
                 body: cuerpo,
             });
 
+            
+
+            if (!nombre || !ruc || !direccion || !correo || !telefono) {
+                /*setErrorMessage('Todos los campos son obligatorios.');*/
+                Swal.fire({
+                    title: "Todos los campos son obligatorios.",
+        
+                    icon: "error"
+                  });
+
+                return; // Salir si hay campos vacíos
+            }
+
+            
+
             const response = await fetch(request);
             const resultado = await response.json();
             
@@ -183,7 +207,7 @@ export default function Proveedor() {
                 setCorreo('');
                 setTelefono('');
                 // Cierra modal
-              
+
                 cerrarModal();
                 //Recarga la tabla
                 obtenerDatos();                
@@ -202,6 +226,56 @@ export default function Proveedor() {
             })
         }
     };
+
+
+
+    //PROPUESTA
+
+    // const editar = async (e) => {
+    //     e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+    
+    //     try {
+    //         const headers = new Headers();
+    //         headers.append("Content-Type", "application/json");
+    
+    //         // Cuerpo del POST request con solo correo y teléfono
+    //         const cuerpo = JSON.stringify({
+    //             correo: correo,
+    //             telefono: telefono
+    //         });
+    
+    //         const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
+    //             method: "PUT",
+    //             headers: headers,
+    //             body: cuerpo,
+    //         });
+    
+    //         const response = await fetch(request);
+    //         const resultado = await response.json();
+            
+    //         if (response.ok) {
+    //             Swal.fire({
+    //                 title: `${resultado.detail}`,
+    //                 icon: 'success',
+    //             });
+    //             // Resetear los campos si es necesario
+    //             setCorreo('');
+    //             setTelefono('');
+    //             cerrarModal();
+    //             obtenerDatos(); // Recargar los datos después de la actualización
+    //         } else {
+    //             Swal.fire({
+    //                 title: `${resultado.detail}`,
+    //                 icon: 'error',
+    //             });
+    //         }
+    //     } catch (error) {
+    //         Swal.fire({
+    //             title: "Error en la conexión con el servidor", // Cambiado para evitar usar resultado en el catch
+    //             icon: 'error',
+    //         });
+    //     }
+    // };
 
     const eliminar = async (id) => {
       
@@ -339,21 +413,24 @@ export default function Proveedor() {
                 </div>
             </div>
 
+
+
+
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Proveedor {nombre}</h2>
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Proveedor</h2>
                     <form id="formularioProveedor">
-                        <div className="mb-4 select-none pointer-events-none text-gray-400">
-                            <label htmlFor="nombreProveedor" className="block text-gray-700">Nombre de Proveedor</label>
-                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                        <div className="mb-4 ">
+                            <label htmlFor="nombreProveedor" className="block text-gray-700 ">Nombre de Proveedor</label>
+                            <input type="text"  value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
-                        <div className="mb-4 select-none pointer-events-none text-gray-400">
-                            <label htmlFor="rucProveedor" className="block text-gray-700">Numero de RUC</label>
+                        <div className="mb-4 pointer-events-none text-gray-400">
+                            <label htmlFor="rucProveedor" className="block text-gray-700 ">Numero de RUC</label>
                             <input type="text" value={ruc} onChange={(e) => setRuc(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                      
                         </div>
-                        <div className="mb-4 select-none pointer-events-none text-gray-400">
-                            <label htmlFor="direccionProveedor" className="block text-gray-700">Direccion</label>
+                        <div className="mb-4 ">
+                            <label htmlFor="direccionProveedor" className="block text-gray-700 ">Direccion</label>
                             <textarea value={direccion} onChange={(e) => setDireccion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="mb-4">
@@ -366,7 +443,7 @@ export default function Proveedor() {
                         </div>
                         <div className="flex justify-end space-x-4">
                         <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editar}>Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -375,7 +452,7 @@ export default function Proveedor() {
             <main className="p-6">
                 <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Proveedores</h1>
                 <div className="mt-5" >
-                    <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
+                    <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModalAgregar}>
                         Agregar nuevo Proveedor
                     </button>
                 </div>
