@@ -164,8 +164,17 @@ export default function Categoria() {
             const response = await fetch(request);
             const datos = await response.json();
 
-            const categorias = datos.map((x) => {
-                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
+            const categorias = datos.map((x, index) => {
+                return <DashboardCategoriaFila 
+                key={x.id} {...x} 
+                setId={setId} 
+                setNombre={setNombre} 
+                setDescripcion={setDescripcion} 
+                setUrl={setUrl} 
+                index = {index + 1}
+
+                eliminarDatos={eliminarDatos} />
+                
             });
 
             setMostrarFilas(categorias);
@@ -246,6 +255,7 @@ export default function Categoria() {
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">DESCRIPCIÓN</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">IMAGEN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
@@ -289,9 +299,10 @@ function DashboardCategoriaFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
+            <td className="text-white font-light text-center py-2 px-4 truncate max-w-xs break-words">{props.imagen}</td>
             <td className="text-white font-light text-center py-2 px-4">
                 <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarCategoria}>Eliminar</button>
