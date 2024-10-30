@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2"
-// import DashboardCategoriaFila from './DashboardCategoriaFila';
 
 export default function Categoria() {
     const abrirModal = () => {
-        setNombre('');
-        setDescripcion('');
-        setUrl('');
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Categoría';
     };
@@ -168,8 +164,8 @@ export default function Categoria() {
             const response = await fetch(request);
             const datos = await response.json();
 
-            const categorias = datos.map((x,index) => {
-                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} index={index + 1}/>
+            const categorias = datos.map((x) => {
+                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
             });
 
             setMostrarFilas(categorias);
@@ -293,7 +289,7 @@ function DashboardCategoriaFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.index}</td>
+            <td className="text-white font-light py-2 px-4">{props.id}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
             <td className="text-white font-light text-center py-2 px-4">
