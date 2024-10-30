@@ -61,7 +61,7 @@ export default function DashboardServicios() {
                 restricciones: restricciones,
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/post/servicios", {
+            const request = new Request("https://compusave-backend.onrender.com/post/servicio", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
