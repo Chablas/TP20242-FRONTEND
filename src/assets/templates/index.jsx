@@ -22,6 +22,7 @@ import Register from "../components/Register.jsx";
 import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 import DashboardServicios from "../components/DashboardServicios.jsx";
+import Footer from "../components/Footer.jsx";
 
 // Páginas
 
@@ -172,7 +173,9 @@ function App() {
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
+            
             </Routes>
+            <Footer/>
         </BrowserRouter>
     )
 }
