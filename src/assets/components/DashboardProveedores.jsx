@@ -105,12 +105,12 @@ export default function Proveedor() {
         return; // Salir si RUC no es un número
     }    
 
-    if (!correo.includes('@')) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
         Swal.fire({
-            title: "El correo electrónico debe contener un '@'.",
+            title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
             icon: "error"
         });
-        return; // Salir si el correo no contiene '@'
+        return; // Salir si el formato de correo no es válido
     }
 
 
@@ -175,8 +175,9 @@ export default function Proveedor() {
                 headers: headers,
                 body: cuerpo,
             });
-
             
+            const response = await fetch(request);
+            const resultado = await response.json();
 
             if (!nombre || !ruc || !direccion || !correo || !telefono) {
                 /*setErrorMessage('Todos los campos son obligatorios.');*/
@@ -187,13 +188,40 @@ export default function Proveedor() {
                   });
 
                 return; // Salir si hay campos vacíos
+          }
+         
+
+            // Validación de que RUC sea un número
+            if (isNaN(ruc)) {
+                /*setErrorMessage('El RUC debe ser un número.');*/
+                Swal.fire({
+                    title: "El RUC debe ser un número",
+
+                    icon: "error"
+                });
+
+
+                return; // Salir si RUC no es un número
             }
 
-            
+            if (isNaN(telefono)) {
+                /*setErrorMessage('El telefono debe ser un número.');*/
+                Swal.fire({
+                    title: "El telefono debe ser un número.",
 
-            const response = await fetch(request);
-            const resultado = await response.json();
-            
+                    icon: "error"
+                });
+                return; // Salir si RUC no es un número
+            }    
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                Swal.fire({
+                    title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
+                    icon: "error"
+                });
+                return; // Salir si el formato de correo no es válido
+            }
+                    
             if (response.ok) {
                 Swal.fire({
                     title: `${resultado.detail}`,
