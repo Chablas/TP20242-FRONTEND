@@ -8,7 +8,7 @@ export default function DashboardServicios() {
         setInformacionGeneral('');
         setPrecio('');
         setGarantia('');
-        setEstado('');
+        setEstado(false);
         setImagen('');
         setCondicionesPrevias("");
         setServicioIncluye('');
@@ -30,7 +30,7 @@ export default function DashboardServicios() {
     const [informacion_general, setInformacionGeneral] = useState('');
     const [precio, setPrecio] = useState('');
     const [garantia, setGarantia] = useState('');
-    const [estado, setEstado] = useState('');
+    const [estado, setEstado] = useState(false);
     const [imagen, setImagen] = useState('');
     const [condiciones_previas, setCondicionesPrevias] = useState('');
     const [servicio_incluye, setServicioIncluye] = useState('');
@@ -114,7 +114,7 @@ export default function DashboardServicios() {
                 informacion_general: informacion_general,
                 precio: precio,
                 garantia: garantia,
-                estado: estado,
+                estado: Boolean(estado),
                 imagen: imagen,
                 condiciones_previas: condiciones_previas,
                 servicio_incluye: servicio_incluye,
@@ -218,7 +218,8 @@ export default function DashboardServicios() {
             });
             const responseBienes = await fetch(requestBienes);
             const datosBienes = await responseBienes.json();
-            const bienesFilas = datosBienes.map((x) => (
+            const bienesFilas = datosBienes.map((x, index) => {
+            return (
                 <DashboardProductosFila
                     key={x.id}
                     {...x}
@@ -234,8 +235,10 @@ export default function DashboardServicios() {
                     setServicioNoIncluye={setServicioNoIncluye}
                     setRestricciones={setRestricciones}
                     eliminarDatos={eliminarDatos}
+                    index={index + 1}
                 />
-            ));
+                );
+            });
             setBienes(datosBienes);
             setMostrarFilas(bienesFilas);
 
@@ -275,7 +278,11 @@ export default function DashboardServicios() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
-                            <input id="estadoBien" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")} required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
@@ -307,7 +314,7 @@ export default function DashboardServicios() {
 
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
+                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Bien</h2>
                     <form id="formularioBienPUT">
                     <div className="mb-4">
                             <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Bien</label>
@@ -326,8 +333,12 @@ export default function DashboardServicios() {
                             <input id="garantiaBienPUT" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="estadoBienPUT" className="block text-gray-700">Estado</label>
-                            <input id="estadoBienPUT" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="estadoBien" className="block text-gray-700"> Estado </label>
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")}required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
@@ -430,7 +441,7 @@ function DashboardProductosFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.informacion_general}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.precio}</td>

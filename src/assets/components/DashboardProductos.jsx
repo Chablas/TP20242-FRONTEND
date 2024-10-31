@@ -41,9 +41,6 @@ export default function DashboardProductos() {
     const [categoriasOpciones, setCategoriasOpciones] = useState([]);
     const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
 
-    const [estadoOpciones, setEstadoOpciones] = useState([]);
-    const [estadoSeleccionada, setEstadoSeleccionada] = useState('');
-
     const enviarDatos = async (e) => {
         e.preventDefault();
         try {
@@ -294,21 +291,14 @@ export default function DashboardProductos() {
                             <label htmlFor="garantiaBien" className="block text-gray-700">Garantía</label>
                             <input id="garantiaBien" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
-                        
                         <div className="mb-4">
-                                    <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
-                                    <select 
-                                        id="estadoBien" 
-                                        className="w-full px-4 py-2 border rounded-lg" 
-                                        value={estado ? "Activo" : "Inactivo"} 
-                                        onChange={(e) => setEstado(e.target.value === "Activo")}
-                                        required
-                                    >
-                                        <option value="">Seleccionar estado</option>
-                                        <option value="Activo">Activo</option>
-                                        <option value="Inactivo">Inactivo</option>
-                                    </select>
-                                </div>
+                            <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")} required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
                             <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
@@ -356,24 +346,14 @@ export default function DashboardProductos() {
                             <label htmlFor="garantiaBienPUT" className="block text-gray-700">Garantía</label>
                             <input id="garantiaBienPUT" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
-                        
                         <div className="mb-4">
-                                <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
-                                <select 
-                                    id="estadoBien" 
-                                    className="w-full px-4 py-2 border rounded-lg" 
-                                    value={estado ? "Activo" : "Inactivo"} 
-                                    onChange={(e) => setEstado(e.target.value === "Activo")}
-                                    required
-                                >
-                                    <option value="">Seleccionar estado</option>
-                                    <option value="Activo">Activo</option>
-                                    <option value="Inactivo">Inactivo</option>
-                                </select>
-                            </div>
-
-
-                    
+                            <label htmlFor="estadoBien" className="block text-gray-700"> Estado </label>
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")}required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
                             <input id="imagenBienPUT" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
