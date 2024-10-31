@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 
-export default function DashboardProductos() {
+export default function DashboardServicios() {
     const abrirModal = () => {
         setId('');
         setNombre('');
@@ -10,11 +10,12 @@ export default function DashboardProductos() {
         setGarantia('');
         setEstado('');
         setImagen('');
-        setMarca('');
-        setEspecificacionesTecnicas('');
-        setCategoriaId('');
+        setCondicionesPrevias("");
+        setServicioIncluye('');
+        setServicioNoIncluye('');
+        setRestricciones('');
         document.getElementById('modalAgregar').classList.remove('hidden');
-        document.getElementById('tituloModal').textContent = 'Registrar Bien';
+        document.getElementById('tituloModal').textContent = 'Registrar Servicio';
     };
 
     const cerrarModal = () => {
@@ -31,20 +32,46 @@ export default function DashboardProductos() {
     const [garantia, setGarantia] = useState('');
     const [estado, setEstado] = useState('');
     const [imagen, setImagen] = useState('');
-    const [marca, setMarca] = useState('');
-    const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
-    const [categoria_id, setCategoriaId] = useState('');
+    const [condiciones_previas, setCondicionesPrevias] = useState('');
+    const [servicio_incluye, setServicioIncluye] = useState('');
+    const [servicio_no_incluye, setServicioNoIncluye] = useState('');
+    const [restricciones, setRestricciones] = useState('');
 
     const [bienes, setBienes] = useState([]);
-    const [categorias, setCategorias] = useState([]);
     const [mostrarFilas, setMostrarFilas] = useState([]);
-    const [categoriasOpciones, setCategoriasOpciones] = useState([]);
-    const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
 
 
     const enviarDatos = async (e) => {
         e.preventDefault();
         try {
+            // Validar que los campos no estén vacíos
+            if (!nombre || !informacion_general || !precio || !garantia || !estado || !imagen || !condiciones_previas || !servicio_incluye || !servicio_no_incluye || !restricciones) {
+                Swal.fire({
+                    title: `Todos los campos son obligatorios.`,
+                    icon: "warning"
+                });
+                return; }
+
+            // Validar que el precio sea un número
+            if (isNaN(precio) || precio <= 0) {
+            Swal.fire({
+                title: `El precio debe ser un número positivo.`,
+                icon: "warning"
+            });
+            return; }
+
+            // Validar si el servicio ya existe
+            const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
+            const exists = await existResponse.json();
+
+            // Suponiendo que `exists` devuelve un objeto o un array, ajusta la condición según la estructura de la respuesta
+            if (Array.isArray(exists) && exists.length > 0) {
+            if (exists.some(servicio => servicio.id !== id)) {
+                Swal.fire({
+                    title: `El servicio con el nombre "${nombre}" ya existe.`,
+                    icon: "warning"
+                });
+                return;  }             }
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -56,12 +83,13 @@ export default function DashboardProductos() {
                 garantia: garantia,
                 estado: estado,
                 imagen: imagen,
-                marca: marca,
-                especificaciones_tecnicas: especificaciones_tecnicas,
-                categoria_id: opcionSeleccionada,
+                condiciones_previas: condiciones_previas,
+                servicio_incluye: servicio_incluye,
+                servicio_no_incluye: servicio_no_incluye,
+                restricciones: restricciones,
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/post/bien", {
+            const request = new Request("https://compusave-backend.onrender.com/post/servicio", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
@@ -82,9 +110,10 @@ export default function DashboardProductos() {
                 setGarantia('');
                 setEstado('');
                 setImagen('');
-                setMarca('');
-                setEspecificacionesTecnicas('');
-                setCategoriaId('');
+                setCondicionesPrevias("");
+                setServicioIncluye('');
+                setServicioNoIncluye('');
+                setRestricciones('');
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -95,7 +124,7 @@ export default function DashboardProductos() {
             }
         } catch (error) {
             Swal.fire({
-                title: `Hubo un error...`,
+                title: `Ocurrio un error...`,
                 icon: "error"
             })
         }
@@ -104,7 +133,40 @@ export default function DashboardProductos() {
     const editarDatos = async (e) => {
         e.preventDefault();
 
-        try {
+            try {
+
+            // Validar que los campos no estén vacíos
+            if (!nombre || !informacion_general || !precio || !garantia || !estado || !imagen || !condiciones_previas || !servicio_incluye || !servicio_no_incluye || !restricciones) {
+            Swal.fire({
+                title: `Todos los campos son obligatorios.`,
+                icon: "warning"
+            });
+            return; }
+
+            // Validar que el precio sea un número
+            if (isNaN(precio) || precio <= 0) {
+            Swal.fire({
+                title: `El precio debe ser un número positivo.`,
+                icon: "warning"
+            });
+            return; }
+
+            // Validar si el servicio ya existe
+            const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
+            const exists = await existResponse.json();
+
+            // Asegurar de que `exists` es un array y verifica si hay duplicados
+            if (Array.isArray(exists) && exists.length > 0) {
+            // Verificar si hay otro servicio con el mismo nombre pero en diferente ID
+            const isDuplicate = exists.some(servicio => servicio.id !== id);
+            if (isDuplicate) {
+                Swal.fire({
+                    title: `El servicio con el nombre "${nombre}" ya existe.`,
+                    icon: "warning"
+                });
+                return; }
+            }
+
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
@@ -115,12 +177,13 @@ export default function DashboardProductos() {
                 garantia: garantia,
                 estado: estado,
                 imagen: imagen,
-                marca: marca,
-                especificaciones_tecnicas: especificaciones_tecnicas,
-                categoria_id: categoria_id
+                condiciones_previas: condiciones_previas,
+                servicio_incluye: servicio_incluye,
+                servicio_no_incluye: servicio_no_incluye,
+                restricciones: restricciones,
             });
             
-            const request = new Request(`https://compusave-backend.onrender.com/put/bien/${id}`, {
+            const request = new Request(`https://compusave-backend.onrender.com/put/servicio/${id}`, {
                 method: "PUT",
                 headers: headers,
                 body: cuerpo,
@@ -141,9 +204,10 @@ export default function DashboardProductos() {
                 setGarantia('');
                 setEstado('');
                 setImagen('');
-                setMarca('');
-                setEspecificacionesTecnicas('');
-                setCategoriaId('');
+                setCondicionesPrevias("");
+                setServicioIncluye('');
+                setServicioNoIncluye('');
+                setRestricciones('');
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -154,7 +218,7 @@ export default function DashboardProductos() {
             }
         } catch (error) {
             Swal.fire({
-                title: `Hubo un error...`,
+                title: `Ocurrio un error...`,
                 icon: "error"
             });
         }
@@ -165,7 +229,7 @@ export default function DashboardProductos() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            const request = new Request(`https://compusave-backend.onrender.com/delete/bien/${id}`, {
+            const request = new Request(`https://compusave-backend.onrender.com/delete/servicio/${id}`, {
                 method: "DELETE",
                 headers: headers,
             });
@@ -185,9 +249,10 @@ export default function DashboardProductos() {
                 setGarantia('');
                 setEstado('');
                 setImagen('');
-                setMarca('');
-                setEspecificacionesTecnicas('');
-                setCategoriaId('');
+                setCondicionesPrevias("");
+                setServicioIncluye('');
+                setServicioNoIncluye('');
+                setRestricciones('');
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -198,29 +263,17 @@ export default function DashboardProductos() {
             }
         } catch (error) {
             Swal.fire({
-                title: `Hubo un error...`,
+                title: `Ocurrio un error...`,
                 icon: "error"
             });
         }
     }
-      
+    
     const obtenerDatosYActualizarFilas = async () => {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            const requestCategorias = new Request("https://compusave-backend.onrender.com/get/categorias", {
-                method: "GET",
-                headers: headers,
-            });
-            const responseCategorias = await fetch(requestCategorias);
-            const datosCategorias = await responseCategorias.json();
-            const categoriaOpciones = datosCategorias.map((x) => (
-                <CategoriaOption key={x.id} {...x} setCategoriaId={setCategoriaId} />
-            ));
-            setCategorias(datosCategorias);
-            setCategoriasOpciones(categoriaOpciones);
-
-            const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
+            const requestBienes = new Request("https://compusave-backend.onrender.com/get/servicios", {
                 method: "GET",
                 headers: headers,
             });
@@ -237,11 +290,11 @@ export default function DashboardProductos() {
                     setGarantia={setGarantia}
                     setEstado={setEstado}
                     setImagen={setImagen}
-                    setMarca={setMarca}
-                    setEspecificacionesTecnicas={setEspecificacionesTecnicas}
-                    setCategoriaId={setCategoriaId}
+                    setCondicionesPrevias={setCondicionesPrevias}
+                    setServicioIncluye={setServicioIncluye}
+                    setServicioNoIncluye={setServicioNoIncluye}
+                    setRestricciones={setRestricciones}
                     eliminarDatos={eliminarDatos}
-                    categorias={datosCategorias}
                 />
             ));
             setBienes(datosBienes);
@@ -249,7 +302,7 @@ export default function DashboardProductos() {
 
         } catch (error) {
             Swal.fire({
-                title: `Hubo un error...`,
+                title: `Ocurrio un error...`,
                 icon: "error"
             });
         }
@@ -263,10 +316,10 @@ export default function DashboardProductos() {
         <>
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Bien</h2>
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Servicio</h2>
                     <form id="formularioBienPOST">
                         <div className="mb-4">
-                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
+                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Servicio</label>
                             <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
@@ -290,18 +343,20 @@ export default function DashboardProductos() {
                             <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
-                            <input id="marcaBien" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="marcaBien" className="block text-gray-700">Condiciones privias</label>
+                            <input id="marcaBien" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="especificacionesTecnicasBien" className="block text-gray-700">Especificaciones Técnicas</label>
-                            <input id="especificacionesTecnicasBien" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="marcaBien" className="block text-gray-700">Incluye</label>
+                            <input id="marcaBien" type="text" value={servicio_incluye} onChange={(e) => setServicioIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
-                            <select id="categoriaIdBien" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
-                                {categoriasOpciones}
-                            </select>
+                            <label htmlFor="marcaBien" className="block text-gray-700">No Incluye</label>
+                            <input id="marcaBien" type="text" value={servicio_no_incluye} onChange={(e) => setServicioNoIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="marcaBien" className="block text-gra1y-700">Restriccion</label>
+                            <input id="marcaBien" type="text" value={restricciones} onChange={(e) => setRestricciones(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -341,17 +396,19 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
-                            <input id="marcaBienPUT" type="text" value={marca} onChange={(e) => setMarca(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input id="marcaBienPUT" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="especificacionesTecnicasBienPUT" className="block text-gray-700">Especificaciones Técnicas</label>
-                            <input id="especificacionesTecnicasBienPUT" type="text" value={especificaciones_tecnicas} onChange={(e) => setEspecificacionesTecnicas(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <input id="marcaBienPUT" type="text" value={servicio_incluye} onChange={(e) => setServicioIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
-                            <select id="categoriaIdBienPUT" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
-                                {categoriasOpciones}
-                            </select>
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <input id="marcaBienPUT" type="text" value={servicio_no_incluye} onChange={(e) => setServicioNoIncluye(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
+                            <input id="marcaBienPUT" type="text" value={restricciones} onChange={(e) => setRestricciones(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -362,10 +419,10 @@ export default function DashboardProductos() {
             </div>
 
             <main className="p-6">
-                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Bienes</h1>
+                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Servicios</h1>
                 <div className="mt-5" >
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
-                        Agregar nuevo Bien
+                        Agregar nuevo Servicio
                     </button>
                 </div>
 
@@ -380,9 +437,10 @@ export default function DashboardProductos() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">GARANTIA</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ESTADO</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">IMAGEN</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">MARCA</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ESPECIFICACIONES TÉCNICAS</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">CATEGORÍA</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">CONDICIONES PREVIAS</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">INCLUYE</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">NO INCLUYE</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">RESTRICCIONES</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
@@ -397,10 +455,9 @@ export default function DashboardProductos() {
 }
 
 function DashboardProductosFila(props) {
-    let n_categoria;
     const abrirModalEdicion = () => {
         document.getElementById('modalEditar').classList.remove('hidden');
-        document.getElementById('tituloModalEditar').textContent = 'Editar Bien ';
+        document.getElementById('tituloModalEditar').textContent = 'Editar Servicio ';
         props.setId(props.id);
         props.setNombre(props.nombre);
         props.setInformacionGeneral(props.informacion_general);
@@ -408,16 +465,17 @@ function DashboardProductosFila(props) {
         props.setGarantia(props.garantia);
         props.setEstado(props.estado);
         props.setImagen(props.imagen);
-        props.setMarca(props.marca);
-        props.setEspecificacionesTecnicas(props.especificaciones_tecnicas);
-        props.setCategoriaId(props.categoria_id);
+        props.setCondicionesPrevias(props.condiciones_previas);
+        props.setServicioIncluye(props.servicio_incluye);
+        props.setServicioNoIncluye(props.servicio_no_incluye);
+        props.setRestricciones(props.restricciones);
     };
 
     const eliminarDato = () => {
         props.setId(props.id);
         Swal.fire({
             title: "¿Está seguro?",
-            text: "No se podrá rehacer una vez eliminado",
+            text: "Esta accion no puede ser deshacer",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -429,12 +487,6 @@ function DashboardProductosFila(props) {
             }
         });
     };
-    
-    for (const categoria of props.categorias) {
-        if (categoria.id == props.categoria_id) {
-            n_categoria = categoria.nombre;
-        }
-    }
 
     return (
         <>
@@ -446,9 +498,10 @@ function DashboardProductosFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{props.garantia}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.estado}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.imagen}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.marca}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.especificaciones_tecnicas}</td>
-            <td className="text-white font-light text-center py-2 px-4">{n_categoria}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.condiciones_previas}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.servicio_incluye}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.servicio_no_incluye}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.restricciones}</td>
             <td className="text-white font-light text-center py-2 px-4">
                 <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarDato}>Eliminar</button>
@@ -456,11 +509,5 @@ function DashboardProductosFila(props) {
         </tr>
         
         </>
-    )
-}
-
-function CategoriaOption(props) {
-    return (
-        <option value={props.id} >{props.nombre}</option>
     )
 }

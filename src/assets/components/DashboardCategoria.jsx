@@ -1,43 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import DashboardCategoriaFila from "./DashboardCategoriaFila";
+import Swal from "sweetalert2"
 
 export default function Categoria() {
-    // Abre el modal
     const abrirModal = () => {
-        document.getElementById('modal').classList.remove('hidden');
+        document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Categoría';
     };
 
-    // Cierra el modal
     const cerrarModal = () => {
-        document.getElementById('modal').classList.add('hidden');
+        const modales = document.querySelectorAll("div.btnCerrarModal");
+        for (const modal of modales) {
+            modal.classList.add('hidden');
+        }
     };
 
-    // Abre el modal para editar categoría
-
-    // Manejador del formulario
-    /*
-    const submit = () => {
-        alert('Categoría registrada o editada');
-        cerrarModal();
-    }
-    document.getElementById('formularioCategoria').addEventListener('submit', function (e) {
-        e.preventDefault();
-        
-    });
-    */
+    const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [url, setUrl] = useState('');
+    const [mostrarFilas, setMostrarFilas] = useState([]);
 
     const enviarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
 
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-            // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
@@ -54,55 +42,148 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });
+                setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                // Cierra modal
                 cerrarModal();
+                obtenerDatosYActualizarFilas();
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
         }
     };
 
+    const editarDatos = async (e) => {
+        e.preventDefault();
 
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
 
-    useEffect(() => {
-        const obtenerDatos = async () => {
+            const cuerpo = JSON.stringify({
+                nombre: nombre,
+                descripcion: descripcion,
+                imagen: url
+            });
             
-            try {
-                const headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/categorias", {
-                    method: "GET",
-                    headers: headers,
-                });
-                const response = await fetch(request);
-                const datos = await response.json();
+            const request = new Request(`https://compusave-backend.onrender.com/put/categoria/${id}`, {
+                method: "PUT",
+                headers: headers,
+                body: cuerpo,
+            });
 
-                const categorias = datos.map((x) => {
-                    return <DashboardCategoriaFila key={x.id} {...x} />
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
                 });
-
-                setMostrar(categorias);
-            } catch (error) {
-                console.error("Error al obtener los datos:", error);
+                setId('');
+                setNombre('');
+                setDescripcion('');
+                setUrl('');
+                cerrarModal();
+                obtenerDatosYActualizarFilas();
+            } else {
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });
             }
-        };
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
+        }
+    }
 
-        obtenerDatos();
+    const eliminarDatos = async (id) => {
 
-        
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request(`https://compusave-backend.onrender.com/delete/categoria/${id}`, {
+                method: "DELETE",
+                headers: headers,
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });
+                setId('');
+                setNombre('');
+                setDescripcion('');
+                setUrl('');
+                cerrarModal();
+                obtenerDatosYActualizarFilas();
+            } else {
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
+        }
+    }
+
+    const obtenerDatosYActualizarFilas = async () => {
+            
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request("https://compusave-backend.onrender.com/get/categorias", {
+                method: "GET",
+                headers: headers,
+            });
+            const response = await fetch(request);
+            const datos = await response.json();
+
+            const categorias = datos.map((x) => {
+                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
+            });
+
+            setMostrarFilas(categorias);
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
+        }
+    };
+    // Se ejecuta al cargar inicialmente la página
+    useEffect(() => {
+        obtenerDatosYActualizarFilas();
     }, []);
 
     return (
         <>
-            <div id="modal" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
+            <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Categoría</h2>
                     <form id="formularioCategoria">
@@ -121,6 +202,30 @@ export default function Categoria() {
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
                             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Categoría {nombre}</h2>
+                    <form id="formularioCategoria">
+                        <div className="mb-4">
+                            <label htmlFor="nombreCategoria" className="block text-gray-700">Nombre de Categoría</label>
+                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="descripcionCategoria" className="block text-gray-700">Descripción</label>
+                            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
+                            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <div className="flex justify-end space-x-4">
+                            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -145,11 +250,54 @@ export default function Categoria() {
                             </tr>
                         </thead>
                         <tbody>
-                            {mostrar}
+                            {mostrarFilas}
                         </tbody>
                     </table>
                 </div>
             </main>
+        </>
+    )
+}
+
+function DashboardCategoriaFila(props) {
+    const abrirModalEdicion = () => {
+        document.getElementById('modalEditar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Editar Categoría ';
+        props.setId(props.id);
+        props.setNombre(props.nombre);
+        props.setDescripcion(props.descripcion);
+        props.setUrl(props.imagen);
+    };
+
+    const eliminarCategoria = () => {
+        props.setId(props.id);
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "No se podrá rehacer una vez eliminado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, elimínalo"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                props.eliminarDatos(props.id);
+            }
+        });
+    };
+
+    return (
+        <>
+        <tr className="border-b border-b-[#394050]">
+            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.nombre}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
+                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarCategoria}>Eliminar</button>
+            </td>
+        </tr>
+        
         </>
     )
 }
