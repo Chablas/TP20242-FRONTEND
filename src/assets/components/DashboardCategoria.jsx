@@ -299,7 +299,7 @@ function DashboardCategoriaFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.index}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td> {/* Contador que ordena id´s */}
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
             <td className="text-white font-light text-center py-2 px-4">
