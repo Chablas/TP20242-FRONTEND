@@ -22,8 +22,19 @@ import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 import DashboardServicios from "../components/DashboardServicios.jsx";
 import ServicePreviews from "../components/StoreServicePreview.jsx";
+import StoreServicios from "../components/StoreServicios.jsx";
 
 // Páginas
+
+function P_Store_Servicios() {
+    return (
+        <>
+            <StoreNavigation />
+            <StoreProductAll />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
 
 function P_Store_Index() {
     return (
@@ -73,6 +84,7 @@ function P_Store_Product_All() {
         </>
     )
 }
+
 
 function P_Dashboard_Proveedores() {
     return (
@@ -172,6 +184,8 @@ function App() {
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
                 <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
+                <Route path="/StoreServicios" element={<P_Store_Servicios />}/>
+                
             </Routes>
         </BrowserRouter>
     )

@@ -76,7 +76,7 @@ function StoreServicePreviewComponent(props) {
                     className="h-full w-full object-cover object-center" />
             </div>
             <h3 className="mt-6 text-sm text-gray-500">
-                <Link to="/servicios">
+            <Link to="/StoreServicios">
                     <span className="absolute inset-0"></span>
                     {props.nombre}
                 </Link>
