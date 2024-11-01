@@ -30,7 +30,7 @@ function P_Store_Servicios() {
     return (
         <>
             <StoreNavigation />
-            <StoreProductAll />
+            <StoreServicios />
             <BarraLateralCarritoCompras />
         </>
     )
