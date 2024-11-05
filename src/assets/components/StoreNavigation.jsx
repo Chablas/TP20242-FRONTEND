@@ -64,7 +64,7 @@ export default function StoreNavigation() {
                                                 <nav className="grid gap-y-8 ">
                                                     <Link to="/categorias" className="text-gray-900  hover:text-purple-500 p-2 rounded-md text-base font-medium">Productos</Link>
                                                     <Link to="#" className="text-gray-900 hover:text-purple-500 p-2 rounded-md text-base font-medium">Servicios</Link>
-                                                    <Link to="#" className="text-gray-900 hover:text-purple-500 p-2 rounded-md text-base font-medium">Empresa</Link>
+                                                    <Link to="/nosotros" className="text-gray-900 hover:text-purple-500 p-2 rounded-md text-base font-medium">Empresa</Link>
                                                 </nav>
                                             </div>
                                         </div>
@@ -75,7 +75,7 @@ export default function StoreNavigation() {
                                     <div className="flex h-full space-x-8">
                                         <Link to="/categorias" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Productos</Link>
                                         <a href="#" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Servicios</a>
-                                        <a href="#" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Empresa</a>
+                                        <a href="/nosotros" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Empresa</a>
                                     </div>
                                 </div>
 

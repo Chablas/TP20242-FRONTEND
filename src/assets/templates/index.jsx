@@ -8,6 +8,7 @@ import BarraLateralCarritoCompras from "../components/StoreBarraLateralCarritoCo
 import StoreNavigation from "../components/StoreNavigation.jsx"
 import PromoSections from "../components/StorePromoSections.jsx"
 import CategoryPreviews from "../components/StoreCategoryPreviews.jsx"
+import StoreCompany from "../components/StoreCompany.jsx";  
 import CarritoCompras from "../components/CarritoCompras.jsx"
 
 import Proveedor from "../components/DashboardProveedores.jsx";
@@ -51,6 +52,17 @@ function P_Store_Product_Overview() {
         <>
             <StoreNavigation />
             <StoreProductOverview />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
+
+function P_Store_Company() {
+    return (
+        <>
+            <StoreNavigation />
+            <StoreCompany />
             <BarraLateralCarritoCompras />
         </>
     )
@@ -162,6 +174,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<P_Store_Index />} />
                 <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
+                <Route path="/nosotros" element={<P_Store_Company />} />                
                 <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
                 <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
                 <Route path="/login" element={<P_Login />} />
