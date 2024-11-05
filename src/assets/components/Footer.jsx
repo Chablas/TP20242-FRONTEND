@@ -11,7 +11,7 @@ import Clientes from "../icons/Clientes";
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-50 text-white py-4 mt-14">
+        <footer className="bg-[#815183] text-white py-4 mt-14">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:justify-around">
                
@@ -22,21 +22,21 @@ const Footer = () => {
                                 alt="Logo"
                                 className="w-7 mr-2" 
                             />
-                            <p className="text-black text-xl font-medium">INFORMACIÓN</p>
+                            <p className="text-white text-xl font-medium">INFORMACIÓN</p>
                         </div>
                         <hr className="border-black my-4" />
                         <ol className="space-y-2">
                             <div className="flex items-center">
                                 <Gps />
-                                <li className="text-black ml-1">Av. San Borja Sur Nro. 818 Int. 701</li>
+                                <li className="text-white ml-1">Av. San Borja Sur Nro. 818 Int. 701</li>
                             </div>
                             <div className="flex items-center">
                                 <Correo />
-                                <li className="text-black ml-1">laguna.jorge@gmail.com</li>
+                                <li className="text-white ml-1">laguna.jorge@gmail.com</li>
                             </div>
                             <div className="flex items-center"> 
                                 <Telefono />
-                                <li className="text-black ml-1">+51 960-199-862</li>
+                                <li className="text-white ml-1">+51 960-199-862</li>
                             </div> 
                         </ol>
                     </div>
@@ -44,20 +44,20 @@ const Footer = () => {
     
                     <div>
                 
-                        <p className="text-black text-xl font-medium">ACERCA DE</p>
+                        <p className="text-white text-xl font-medium">ACERCA DE</p>
                         <hr className="border-black my-4" /> 
                         <ol className="space-y-2">
                             <div className="flex items-center"> 
                                 <Nosotros />
-                                <li className="text-black ml-1">Nosotros</li>
+                                <li className="text-white ml-1">Nosotros</li>
                             </div> 
                             <div className="flex items-center"> 
                                 <Contactos />
-                                <li className="text-black ml-1">Contactos</li>
+                                <li className="text-white ml-1">Contactos</li>
                             </div> 
                             <div className="flex items-center"> 
                                 <Clientes />
-                                <li className="text-black ml-1">Clientes</li>
+                                <li className="text-white ml-1">Clientes</li>
                             </div> 
 
                         </ol>
@@ -65,20 +65,20 @@ const Footer = () => {
 
                  
                     <div> 
-                        <p className="text-xl font-medium text-black">REDES SOCIALES</p>
+                        <p className="text-xl font-medium text-white">REDES SOCIALES</p>
                         <hr className="border-black my-4" />
                         <ol className="space-y-2">
                             <div className="flex items-center"> 
                                 <Facebook />
-                                <li className="text-black ml-1">Facebook</li>
+                                <li className="text-white ml-1">Facebook</li>
                             </div> 
                             <div className="flex items-center"> 
                                 <Twitter />
-                                <li className="text-black ml-1">Twitter</li>
+                                <li className="text-white ml-1">Twitter</li>
                             </div>
                             <div className="flex items-center"> 
                                 <Instagram />
-                                <li className="text-black ml-1">Instagram</li>
+                                <li className="text-white ml-1">Instagram</li>
                             </div>
                         </ol>
                     </div>
@@ -88,7 +88,7 @@ const Footer = () => {
                 
            
                 <div className="text-center">
-                    <p className="text-sm text-black">&copy; 2024 Compusave. Todos los derechos reservados.</p>
+                    <p className="text-sm text-white">&copy; 2024 Compusave. Todos los derechos reservados.</p>
                 </div>
             </div>
         </footer>

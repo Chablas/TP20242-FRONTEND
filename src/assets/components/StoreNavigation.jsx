@@ -16,7 +16,7 @@ export default function StoreNavigation() {
         <>
             <div className="bg-white">
                 <header className="relative bg-white">
-                    <p className="flex h-10 items-center justify-center bg-purple-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
+                    <p className="flex bg-[#815183] h-10 items-center justify-center bg-purple-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
                         Obtenga delivery gratis en compras mayores a 100 soles
                     </p>
 
