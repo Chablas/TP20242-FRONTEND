@@ -3,8 +3,9 @@ import imagen1 from "../images/productos/1/13.jpg"
 import imagen2 from "../images/productos/1/12.jpg"
 import imagen3 from "../images/productos/1/11.jpg"
 import imagen4 from "../images/productos/1/14.jpg"
+import DashboardServicios from "./DashboardServicios"
 
-export default function StoreProductOverview() {
+export default function StoreServiciosOverview() {
     return (
         <>
             {/* (INICIO) COMPONENTE TAILWIND CSS PRODUCT OVERVIEWS / WITH IMAGE GRID */}
@@ -35,7 +36,7 @@ export default function StoreProductOverview() {
                         <ol role="list" class="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
                             <li>
                                 <div class="flex items-center">
-                                    <Link to="/producto/overview" class="mr-2 text-sm font-medium text-gray-900">Productos</Link>
+                                    <Link to="/StoreServiciosOverview" class="mr-2 text-sm font-medium text-gray-900">Productos</Link>
                                     <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true"
                                         class="h-5 w-4 text-gray-300">
                                         <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
@@ -44,7 +45,7 @@ export default function StoreProductOverview() {
                             </li>
                             <li>
                                 <div class="flex items-center">
-                                    <a href="#" class="mr-2 text-sm font-medium text-gray-900">Teclados</a>
+                                    <a href="#" class="mr-2 text-sm font-medium text-gray-900">servicios</a>
                                     <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true"
                                         class="h-5 w-4 text-gray-300">
                                         <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
@@ -53,8 +54,9 @@ export default function StoreProductOverview() {
                             </li>
 
                             <li class="text-sm">
-                                <a href="#" aria-current="page" class="font-medium text-gray-500 hover:text-gray-600">Teclado
-                                    Gamer Xtrike Me Kb-306 Sp Rgb Backlit</a>
+                                <a href="#" aria-current="page" class="font-medium text-gray-500 hover:text-gray-600">instalacion de software y sistemas operativos s/.50
+
+                                </a>
                             </li>
                         </ol>
                     </nav>
@@ -86,8 +88,7 @@ export default function StoreProductOverview() {
                     <div
                         class="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
                         <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-                            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Teclado Gamer Xtrike Me
-                                Kb-306 Sp Rgb Backlit</h1>
+                            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">instalacion de software y sistemas operativos s/.50</h1>
                         </div>
 
                         {/* Options */}
@@ -151,60 +152,23 @@ export default function StoreProductOverview() {
                                 <h3 class="sr-only">Descripción</h3>
 
                                 <div class="space-y-6">
-                                    <p class="text-base text-gray-900">Teclado para Gamers en Español (con tecla ñ), 115 teclas
-                                        en total. Tiene botones exclusivos de acceso y control rápido al volumen, reproductor
-                                        multimedia, correo y más. Las teclas son de acción silenciosa y suave, gracias a una
-                                        membrana de alta calidad con capacidad para más de 10 millones de pulsaciones. Tiene
-                                        retroiluminación RGB automática. Especificaciones técnicas: ¿ Teclas: 115 ¿ Tipo de
-                                        interruptor: Membrana ¿ Fuerza de funcionamiento: 55±7g ¿ Ruta clave: 3.8 ± 0.4 mm ¿
-                                        Duración de interruptor: 10 millones de pulsaciones ¿ Retroiluminación: arcoíris ¿
-                                        Tamaño: 448 x 175 x 33 mm ¿ Peso: 575g ¿ Longitud del Cable: 1.5m ¿ Interfaz: USB 2.0 ¿
-                                        Compatibilidad con todos los sistemas operativos. Plug & play</p>
+                                    <p class="text-base text-gray-900">La instalación de software y sistemas operativos es el proceso de 
+                                        configurar y preparar un dispositivo para que ejecute un sistema operativo o programa específico.
+                                         Incluye la creación de particiones, la selección de configuraciones de hardware, y la instalación 
+                                         de archivos necesarios. En el caso de sistemas operativos, se inicia desde un medio de instalación
+                                          (como USB o CD) y se siguen instrucciones para copiar y configurar los archivos del sistema en el 
+                                          dispositivo, garantizando que esté listo para su uso.</p>
                                 </div>
                             </div>
 
+                            
                             <div class="mt-10">
-                                <h3 class="text-sm font-medium text-gray-900">Especificaciones</h3>
-
-                                <div class="mt-4">
-                                    <ul role="list" class="list-disc space-y-2 pl-4 text-sm">
-                                        <li class="text-gray-400"><span class="text-gray-600">Marca: Xtrike Me</span>
-                                        </li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Alto: 44.8 cm</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Ancho: 17.5 cm</span>
-                                        </li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Modelo: KB-306 SP</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Compatibilidad: Windows/iOS</span>
-                                        </li>
-                                        <li class="text-gray-400"><span class="text-gray-600">País de origen: China</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Entrada: USB</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Garantía del proveedor: 6
-                                            Meses</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Conectividad/conexión: USB</span>
-                                        </li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Incluye accesorios: No</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Largo del cable: 150 cm</span>
-                                        </li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Peso: 575g</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Profundidad: 3.3 cm</span></li>
-                                        <li class="text-gray-400"><span class="text-gray-600">Tipo: Teclado gamer</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="mt-10">
-                                <h2 class="text-sm font-medium text-gray-900">Detalles</h2>
+                                <h2 class="text-sm font-medium text-gray-900">Para consultas o preguntas especificas</h2>
 
                                 <div class="mt-4 space-y-6">
-                                    <p class="text-sm text-gray-600">Teclado para Gamers en Español (con tecla ñ), 115 teclas en
-                                        total. Tiene botones exclusivos de acceso y control rápido al volumen, reproductor
-                                        multimedia, correo y más. Las teclas son de acción silenciosa y suave, gracias a una
-                                        membrana de alta calidad con capacidad para más de 10 millones de pulsaciones. Tiene
-                                        retroiluminación RGB automática. Especificaciones técnicas: ¿ Teclas: 115 ¿ Tipo de
-                                        interruptor: Membrana ¿ Fuerza de funcionamiento: 55±7g ¿ Ruta clave: 3.8 ± 0.4 mm ¿
-                                        Duración de interruptor: 10 millones de pulsaciones ¿ Retroiluminación: arcoíris ¿
-                                        Tamaño: 448 x 175 x 33 mm ¿ Peso: 575g ¿ Longitud del Cable: 1.5m ¿ Interfaz: USB 2.0 ¿
-                                        Compatibilidad con todos los sistemas operativos. Plug & play</p>
+                                    <p class="text-sm text-gray-600">Cualquier consulta relacionada consultar con el siguiente numero
+                                        942232391
+                                    </p>
                                 </div>
                             </div>
                         </div>
