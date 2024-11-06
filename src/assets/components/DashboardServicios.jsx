@@ -44,6 +44,7 @@ export default function DashboardServicios() {
     const enviarDatos = async (e) => {
         e.preventDefault();
     
+        // Función para mostrar alertas
         const mostrarAlerta = (titulo, tipo) => {
             Swal.fire({ title: titulo, icon: tipo });
         };
@@ -118,6 +119,7 @@ export default function DashboardServicios() {
     const editarDatos = async (e) => {
         e.preventDefault();
     
+        // Función para mostrar alertas
         const mostrarAlerta = (titulo, tipo) => {
             Swal.fire({ title: titulo, icon: tipo });
         };
@@ -148,6 +150,7 @@ export default function DashboardServicios() {
                 return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
             }
     
+            // Preparar y enviar los datos
             const cuerpo = JSON.stringify({
                 nombre, informacion_general, precio, garantia, estado: estadoBooleano, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones
             });
