@@ -43,186 +43,120 @@ export default function DashboardServicios() {
 
     const enviarDatos = async (e) => {
         e.preventDefault();
+    
+        // Función para mostrar alertas
+        const mostrarAlerta = (titulo, tipo) => {
+            Swal.fire({ title: titulo, icon: tipo });
+        };
+    
+        // Validaciones
+        const camposVacios = [nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones].some(campo => !campo);
+        if (camposVacios) return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
+    
+        if (isNaN(precio) || precio <= 0) return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
+    
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&-]*)?$/i;
+        if (!urlPattern.test(imagen)) return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
+    
         try {
-            // Validar que los campos no estén vacíos
-            if (!nombre || !informacion_general || !precio || !garantia || !estado || !imagen || !condiciones_previas || !servicio_incluye || !servicio_no_incluye || !restricciones) {
-                Swal.fire({
-                    title: `Todos los campos son obligatorios.`,
-                    icon: "warning"
-                });
-                return; }
-
-            // Validar que el precio sea un número
-            if (isNaN(precio) || precio <= 0) {
-            Swal.fire({
-                title: `El precio debe ser un número positivo.`,
-                icon: "warning"
-            });
-            return; }
-
-            // Validar si el servicio ya existe
+            // Verificar si el servicio ya existe
             const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
             const exists = await existResponse.json();
-
-            // Suponiendo que `exists` devuelve un objeto o un array, ajusta la condición según la estructura de la respuesta
-            if (Array.isArray(exists) && exists.length > 0) {
-            if (exists.some(servicio => servicio.id !== id)) {
-                Swal.fire({
-                    title: `El servicio con el nombre "${nombre}" ya existe.`,
-                    icon: "warning"
-                });
-                return;  }             }
-
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json");
-
-            const cuerpo = JSON.stringify({
-                nombre: nombre,
-                informacion_general: informacion_general,
-                precio: precio,
-                garantia: garantia,
-                estado: estado,
-                imagen: imagen,
-                condiciones_previas: condiciones_previas,
-                servicio_incluye: servicio_incluye,
-                servicio_no_incluye: servicio_no_incluye,
-                restricciones: restricciones,
-            });
-
-            const request = new Request("https://compusave-backend.onrender.com/post/servicio", {
-                method: "POST",
-                headers: headers,
+            if (Array.isArray(exists) && exists.some(servicio => servicio.id !== id)) {
+                return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
+            }
+    
+            // Preparar y enviar los datos
+            const cuerpo = JSON.stringify({ nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones });
+            const response = await fetch('https://compusave-backend.onrender.com/post/servicio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: cuerpo,
             });
-
-            const response = await fetch(request);
+    
             const resultado = await response.json();
-            
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                })
-                setId('');
-                setNombre('');
-                setInformacionGeneral('');
-                setPrecio('');
-                setGarantia('');
-                setEstado('');
-                setImagen('');
-                setCondicionesPrevias("");
-                setServicioIncluye('');
-                setServicioNoIncluye('');
-                setRestricciones('');
-                cerrarModal();
+                mostrarAlerta(resultado.detail, 'success');
+                resetForm();
                 obtenerDatosYActualizarFilas();
             } else {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "error"
-                })
+                mostrarAlerta(resultado.detail, 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: `Ocurrio un error...`,
-                icon: "error"
-            })
+            mostrarAlerta('Ocurrió un error...', 'error');
         }
     };
 
     const editarDatos = async (e) => {
         e.preventDefault();
-
-            try {
-
-            // Validar que los campos no estén vacíos
-            if (!nombre || !informacion_general || !precio || !garantia || !estado || !imagen || !condiciones_previas || !servicio_incluye || !servicio_no_incluye || !restricciones) {
-            Swal.fire({
-                title: `Todos los campos son obligatorios.`,
-                icon: "warning"
-            });
-            return; }
-
-            // Validar que el precio sea un número
-            if (isNaN(precio) || precio <= 0) {
-            Swal.fire({
-                title: `El precio debe ser un número positivo.`,
-                icon: "warning"
-            });
-            return; }
-
-            // Validar si el servicio ya existe
+    
+        // Función para mostrar alertas
+        const mostrarAlerta = (titulo, tipo) => {
+            Swal.fire({ title: titulo, icon: tipo });
+        };
+    
+        // Validaciones
+        if ([nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones].some(campo => !campo)) {
+            return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
+        }
+    
+        if (isNaN(precio) || precio <= 0) {
+            return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
+        }
+    
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&-]*)?$/i;
+        if (!urlPattern.test(imagen)) {
+            return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
+        }
+    
+        try {
+            // Verificar si el servicio ya existe
             const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
             const exists = await existResponse.json();
-
-            // Asegurar de que `exists` es un array y verifica si hay duplicados
-            if (Array.isArray(exists) && exists.length > 0) {
-            // Verificar si hay otro servicio con el mismo nombre pero en diferente ID
-            const isDuplicate = exists.some(servicio => servicio.id !== id);
-            if (isDuplicate) {
-                Swal.fire({
-                    title: `El servicio con el nombre "${nombre}" ya existe.`,
-                    icon: "warning"
-                });
-                return; }
+    
+            if (Array.isArray(exists) && exists.some(servicio => servicio.id !== id)) {
+                return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
             }
-
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json");
-
+    
+            // Preparar y enviar los datos
             const cuerpo = JSON.stringify({
-                nombre: nombre,
-                informacion_general: informacion_general,
-                precio: precio,
-                garantia: garantia,
-                estado: estado,
-                imagen: imagen,
-                condiciones_previas: condiciones_previas,
-                servicio_incluye: servicio_incluye,
-                servicio_no_incluye: servicio_no_incluye,
-                restricciones: restricciones,
+                nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones
             });
-            
-            const request = new Request(`https://compusave-backend.onrender.com/put/servicio/${id}`, {
-                method: "PUT",
-                headers: headers,
+    
+            const response = await fetch(`https://compusave-backend.onrender.com/put/servicio/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: cuerpo,
             });
-
-            const response = await fetch(request);
+    
             const resultado = await response.json();
-            
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                });
-                setId('');
-                setNombre('');
-                setInformacionGeneral('');
-                setPrecio('');
-                setGarantia('');
-                setEstado('');
-                setImagen('');
-                setCondicionesPrevias("");
-                setServicioIncluye('');
-                setServicioNoIncluye('');
-                setRestricciones('');
-                cerrarModal();
+                mostrarAlerta(resultado.detail, 'success');
+                resetForm();
                 obtenerDatosYActualizarFilas();
             } else {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "error"
-                });
+                mostrarAlerta(resultado.detail, 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: `Ocurrio un error...`,
-                icon: "error"
-            });
+            mostrarAlerta('Ocurrió un error...', 'error');
         }
-    }
+    };
+
+    // Función para resetear el formulario
+    const resetForm = () => {
+        setId('');
+        setNombre('');
+        setInformacionGeneral('');
+        setPrecio('');
+        setGarantia('');
+        setEstado('');
+        setImagen('');
+        setCondicionesPrevias('');
+        setServicioIncluye('');
+        setServicioNoIncluye('');
+        setRestricciones('');
+        cerrarModal();
+    };
 
     const eliminarDatos = async (id) => {
 
