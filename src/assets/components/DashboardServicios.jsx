@@ -44,53 +44,6 @@ export default function DashboardServicios() {
     const enviarDatos = async (e) => {
         e.preventDefault();
     
-        // Función para mostrar alertas
-        const mostrarAlerta = (titulo, tipo) => {
-            Swal.fire({ title: titulo, icon: tipo });
-        };
-    
-        // Validaciones
-        const camposVacios = [nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones].some(campo => !campo);
-        if (camposVacios) return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
-    
-        if (isNaN(precio) || precio <= 0) return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
-    
-        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&-]*)?$/i;
-        if (!urlPattern.test(imagen)) return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
-    
-        try {
-            // Verificar si el servicio ya existe
-            const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
-            const exists = await existResponse.json();
-            if (Array.isArray(exists) && exists.some(servicio => servicio.id !== id)) {
-                return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
-            }
-    
-            // Preparar y enviar los datos
-            const cuerpo = JSON.stringify({ nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones });
-            const response = await fetch('https://compusave-backend.onrender.com/post/servicio', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: cuerpo,
-            });
-    
-            const resultado = await response.json();
-            if (response.ok) {
-                mostrarAlerta(resultado.detail, 'success');
-                resetForm();
-                obtenerDatosYActualizarFilas();
-            } else {
-                mostrarAlerta(resultado.detail, 'error');
-            }
-        } catch (error) {
-            mostrarAlerta('Ocurrió un error...', 'error');
-        }
-    };
-
-    const editarDatos = async (e) => {
-        e.preventDefault();
-    
-        // Función para mostrar alertas
         const mostrarAlerta = (titulo, tipo) => {
             Swal.fire({ title: titulo, icon: tipo });
         };
@@ -104,7 +57,84 @@ export default function DashboardServicios() {
             return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
         }
     
-        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&-]*)?$/i;
+        const urlPattern = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/?].*)?$/i;
+        if (!urlPattern.test(imagen)) {
+            return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
+        }
+    
+        if (estado !== 'true' && estado !== 'false' && estado !== true && estado !== false) {
+            return mostrarAlerta('El campo "estado" debe ser un valor booleano (true o false).', 'warning');
+        }
+    
+        // Asegurarse de que estado sea un booleano (true o false)
+        const estadoBooleano = (estado === 'true' || estado === true);
+    
+        try {
+            // Verificar si el servicio ya existe
+            const existResponse = await fetch(`https://compusave-backend.onrender.com/get/servicio?nombre=${nombre}`);
+            const exists = await existResponse.json();
+    
+            if (Array.isArray(exists) && exists.some(servicio => servicio.nombre === nombre)) {
+                return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
+            }
+    
+            // Preparar los datos para la creación del servicio
+            const cuerpo = JSON.stringify({
+                nombre,
+                informacion_general,
+                precio,
+                garantia,
+                estado: estadoBooleano,
+                imagen,
+                condiciones_previas,
+                servicio_incluye,
+                servicio_no_incluye,
+                restricciones
+            });
+    
+            const response = await fetch('https://compusave-backend.onrender.com/post/servicio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: cuerpo,
+            });
+    
+            const resultado = await response.json();
+    
+            // Verificar si el resultado es un objeto o cadena
+            const mensaje = typeof resultado.detail === 'object' ? JSON.stringify(resultado.detail) : resultado.detail;
+    
+            if (response.ok) {
+                mostrarAlerta(mensaje, 'success');
+                resetForm();
+                obtenerDatosYActualizarFilas();
+            } else {
+                mostrarAlerta(mensaje, 'error');
+            }
+        } catch (error) {
+            mostrarAlerta('Ocurrió un error...', 'error');
+        }
+    };
+
+    const editarDatos = async (e) => {
+        e.preventDefault();
+    
+        const mostrarAlerta = (titulo, tipo) => {
+            Swal.fire({ title: titulo, icon: tipo });
+        };
+    
+        // Validaciones
+        if ([nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones].some(campo => !campo)) {
+            return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
+        }
+    
+        if (estado !== 'true' && estado !== 'false' && estado !== true && estado !== false) {
+            return mostrarAlerta('El campo "estado" debe ser un valor booleano (true o false).', 'warning');
+        }
+    
+        // Asegúrate de que estado sea un booleano
+        const estadoBooleano = (estado === 'true' || estado === true);
+    
+        const urlPattern = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/?].*)?$/i;
         if (!urlPattern.test(imagen)) {
             return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
         }
@@ -118,9 +148,8 @@ export default function DashboardServicios() {
                 return mostrarAlerta(`El servicio con el nombre "${nombre}" ya existe.`, 'warning');
             }
     
-            // Preparar y enviar los datos
             const cuerpo = JSON.stringify({
-                nombre, informacion_general, precio, garantia, estado, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones
+                nombre, informacion_general, precio, garantia, estado: estadoBooleano, imagen, condiciones_previas, servicio_incluye, servicio_no_incluye, restricciones
             });
     
             const response = await fetch(`https://compusave-backend.onrender.com/put/servicio/${id}`, {
@@ -130,12 +159,16 @@ export default function DashboardServicios() {
             });
     
             const resultado = await response.json();
+    
+            // Verificar si el resultado es un objeto o cadena
+            const mensaje = typeof resultado.detail === 'object' ? JSON.stringify(resultado.detail) : resultado.detail;
+    
             if (response.ok) {
-                mostrarAlerta(resultado.detail, 'success');
+                mostrarAlerta(mensaje, 'success');
                 resetForm();
                 obtenerDatosYActualizarFilas();
             } else {
-                mostrarAlerta(resultado.detail, 'error');
+                mostrarAlerta(mensaje, 'error');
             }
         } catch (error) {
             mostrarAlerta('Ocurrió un error...', 'error');
