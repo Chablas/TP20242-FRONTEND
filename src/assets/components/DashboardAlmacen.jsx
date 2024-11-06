@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
 import Swal from "sweetalert2";
 
 export default function Almacen() {
@@ -24,13 +25,12 @@ export default function Almacen() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const enviarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        e.preventDefault();
             
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
     
-            // Cuerpo del POST request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 ubicacion: ubicacion
@@ -45,60 +45,41 @@ export default function Almacen() {
             const response = await fetch(request);
             const resultado = await response.json();
             
-            //Validacion SweerAlert NO DEBE TENER CAMPOS VACIOS
             if (!nombre || !ubicacion) {
                 setErrorMessage('Todos los campos son obligatorios.');
-                return; // Salir si hay campos vacíos
-            }
-        
-            try {
-                // El resto de tu código para enviar datos...
-            } catch (error) {
-                console.error('Error en la conexión con el servidor:', error);
+                return;
             }
 
-
-
-            //Validacion SweetAlert NO SE REPITE ALMACEN
             if (response.ok) {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon:"success"
-            
-                })
-
+                    icon: "success"
+                });
                 setId('');
                 setNombre('');
                 setUbicacion('');
-                // Cierra modal
                 cerrarModal();
                 obtenerDatos();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon:"error"
-            
-                })
-
+                    icon: "error"
+                });
             }
-        } 
-        catch (error) {
+        } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
-                icon:"error"
-        
-            })
+                icon: "error"
+            });
         }
     };
 
     const editarDatos = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
+        e.preventDefault();
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            // Cuerpo del request
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 ubicacion: ubicacion
@@ -118,11 +99,9 @@ export default function Almacen() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 });                
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
-                // Cierra modal
                 cerrarModal();
                 obtenerDatos();
 
@@ -138,10 +117,9 @@ export default function Almacen() {
                 icon: "error"
             });        
         }
-    }
+    };
 
     const eliminarDatos = async (id) => {
-
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -159,67 +137,66 @@ export default function Almacen() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 });                
-                // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
-                // Cierra modal
                 cerrarModal();
                 obtenerDatos();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "error"
-                });            }
+                });
+            }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
             });
         }
-    }
+    };
 
-    
-        const obtenerDatos = async () => {
-            try {
-                const headers = new Headers();
-                headers.append("Content-Type", "application/json");
-                const request = new Request("https://compusave-backend.onrender.com/get/almacenes", {
-                    method: "GET",
-                    headers: headers,
-                });
-                const response = await fetch(request);
-                const datos = await response.json();
-                const filas = datos.map((x, index) => {
-                    return (
-                        <DashboardAlmacenFila 
-                            key={x.id} 
-                            {...x} 
-                            setId={setId} 
-                            setNombre={setNombre} 
-                            setUbicacion={setUbicacion} 
-                            eliminarDatos={eliminarDatos} 
-                            index={index + 1} // Pasar el índice como prop
-                        />
-                    );
-                });
-                setAlmacenes(filas);
-
-            } catch (error) {
+    const obtenerDatos = async () => {
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request("https://compusave-backend.onrender.com/get/almacenes", {
+                method: "GET",
+                headers: headers,
+            });
+            const response = await fetch(request);
+            const datos = await response.json();
+            setAlmacenes(datos);
+        } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
             });
         }
-        };
+    };
+
     useEffect(() => {
         obtenerDatos();
     }, []);
 
+    // Función para exportar los datos a Excel
+    const exportToExcel = () => {
+        const data = almacenes.map(item => ({
+            ID: item.id,
+            Nombre: item.nombre,
+            Ubicación: item.ubicacion
+        }));
+        
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Almacenes");
+
+        XLSX.writeFile(workbook, "Almacenes.xlsx");
+    };
+
     return (
         <>
-         {/* Diálogo de error */}
-         <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
                 <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 className="text-white text-xl font-bold mb-4">Error</h2>
                     <p className="text-white">{errorMessage}</p>
@@ -246,71 +223,52 @@ export default function Almacen() {
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
-    
-            {/* Modal para editar almacén */}
-            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-xl font-bold mb-4">Editar Almacén</h2>
-                    <form onSubmit={editarDatos}>
-                        <div className="mb-4">
-                            <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
-                            <input type="text" id="nombreAlmacen" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea id="ubicacionAlmacen" value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required />
-                        </div>
-                        <div className="flex justify-end space-x-4">
-                            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"onClick={editarDatos}>Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-    
-            {/* Sección principal */}
 
+            {/* Sección principal */}
             <main className="p-6">
                 <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Almacenes</h1>
-                <div className="mt-5" >
+                <div className="mt-5">
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
                         Agregar nuevo almacén
+                    </button>
+                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={exportToExcel}>
+                        Exportar a Excel
                     </button>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-[#212936] shadow-md rounded-lg overflow-hidden">
-                            <thead className="bg-[#394050]">
-                              <tr>
+                        <thead className="bg-[#394050]">
+                            <tr>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">NOMBRE</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">UBICACIÓN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
-                              </tr>
-                            </thead>
-                            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-                               <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                                   <p className="text-white">{errorMessage}</p>
-                                    <div className="flex justify-end">
-                                      <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}> Cerrar </button>
-                                    </div>
-                                </div>
-                             </div>
-                            
-                          <tbody>
-                            {almacenes}
-                          </tbody>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {almacenes.map((x, index) => (
+                                <DashboardAlmacenFila 
+                                    key={x.id} 
+                                    {...x} 
+                                    setId={setId} 
+                                    setNombre={setNombre} 
+                                    setUbicacion={setUbicacion} 
+                                    eliminarDatos={eliminarDatos} 
+                                    index={index + 1}
+                                />
+                            ))}
+                        </tbody>
                     </table>
                 </div>
             </main>
         </>
-    )
+    );
 }
 
 function DashboardAlmacenFila(props) {
@@ -337,12 +295,11 @@ function DashboardAlmacenFila(props) {
                 props.eliminarDatos(props.id);
             }
         });
-
     };
 
     return (
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.index}</td> {/* Contador */}
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.ubicacion}</td>
             <td className="text-white font-light text-center py-2 px-4">

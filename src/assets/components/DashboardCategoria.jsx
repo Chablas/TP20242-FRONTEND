@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
 import Swal from "sweetalert2"
 
 export default function Categoria() {
@@ -114,7 +115,6 @@ export default function Categoria() {
     }
 
     const eliminarDatos = async (id) => {
-
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -127,7 +127,6 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
-
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: "success"
@@ -153,7 +152,6 @@ export default function Categoria() {
     }
 
     const obtenerDatosYActualizarFilas = async () => {
-            
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -163,21 +161,18 @@ export default function Categoria() {
             });
             const response = await fetch(request);
             const datos = await response.json();
-            const categorias = datos.map((x, index) => {
-                return (
+            const categorias = datos.map((x, index) => (
                 <DashboardCategoriaFila 
-                key={x.id} 
-                {...x} 
-                setId={setId} 
-                setNombre={setNombre} 
-                setDescripcion={setDescripcion} 
-                setUrl={setUrl} 
-                eliminarDatos={eliminarDatos} 
-                index={index + 1}
-                /> 
-            );
-            });
-
+                    key={x.id} 
+                    {...x} 
+                    setId={setId} 
+                    setNombre={setNombre} 
+                    setDescripcion={setDescripcion} 
+                    setUrl={setUrl} 
+                    eliminarDatos={eliminarDatos} 
+                    index={index + 1}
+                />
+            ));
             setMostrarFilas(categorias);
         } catch (error) {
             Swal.fire({
@@ -186,10 +181,26 @@ export default function Categoria() {
             });
         }
     };
-    // Se ejecuta al cargar inicialmente la página
+
     useEffect(() => {
         obtenerDatosYActualizarFilas();
     }, []);
+
+    // Función para exportar los datos a Excel
+    const exportToExcel = () => {
+        const data = mostrarFilas.map(row => ({
+            ID: row.props.id,
+            Nombre: row.props.nombre,
+            Descripción: row.props.descripcion,
+            Imagen: row.props.imagen
+        }));
+        
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Categorías");
+
+        XLSX.writeFile(workbook, "Categorias.xlsx");
+    };
 
     return (
         <>
@@ -217,35 +228,14 @@ export default function Categoria() {
                 </div>
             </div>
 
-            <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Categoría {nombre}</h2>
-                    <form id="formularioCategoria">
-                        <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Nombre de Categoría</label>
-                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="descripcionCategoria" className="block text-gray-700">Descripción</label>
-                            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
-                            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
-                        <div className="flex justify-end space-x-4">
-                            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <main className="p-6">
                 <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Categorías de Productos</h1>
-                <div className="mt-5" >
+                <div className="mt-5">
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
                         Agregar nueva categoría
+                    </button>
+                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={exportToExcel}>
+                        Exportar a Excel
                     </button>
                 </div>
 
@@ -266,7 +256,7 @@ export default function Categoria() {
                 </div>
             </main>
         </>
-    )
+    );
 }
 
 function DashboardCategoriaFila(props) {
@@ -297,7 +287,6 @@ function DashboardCategoriaFila(props) {
     };
 
     return (
-        <>
         <tr className="border-b border-b-[#394050]">
             <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
@@ -307,7 +296,5 @@ function DashboardCategoriaFila(props) {
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarCategoria}>Eliminar</button>
             </td>
         </tr>
-        
-        </>
-    )
+    );
 }
