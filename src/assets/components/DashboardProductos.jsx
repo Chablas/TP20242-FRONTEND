@@ -8,7 +8,7 @@ export default function DashboardProductos() {
         setInformacionGeneral('');
         setPrecio('');
         setGarantia('');
-        setEstado('');
+        setEstado(false); // Cambiado a booleano
         setImagen('');
         setMarca('');
         setEspecificacionesTecnicas('');
@@ -29,7 +29,7 @@ export default function DashboardProductos() {
     const [informacion_general, setInformacionGeneral] = useState('');
     const [precio, setPrecio] = useState('');
     const [garantia, setGarantia] = useState('');
-    const [estado, setEstado] = useState('');
+    const [estado, setEstado] = useState(false); // Cambiado a booleano
     const [imagen, setImagen] = useState('');
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
@@ -41,20 +41,26 @@ export default function DashboardProductos() {
     const [categoriasOpciones, setCategoriasOpciones] = useState([]);
     const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
 
-
     const enviarDatos = async (e) => {
         e.preventDefault();
         try {
-
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+
+            if (opcionSeleccionada === "") {
+                Swal.fire({
+                    title: "Por favor seleccione una categoría.",
+                    icon: "error"
+                });
+                return;
+            }
 
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
                 precio: precio,
                 garantia: garantia,
-                estado: estado,
+                estado: estado, // Ahora es booleano
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
@@ -113,7 +119,7 @@ export default function DashboardProductos() {
                 informacion_general: informacion_general,
                 precio: precio,
                 garantia: garantia,
-                estado: estado,
+                estado: Boolean(estado),
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
@@ -216,9 +222,13 @@ export default function DashboardProductos() {
             const datosCategorias = await responseCategorias.json();
             const categoriaOpciones = datosCategorias.map((x) => (
                 <CategoriaOption key={x.id} {...x} setCategoriaId={setCategoriaId} />
+                
             ));
+            
             setCategorias(datosCategorias);
             setCategoriasOpciones(categoriaOpciones);
+
+            
 
             const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
                 method: "GET",
@@ -263,10 +273,10 @@ export default function DashboardProductos() {
         <>
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Bien</h2>
+                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Producto</h2>
                     <form id="formularioBienPOST">
                         <div className="mb-4">
-                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Bien</label>
+                            <label htmlFor="nombreBien" className="block text-gray-700">Nombre de Producto</label>
                             <input id="nombreBien" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
@@ -283,7 +293,11 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="estadoBien" className="block text-gray-700">Estado</label>
-                            <input id="estadoBien" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")} required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
@@ -300,6 +314,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBien" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                <option value="">Seleccionar una categoría</option>
                                 {categoriasOpciones}
                             </select>
                         </div>
@@ -313,10 +328,10 @@ export default function DashboardProductos() {
 
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-start z-50 btnCerrarModal overflow-auto">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Bien {nombre}</h2>
+                    <h2 id="tituloModalEditar" className="text-xl font-bold mb-4">Editar Producto {nombre}</h2>
                     <form id="formularioBienPUT">
                     <div className="mb-4">
-                            <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Bien</label>
+                            <label htmlFor="nombreBienPUT" className="block text-gray-700">Nombre de Producto</label>
                             <input id="nombreBienPUT" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
@@ -332,8 +347,12 @@ export default function DashboardProductos() {
                             <input id="garantiaBienPUT" type="text" value={garantia} onChange={(e) => setGarantia(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="estadoBienPUT" className="block text-gray-700">Estado</label>
-                            <input id="estadoBienPUT" type="text" value={estado} onChange={(e) => setEstado(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="estadoBien" className="block text-gray-700"> Estado </label>
+                            <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")}required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
@@ -350,6 +369,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBienPUT" className="block text-gray-700">Categoría</label>
                             <select id="categoriaIdBienPUT" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                                <option value="">Seleccionar una categoría</option>
                                 {categoriasOpciones}
                             </select>
                         </div>
@@ -362,10 +382,10 @@ export default function DashboardProductos() {
             </div>
 
             <main className="p-6">
-                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Bienes</h1>
+                <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestionar Productos</h1>
                 <div className="mt-5" >
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
-                        Agregar nuevo Bien
+                        Agregar nuevo Producto
                     </button>
                 </div>
 
@@ -464,3 +484,4 @@ function CategoriaOption(props) {
         <option value={props.id} >{props.nombre}</option>
     )
 }
+

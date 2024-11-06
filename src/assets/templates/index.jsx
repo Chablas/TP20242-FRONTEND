@@ -13,7 +13,7 @@ import Proveedor from "../components/DashboardProveedores.jsx";
 import Categoria from "../components/DashboardCategoria.jsx";
 import DashboardNav from "../components/DashboardNav.jsx";
 import DashboardProductos from "../components/DashboardProductos.jsx"
-import DashboardRoles from "../components/DashboardRoles.jsx";
+import DashboardUsuarios from "../components/DashboardUsuarios.jsx";
 import StoreProductOverview from "../components/StoreProductOverview.jsx";
 import StoreProductAll from "../components/StoreProductAll.jsx";
 import Login from "../components/Login.jsx";
@@ -55,6 +55,15 @@ function P_Store_Productos_Categorias() {
         </>
     )
 }
+function P_Store_Servicios_Categorias() {
+    return (
+        <>
+            <StoreNavigation />
+            <ServicePreviews />
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
 
 function P_Store_Product_Overview() {
     return (
@@ -75,6 +84,7 @@ function P_Store_Product_All() {
         </>
     )
 }
+
 
 function P_Dashboard_Proveedores() {
     return (
@@ -116,7 +126,7 @@ function P_Dashboard_Usuarios() {
     return (
         <>
             <DashboardNav />
-            <DashboardRoles />
+            <DashboardUsuarios />
         </>
     )
 }
@@ -175,7 +185,7 @@ function App() {
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
                 <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
                 <Route path="/StoreServiciosOverview" element={<P_Store_Servicios_Overview />}/>
-
+                
             </Routes>
         </BrowserRouter>
     )

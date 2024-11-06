@@ -163,9 +163,19 @@ export default function Categoria() {
             });
             const response = await fetch(request);
             const datos = await response.json();
-
-            const categorias = datos.map((x) => {
-                return <DashboardCategoriaFila key={x.id} {...x} setId={setId} setNombre={setNombre} setDescripcion={setDescripcion} setUrl={setUrl} eliminarDatos={eliminarDatos} />
+            const categorias = datos.map((x, index) => {
+                return (
+                <DashboardCategoriaFila 
+                key={x.id} 
+                {...x} 
+                setId={setId} 
+                setNombre={setNombre} 
+                setDescripcion={setDescripcion} 
+                setUrl={setUrl} 
+                eliminarDatos={eliminarDatos} 
+                index={index + 1}
+                /> 
+            );
             });
 
             setMostrarFilas(categorias);
@@ -189,15 +199,15 @@ export default function Categoria() {
                     <form id="formularioCategoria">
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Nombre de Categoría</label>
-                            <input type="text" id="nombreCategoria" onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreCategoria" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="descripcionCategoria" className="block text-gray-700">Descripción</label>
-                            <textarea id="descripcionCategoria" onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="descripcionCategoria" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
-                            <input type="text" id="nombreCategoria" onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreCategoria" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -289,7 +299,7 @@ function DashboardCategoriaFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td> {/* Contador que ordena id´s */}
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
             <td className="text-white font-light text-center py-2 px-4">

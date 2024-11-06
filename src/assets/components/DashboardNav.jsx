@@ -12,9 +12,7 @@ export default function DashboardNav() {
                     <Link to="/dashboard/proveedores" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Proveedores</Link>
                     <Link to="/dashboard/servicios" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Servicios</Link>
                     <Link to="/dashboard/almacen" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Almacenes</Link>
-
                     <Link to="/dashboard/usuarios" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Usuarios</Link>
-                    <a href="#" className="text-gray-300 p-2 rounded-md hover:text-white hover:bg-[#111727] font-semibold">Otros</a>
                 </nav>
 
                 <div className="flex items-center space-x-4">
