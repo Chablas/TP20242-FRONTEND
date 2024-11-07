@@ -446,8 +446,12 @@ function DashboardProductosFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{props.informacion_general}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.precio}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.garantia}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.estado}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.imagen}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                {props.estado ? "Activo" : "Inactivo"}
+            </td>
+            <td className="text-white font-light text-center py-2 px-4">
+                {props.imagen ? "Imagen Cargada" : "sin imagen"}
+            </td>
             <td className="text-white font-light text-center py-2 px-4">{props.condiciones_previas}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.servicio_incluye}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.servicio_no_incluye}</td>
@@ -457,7 +461,7 @@ function DashboardProductosFila(props) {
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarDato}>Eliminar</button>
             </td>
         </tr>
-        
         </>
-    )
+    );
+    
 }
