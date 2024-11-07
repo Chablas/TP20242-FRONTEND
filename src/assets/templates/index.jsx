@@ -184,7 +184,7 @@ function App() {
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
                 <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
-                <Route path="/StoreServiciosOverview" element={<P_Store_Servicios_Overview />}/>
+                <Route path="/StoreServiciosOverview/:id" element={<P_Store_Servicios_Overview />}/>
                 
             </Routes>
         </BrowserRouter>
