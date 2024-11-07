@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 export default function StoreServiciosOverview() {
-    const { id } = useParams();  // Obtener el ID desde la URL
-    const [producto, setServicio] = useState(null);  // Estado para los datos del servicio
+    const { id } = useParams();
+    const [producto, setServicio] = useState(null);
 
     useEffect(() => {
         if (!id) {
@@ -12,21 +12,20 @@ export default function StoreServiciosOverview() {
 
         const obtenerDatos = async () => {
             try {
-                // Obtenemos todos los servicios
+                
                 const response = await fetch("https://compusave-backend.onrender.com/get/servicios");
                 const datos = await response.json();
                 
-                // Filtramos el servicio por el ID recibido desde la URL
-                const servicio = datos.find(item => item.id === parseInt(id)); // parseInt(id) para asegurar que el ID es numérico
+                const servicio = datos.find(item => item.id === parseInt(id));
 
-                setServicio(servicio);  // Guardamos el servicio encontrado en el estado
+                setServicio(servicio);
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
             }
         };
 
         obtenerDatos();
-    }, [id]);  // Dependemos del ID para que se repita la petición cuando el ID cambie
+    }, [id]);
 
     if (!producto) {
         return <div>Esperando datos para el servicio con ID: {id}...</div>;
