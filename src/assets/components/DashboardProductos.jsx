@@ -236,7 +236,7 @@ export default function DashboardProductos() {
             });
             const responseBienes = await fetch(requestBienes);
             const datosBienes = await responseBienes.json();
-            const bienesFilas = datosBienes.map((x) => (
+            const bienesFilas = datosBienes.map((x, index) => (
                 <DashboardProductosFila
                     key={x.id}
                     {...x}
@@ -252,6 +252,7 @@ export default function DashboardProductos() {
                     setCategoriaId={setCategoriaId}
                     eliminarDatos={eliminarDatos}
                     categorias={datosCategorias}
+                    index={index + 1} // Pasar el índice como prop
                 />
             ));
             setBienes(datosBienes);
@@ -349,7 +350,7 @@ export default function DashboardProductos() {
                         <div className="mb-4">
                             <label htmlFor="estadoBien" className="block text-gray-700"> Estado </label>
                             <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")}required>
-                                <option value="">Seleccionar estado</option>
+                                <option value="" disabled selected>Seleccionar estado</option>
                                 <option value="Activo">Activo</option>
                                 <option value="Inactivo">Inactivo</option>
                             </select>
@@ -459,13 +460,17 @@ function DashboardProductosFila(props) {
     return (
         <>
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.informacion_general}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.precio}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.garantia}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.estado}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.imagen}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                {props.estado ? "Activo" : "Inactivo"}
+            </td>
+            <td className="text-white font-light text-center py-2 px-4">
+                {props.imagen ? "Imagen Cargada" : "sin imagen"}
+            </td>
             <td className="text-white font-light text-center py-2 px-4">{props.marca}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.especificaciones_tecnicas}</td>
             <td className="text-white font-light text-center py-2 px-4">{n_categoria}</td>

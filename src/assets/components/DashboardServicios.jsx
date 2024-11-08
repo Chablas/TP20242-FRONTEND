@@ -335,7 +335,7 @@ export default function DashboardServicios() {
                         <div className="mb-4">
                             <label htmlFor="estadoBien" className="block text-gray-700"> Estado </label>
                             <select id="estadoBien" className="w-full px-4 py-2 border rounded-lg" value={estado ? "Activo" : "Inactivo"} onChange={(e) => setEstado(e.target.value === "Activo")}required>
-                                <option value="">Seleccionar estado</option>
+                                <option value="" disabled selected>Seleccionar estado</option>
                                 <option value="Activo">Activo</option>
                                 <option value="Inactivo">Inactivo</option>
                             </select>

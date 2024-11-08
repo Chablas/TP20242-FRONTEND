@@ -195,8 +195,14 @@ export default function Proveedor() {
             const response = await fetch(request);
             const datos = await response.json();
 
-            const proveedores = datos.map((x) => {
-                return <DashboardProveedoresFila setId={setId} eliminar={eliminar} key={x.id} {...x} />
+            const proveedores = datos.map((x, index) => {
+                return <DashboardProveedoresFila 
+                setId={setId} 
+                eliminar={eliminar}
+                index={index + 1} // Pasar el índice como prop
+                key={x.id} 
+                {...x} 
+                />
             });
 
             setMostrar(proveedores);
@@ -295,7 +301,7 @@ function DashboardProveedoresFila(props) {
 
     return (
         <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.id}</td>
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.ruc}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.direccion}</td>
