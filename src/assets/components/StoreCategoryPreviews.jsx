@@ -37,21 +37,6 @@ export default function CategoryPreviews() {
 
     return (
         <>
-            {/* (INICIO) COMPONENTE TAILWIND CSS CATEGORY PREVIEWS / THREE-COLUMN */}
-            {/*
-            This example requires some changes to your config:
-
-            ```
-            // tailwind.config.js
-            module.exports = {
-                // ...
-                plugins: [
-            // ...
-            require('@tailwindcss/aspect-ratio'),
-            ],
-  }
-            ```
-*/}
             <div className="bg-gray-100">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
@@ -64,22 +49,22 @@ export default function CategoryPreviews() {
                     </div>
                 </div>
             </div>
-            {/* (FIN) COMPONENTE TAILWIND CSS CATEGORY PREVIEWS / THREE-COLUMN */}
         </>
     )
 }
 
 function StoreCategoryPreviewComponent(props) {
     return (
+        
         <div className="group relative">
             <div
                 className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
                 <img src={props.imagen}
-                    alt="Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug."
+                    alt={props.nombre}
                     className="h-full w-full object-cover object-center" />
             </div>
             <h3 className="mt-6 text-sm text-gray-500">
-                <Link to="/categorias/teclados">
+                <Link to={`/categorias/${props.id}`}>
                     <span className="absolute inset-0"></span>
                     {props.nombre}
                 </Link>

@@ -109,6 +109,7 @@ function P_Store_Product_All() {
         </>
     )
 }
+
 function P_Dashboard_Proveedores() {
     return (
         <>
@@ -194,14 +195,19 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<P_Store_Index />} />
-                <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
+                
                 <Route path="/nosotros" element={<P_Store_Company />} />                
-                <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
-                <Route path="/producto/overview" element={<P_Store_Product_Overview />} />
                 <Route path="/login" element={<P_Login />} />
                 <Route path="/register" element={<P_Register/>} />
                 <Route path="/restore-password" element={<P_RestorePassword/>} />
                 <Route path="/carritoCompras" element={<P_Carrito_Compras />}/>
+
+                <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
+
+                <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
+                <Route path="/categorias/:categoriaid" element={<P_Store_Product_All />} />
+                <Route path="/producto/overview/:id" element={<P_Store_Product_Overview />} />
+
                 <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
                 <Route path="/StoreServiciosOverview/:id" element={<P_Store_Servicios_Overview />}/>
                 
