@@ -20,7 +20,8 @@ export default function StoreProductAll() {
                 });
                 const response = await fetch(request);
                 const datos = await response.json();
-                const bienes = datos.filter((x) => {
+                const datos2 = datos.filter((x) => x.estado === true)
+                const bienes = datos2.filter((x) => {
                     if (x.categoria_id == parseInt(categoriaid)) {
                         return true;
                     }
