@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import DashboardAlmacenFila from "./DashboardAlmacenFila";
-import Swal from "sweetalert2"
+import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
+import Swal from "sweetalert2";
 
 export default function Almacen() {
     const abrirModal = () => {
+        setId('');
+        setNombre('');
+        setUbicacion('');
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Almacén';
     };
@@ -14,11 +17,12 @@ export default function Almacen() {
             modal.classList.add('hidden');
         }
     };
-    const [errorMessage, setErrorMessage] = useState('');
 
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [ubicacion, setUbicacion] = useState('');
+    const [almacenes, setAlmacenes] = useState([]); // Estado para almacenar la lista de almacenes
+    const [errorMessage, setErrorMessage] = useState('');
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -69,6 +73,7 @@ export default function Almacen() {
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -86,10 +91,6 @@ export default function Almacen() {
             })
         }
     };
-
-    
-    
-
 
     const editarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -114,18 +115,29 @@ export default function Almacen() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos enviados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });                
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
+
             } else {
-                console.error('Error en el envío:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });            
             }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });        
         }
     }
 
@@ -144,24 +156,31 @@ export default function Almacen() {
             const resultado = await response.json();
             
             if (response.ok) {
-                console.log('Datos eliminados correctamente:', resultado);
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });                
                 // Aquí puedes resetear el formulario o mostrar una notificación
                 setId('');
                 setNombre('');
                 setUbicacion('');
                 // Cierra modal
                 cerrarModal();
+                obtenerDatos();
             } else {
-                console.error('Error en el envío:', resultado);
-            }
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "error"
+                });            }
         } catch (error) {
-            console.error('Error en la conexión con el servidor:', error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
         }
     }
 
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
-
-    useEffect(() => {
+    
         const obtenerDatos = async () => {
             try {
                 const headers = new Headers();
@@ -172,8 +191,7 @@ export default function Almacen() {
                 });
                 const response = await fetch(request);
                 const datos = await response.json();
-        
-                const almacenes = datos.map((x, index) => {
+                const filas = datos.map((x, index) => {
                     return (
                         <DashboardAlmacenFila 
                             key={x.id} 
@@ -186,47 +204,61 @@ export default function Almacen() {
                         />
                     );
                 });
-        
-                setMostrar(almacenes);
+                setAlmacenes(filas);
+
             } catch (error) {
-                console.error("Error al obtener los datos:", error);
-            }
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
+        }
         };
-
+    useEffect(() => {
         obtenerDatos();
-
-
     }, []);
+
+    // Función para exportar los datos a Excel
+    const exportToExcel = () => {
+        const data = almacenes.map(item => ({
+            ID: item.id,
+            Nombre: item.nombre,
+            Ubicación: item.ubicacion
+        }));
+        
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Almacenes");
+
+        XLSX.writeFile(workbook, "Almacenes.xlsx");
+    };
 
     return (
         <>
-        {/* Diálogo de error */}
-        <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-            <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                <p className="text-white">{errorMessage}</p>
-                <div className="flex justify-end">
-                    <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
-                        Cerrar
-                    </button>
+            {/* Diálogo de error */}
+            <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
+                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
+                    <p className="text-white">{errorMessage}</p>
+                    <div className="flex justify-end">
+                        <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <main className="p-6">
-            {/* Resto del componente... */}
-        </main>
+    
+            {/* Modal para agregar almacén */}
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Registrar Almacén</h2>
-                    <form id="formularioAlmacen">
+                    <form onSubmit={enviarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
-                            <input type="text" id="nombreAlmacen" onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreAlmacen" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea id="ubicacionAlmacen" onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="ubicacionAlmacen" value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -235,18 +267,19 @@ export default function Almacen() {
                     </form>
                 </div>
             </div>
-
+    
+            {/* Modal para editar almacén */}
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 id="tituloModal" className="text-xl font-bold mb-4">Editar Almacén {nombre}</h2>
-                    <form id="formularioAlmacen">
+                    <h2 className="text-xl font-bold mb-4">Editar Almacén</h2>
+                    <form onSubmit={editarDatos}>
                         <div className="mb-4">
                             <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacén</label>
-                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="text" id="nombreAlmacen" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="ubicacionAlmacen" className="block text-gray-700">Dirección</label>
-                            <textarea value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
+                            <textarea id="ubicacionAlmacen" value={ubicacion} onChange={(e) => setUbicacion(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -255,15 +288,19 @@ export default function Almacen() {
                     </form>
                 </div>
             </div>
-
+    
+            {/* Sección principal */}
             <main className="p-6">
                 <h1 className="border-b-2 border-b-gray-200 text-3xl pb-5 font-bold text-gray-700 mb-4">Gestión de Almacenes</h1>
-                <div className="mt-5" >
+                <div className="mt-5">
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
                         Agregar nuevo almacén
                     </button>
+                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={exportToExcel}>
+                        Exportar a Excel
+                    </button>
                 </div>
-
+    
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-[#212936] shadow-md rounded-lg overflow-hidden">
                         <thead className="bg-[#394050]">
@@ -274,24 +311,63 @@ export default function Almacen() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
-                <div id="modalError" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${errorMessage ? '' : 'hidden'} flex justify-center items-center z-50`}>
-                <div className="bg-red-500 p-6 rounded-lg shadow-lg w-full max-w-md">
-                    <h2 className="text-white text-xl font-bold mb-4">Error</h2>
-                        <p className="text-white">{errorMessage}</p>
-                <div className="flex justify-end">
-                                <button className="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200" onClick={() => setErrorMessage('')}>
-                                    Cerrar
-                                </button>
-                </div>
-                </div>
-                </div>
-
+    
                         <tbody>
-                            {mostrar}
+                            {almacenes}
                         </tbody>
                     </table>
                 </div>
             </main>
         </>
     )
+}
+
+function DashboardAlmacenFila(props) {
+    const abrirModalEdicion = () => {
+        document.getElementById('modalEditar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Editar Almacén';
+        props.setId(props.id);
+        props.setNombre(props.nombre);
+        props.setUbicacion(props.ubicacion);
+    };
+
+    const eliminarAlmacen = () => {
+        props.setId(props.id);
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "No se podrá rehacer una vez eliminado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, elimínalo"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                props.eliminarDatos(props.id);
+            }
+        });
+
+    };
+
+    return (
+        <tr className="border-b border-b-[#394050]">
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
+            <td className="text-white font-light py-2 px-4">{props.nombre}</td>
+            <td className="text-white font-light text-center py-2 px-4">{props.ubicacion}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                <button
+                    className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500"
+                    onClick={abrirModalEdicion}
+                >
+                    Editar
+                </button>
+                <button
+                    className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4"
+                    onClick={eliminarAlmacen}
+                >
+                    Eliminar
+                </button>
+            </td>
+        </tr>
+    );
 }

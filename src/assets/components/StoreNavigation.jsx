@@ -74,7 +74,7 @@ export default function StoreNavigation() {
                                 <div className="hidden lg:ml-8 lg:block lg:self-stretch">
                                     <div className="flex h-full space-x-8">
                                         <Link to="/categorias" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Productos</Link>
-                                        <a href="#" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Servicios</a>
+                                        <Link href="/servicios" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Servicios</Link>
                                         <a href="/nosotros" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Empresa</a>
                                     </div>
                                 </div>
