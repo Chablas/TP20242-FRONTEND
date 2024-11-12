@@ -180,6 +180,7 @@ function App() {
                 <Route path="/login" element={<P_Login />} />
                 <Route path="/register" element={<P_Register/>} />
                 <Route path="/restore-password" element={<P_RestorePassword/>} />
+                <Route path="/carritoCompras" element={<P_Carrito_Compras />}/>
                 <Route path="/dashboard/proveedores" element={<P_Dashboard_Proveedores />}/>
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
