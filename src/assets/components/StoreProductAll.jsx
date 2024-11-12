@@ -1,10 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import imagen1 from "../images/productos/1/12.jpg"
-import imagen2 from "../images/productos/2/21.jpg"
-import imagen3 from "../images/productos/3/31.jpg"
-import imagen4 from "../images/productos/4/41.jpg"
-import imagen5 from "../images/productos/5/51.jpg"
 
 export default function StoreProductAll() {
     const { categoriaid } = useParams();
@@ -63,7 +58,7 @@ export default function StoreProductAll() {
 
 function StoreProductoPreviewComponent(props) {
     return (
-        <Link to="/producto/overview" className="group">
+        <Link to={`/producto/overview/${props.id}`} className="group">
             <div
                 className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                 <img src={props.imagen}
