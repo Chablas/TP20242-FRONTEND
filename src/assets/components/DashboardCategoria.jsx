@@ -315,15 +315,19 @@ export default function Categoria() {
         };
     
         return (
+            <>
             <tr className="border-b border-b-[#394050]">
-              <td className="text-white font-light py-2 px-4">{props.index}</td>
-              <td className="text-white font-light py-2 px-4">{props.nombre}</td>
-              <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
-              <td className="text-white font-light text-center py-2 px-4">
-                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
-                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarCategoria}>Eliminar</button>
-              </td>
+                <td className="text-white font-light py-2 px-4">{props.index}</td>
+                <td className="text-white font-light py-2 px-4">{props.nombre}</td>
+                <td className="text-white font-light text-center py-2 px-4">{props.descripcion}</td>
+                <td className="text-white font-light text-center py-2 px-4 truncate max-w-xs break-words">Imagen Cargada</td>
+                <td className="text-white font-light text-center py-2 px-4">
+                    <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
+                    <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarCategoria}>Eliminar</button>
+                </td>
             </tr>
-          );          
+            
+            </>
+        )
     }
 }    

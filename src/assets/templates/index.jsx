@@ -26,6 +26,7 @@ import DashboardServicios from "../components/DashboardServicios.jsx";
 import Footer from "../components/Footer.jsx";
 import ServicePreviews from "../components/StoreServicePreview.jsx";
 import StoreServiciosOverview from "../components/StoreServiciosOverview.jsx";
+import { UserProvider } from "../context/UserContext.jsx";
 
 
 // Páginas
@@ -231,5 +232,7 @@ function RutasProductos() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <App />
+    <UserProvider>
+        <App />
+    </UserProvider>,
 );

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../images/logo.jpg";
+import { UserContext } from "../context/UserContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [, setToken] = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -26,6 +28,7 @@ export default function Login() {
         },
         body: params,
       });
+      const data = await response.json();
   
       if (response.status === 200) {
         await fetch("https://compusave-backend.onrender.com/put/login", {
@@ -35,8 +38,8 @@ export default function Login() {
           },
           body: JSON.stringify({ email }),
         });
-  
-        navigate("/dashboard/categorias");
+        setToken(data.access_token);
+        navigate("/");
       } else {
         setErrorMessage("Hubo un error. Verifica tus credenciales.");
       }
