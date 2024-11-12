@@ -202,8 +202,6 @@ function App() {
                 <Route path="/restore-password" element={<P_RestorePassword/>} />
                 <Route path="/carritoCompras" element={<P_Carrito_Compras />}/>
 
-                <Route path="/categorias/teclados" element={<P_Store_Product_All />}/>
-
                 <Route path="/categorias" element={<P_Store_Productos_Categorias />} />
                 <Route path="/categorias/:categoriaid" element={<P_Store_Product_All />} />
                 <Route path="/producto/overview/:id" element={<P_Store_Product_Overview />} />
