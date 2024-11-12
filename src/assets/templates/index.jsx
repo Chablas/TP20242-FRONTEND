@@ -202,6 +202,9 @@ function App() {
                 <Route path="/register" element={<P_Register/>} />
                 <Route path="/restore-password" element={<P_RestorePassword/>} />
                 <Route path="/carritoCompras" element={<P_Carrito_Compras />}/>
+                <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
+                <Route path="/StoreServiciosOverview/:id" element={<P_Store_Servicios_Overview />}/>
+                
                 <Route path="/dashboard/proveedores" element={<P_Dashboard_Proveedores />}/>
                 <Route path="/dashboard/categorias" element={<P_Dashboard_Categorias />}/>
                 <Route path="/dashboard/productos" element={<P_Dashboard_Productos />}/>
@@ -209,8 +212,7 @@ function App() {
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
             
-                <Route path="/servicios" element={<P_Store_Servicios_Categorias />}/>
-                <Route path="/StoreServiciosOverview/:id" element={<P_Store_Servicios_Overview />}/>
+                
             </Routes>
             <Footer/>
         </BrowserRouter>
