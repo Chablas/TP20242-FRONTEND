@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState } from "react";
 export const UserContext = createContext();
 
 export const UserProvider = (props) => {
-  const [token, setToken] = useState(localStorage.getItem("awesomeLeadsToken"));
+  const [token, setToken] = useState(localStorage.getItem("compusaveToken"));
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -20,7 +20,7 @@ export const UserProvider = (props) => {
       if (!response.ok) {
         setToken(null);
       }
-      localStorage.setItem("awesomeLeadsToken", token);
+      localStorage.setItem("compusaveToken", token);
     };
     fetchUser();
   }, [token]);
