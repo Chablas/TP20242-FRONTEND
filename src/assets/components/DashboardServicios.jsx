@@ -40,14 +40,36 @@ export default function DashboardServicios() {
     const [bienes, setBienes] = useState([]);
     const [mostrarFilas, setMostrarFilas] = useState([]);
 
-
+    const validarURL = (valor) => {
+        const patronURL = /^(https?:\/\/)[^\s$.?#].[^\s]*$/;
+        if (valor.trim() !== "" && !patronURL.test(valor)) {
+            Swal.fire({
+                title: "URL inválida",
+                text: "Por favor, ingrese una URL válida que comience con http:// o https://",
+                icon: "warning",
+            });
+        }
+    };
+    
+    
+    
     const enviarDatos = async (e) => {
         e.preventDefault();
+        // Validar URL antes de proceder
+        const patronURL = /^(https?:\/\/)[^\s$.?#].[^\s]*$/;
+        if (!patronURL.test(imagen)) {
+            Swal.fire({
+                title: "URL inválida",
+                text: "Por favor, corrija la URL antes de registrar.",
+                icon: "error",
+            });
+            return; // Detiene el envío si la URL es inválida
+        }
+    
         try {
-
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
+    
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
@@ -60,27 +82,28 @@ export default function DashboardServicios() {
                 servicio_no_incluye: servicio_no_incluye,
                 restricciones: restricciones,
             });
-
+    
             const request = new Request("https://compusave-backend.onrender.com/post/servicio", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
-            
+    
             if (response.ok) {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon: "success"
-                })
+                    icon: "success",
+                });
+                // Resetear campos
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
-                setEstado('');
+                setEstado(false);
                 setImagen('');
                 setCondicionesPrevias("");
                 setServicioIncluye('');
@@ -91,16 +114,17 @@ export default function DashboardServicios() {
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon: "error"
-                })
+                    icon: "error",
+                });
             }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
-                icon: "error"
-            })
+                icon: "error",
+            });
         }
     };
+    
 
     const editarDatos = async (e) => {
         e.preventDefault();
@@ -285,9 +309,21 @@ export default function DashboardServicios() {
                             </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
+                                    <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
+                                    <input
+                                        id="imagenBien"
+                                        type="text"
+                                        value={imagen}
+                                        onChange={(e) => setImagen(e.target.value)} // Actualiza el valor normalmente
+                                        onBlur={() => validarURL(imagen)} // Valida cuando se pierde el foco
+                                        maxLength="1000"
+                                        className="w-full px-4 py-2 border rounded-lg"
+                                        required
+                                    />
+                                </div>
+
+
+
                         <div className="mb-4">
                             <label htmlFor="marcaBien" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBien" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />

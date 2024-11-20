@@ -23,6 +23,7 @@ export default function Almacen() {
     const [ubicacion, setUbicacion] = useState('');
     const [almacenes, setAlmacenes] = useState([]); // Estado para almacenar la lista de almacenes
     const [errorMessage, setErrorMessage] = useState('');
+    const [filas, setFilas] = useState([]);
 
     const enviarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -205,9 +206,22 @@ export default function Almacen() {
                     );
                 });
                 setAlmacenes(filas);
-
+                const filasRenderizadas = datos.map((x, index) => {
+                    return (
+                        <DashboardAlmacenFila 
+                            key={x.id} 
+                            {...x} 
+                            setId={setId} 
+                            setNombre={setNombre} 
+                            setUbicacion={setUbicacion} 
+                            eliminarDatos={eliminarDatos} 
+                            index={index + 1}
+                        />
+                    );
+                });
+                setFilas(filasRenderizadas);
             } catch (error) {
-            Swal.fire({
+             Swal.fire({
                 title: `Hubo un error...`,
                 icon: "error"
             });
@@ -219,18 +233,26 @@ export default function Almacen() {
 
     // Función para exportar los datos a Excel
     const exportToExcel = () => {
+        // Mapear los datos originales en lugar de componentes
         const data = almacenes.map(item => ({
-            ID: item.id,
-            Nombre: item.nombre,
-            Ubicación: item.ubicacion
+            ID: item.key,
+            Nombre: item.props.nombre,
+            Ubicación: item.props.ubicacion,
         }));
+
+        console.log(data);
         
+    
+        
+    
+        // Crear hoja de cálculo y archivo Excel
         const worksheet = XLSX.utils.json_to_sheet(data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Almacenes");
-
+    
         XLSX.writeFile(workbook, "Almacenes.xlsx");
     };
+    
 
     return (
         <>
