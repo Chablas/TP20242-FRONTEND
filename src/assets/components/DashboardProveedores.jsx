@@ -14,6 +14,11 @@ export default function Proveedor() {
     // Cierra el modal
     const cerrarModal = () => {
         const modales = document.querySelectorAll("div.btnCerrarModal");
+        setNombre('');
+        setRuc('');
+        setDireccion('');
+        setCorreo('');
+        setTelefono('');
         for (const modal of modales) {
             modal.classList.add('hidden');
         }
@@ -95,6 +100,15 @@ export default function Proveedor() {
         return; // Salir si RUC no es un número
     }
 
+    if (!/^10|20/.test(ruc)) {
+        Swal.fire({
+            title: "El RUC debe comenzar con 10 o 20",
+            icon: "error"
+        });
+        return; // Salir si el RUC no comienza con 10 o 20
+    }
+    
+
     if (isNaN(telefono)) {
         /*setErrorMessage('El telefono debe ser un número.');*/
         Swal.fire({
@@ -128,7 +142,7 @@ export default function Proveedor() {
                 setCorreo('');
                 setTelefono('');
                 // Cierra modal
-                cerrarModal();
+                // cerrarModal();
                 obtenerDatos();
             } else {
              //   console.error('Error en el envío:', resultado);
@@ -254,56 +268,6 @@ export default function Proveedor() {
             })
         }
     };
-
-
-
-    //PROPUESTA
-
-    // const editar = async (e) => {
-    //     e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-    
-    //     try {
-    //         const headers = new Headers();
-    //         headers.append("Content-Type", "application/json");
-    
-    //         // Cuerpo del POST request con solo correo y teléfono
-    //         const cuerpo = JSON.stringify({
-    //             correo: correo,
-    //             telefono: telefono
-    //         });
-    
-    //         const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
-    //             method: "PUT",
-    //             headers: headers,
-    //             body: cuerpo,
-    //         });
-    
-    //         const response = await fetch(request);
-    //         const resultado = await response.json();
-            
-    //         if (response.ok) {
-    //             Swal.fire({
-    //                 title: `${resultado.detail}`,
-    //                 icon: 'success',
-    //             });
-    //             // Resetear los campos si es necesario
-    //             setCorreo('');
-    //             setTelefono('');
-    //             cerrarModal();
-    //             obtenerDatos(); // Recargar los datos después de la actualización
-    //         } else {
-    //             Swal.fire({
-    //                 title: `${resultado.detail}`,
-    //                 icon: 'error',
-    //             });
-    //         }
-    //     } catch (error) {
-    //         Swal.fire({
-    //             title: "Error en la conexión con el servidor", // Cambiado para evitar usar resultado en el catch
-    //             icon: 'error',
-    //         });
-    //     }
-    // };
 
     const eliminar = async (id) => {
       
