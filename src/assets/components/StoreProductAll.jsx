@@ -62,7 +62,7 @@ function StoreProductoPreviewComponent(props) {
         <Link to={`/producto/overview/${props.id}`} className="group">
             <div
                 className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                <img src={props.imagen}
+                <img src={`https://compusave-backend.onrender.com${props.imagen}`}
                     alt="Hand holding black machined steel mechanical pencil with brass tip and top."
                     className="h-full w-full object-cover object-center group-hover:opacity-75" />
             </div>
