@@ -49,223 +49,241 @@ export default function Proveedor() {
     const registrarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
         
+        // Validación de que todos los campos estén completos
+        if (!nombre || !ruc || !direccion || !correo || !telefono) {
+            Swal.fire({
+                title: "Todos los campos son obligatorios.",
+                icon: "error"
+            });
+            return; // Salir si hay campos vacíos
+        }
+    
+        // Validación de que RUC sea un número
+        if (isNaN(ruc)) {
+            Swal.fire({
+                title: "El RUC debe ser un número.",
+                icon: "error"
+            });
+            return; // Salir si RUC no es un número
+        }
+    
+        // Validación de que el RUC comience con 10 o 20
+        if (!/^10|20/.test(ruc)) {
+            Swal.fire({
+                title: "El RUC debe comenzar con 10 o 20.",
+                icon: "error"
+            });
+            return; // Salir si el RUC no comienza con 10 o 20
+        }
+    
+        // Validación de que el teléfono sea un número
+        if (isNaN(telefono)) {
+            Swal.fire({
+                title: "El teléfono debe ser un número.",
+                icon: "error"
+            });
+            return; // Salir si teléfono no es un número
+        }
 
+        if (telefono.length !== 9 || !telefono.startsWith('9')) {
+            Swal.fire({
+                title: "El teléfono debe tener 9 dígitos y comenzar con 9.",
+                icon: "error"
+            });
+            return; // Salir si el teléfono no cumple con estas condiciones
+        }
+    
+        // Validación de que el correo tenga un formato válido
+        const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        if (!emailRegex.test(correo)) {
+            Swal.fire({
+                title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
+                icon: "error"
+            });
+            return; // Salir si el formato de correo no es válido
+        }
+   
+    // Eliminar los espacios al inicio y al final del nombre
+    let nombreTrimmed = nombre.trim();
+
+    // Reemplazar múltiples espacios consecutivos por un solo espacio
+    nombreTrimmed = nombreTrimmed.replace(/\s+/g, ' ');
+
+
+        if (nombre !== nombreTrimmed) {
+            Swal.fire({
+                title: "El nombre no puede tener espacios en blanco al principio, al final o mas de uno.",
+                icon: "error"
+            });
+            return; // Salir si el nombre tiene espacios al principio o al final
+        }
+
+
+    // Verificar si el nombre ya existe
+    const response = await fetch("https://compusave-backend.onrender.com/get/proveedores"); // Endpoint que te devuelve todos los proveedores
+    const proveedores = await response.json();
+    console.log(proveedores);
+    // Comprobar si ya existe el nombre
+    const nombreExistente = proveedores.some(proveedor => proveedor.nombre.toLowerCase() === nombre.toLowerCase());
+
+    if (nombreExistente) {
+        Swal.fire({
+            title: "Ese nombre ya existe.",
+            icon: "error"
+        });
+        return; // Salir si el nombre ya existe
+    }
+
+    
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-            // Cuerpo del POST request
+    
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 ruc: ruc,
                 direccion: direccion,
                 correo: correo,
-                telefono: telefono,
-              /*   descripcion: descripcion, */
-                /* imagen: url */
-                //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
+                telefono: telefono
             });
-
+    
             const request = new Request("https://compusave-backend.onrender.com/post/proveedor", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
-            
-         if (!nombre || !ruc || !direccion || !correo || !telefono) {
-                /*setErrorMessage('Todos los campos son obligatorios.');*/
-                Swal.fire({
-                    title: "Todos los campos son obligatorios.",
-        
-                    icon: "error"
-                  });
-
-                return; // Salir si hay campos vacíos
-         }
-         
-
-    // Validación de que RUC sea un número
-    if (isNaN(ruc)) {
-        /*setErrorMessage('El RUC debe ser un número.');*/
-        Swal.fire({
-            title: "El RUC debe ser un número",
-
-            icon: "error"
-          });
-
-
-        return; // Salir si RUC no es un número
-    }
-
-    if (!/^10|20/.test(ruc)) {
-        Swal.fire({
-            title: "El RUC debe comenzar con 10 o 20",
-            icon: "error"
-        });
-        return; // Salir si el RUC no comienza con 10 o 20
-    }
     
-
-    if (isNaN(telefono)) {
-        /*setErrorMessage('El telefono debe ser un número.');*/
-        Swal.fire({
-            title: "El telefono debe ser un número.",
-
-            icon: "error"
-          });
-        return; // Salir si RUC no es un número
-    }    
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-        Swal.fire({
-            title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
-            icon: "error"
-        });
-        return; // Salir si el formato de correo no es válido
-    }
-
-
             if (response.ok) {
-          //      console.log('Datos enviados correctamente:', resultado);
-          Swal.fire({
-            title: `${resultado.detail}`,
-            icon:"success"
-    
-        })
-                // Aquí puedes resetear el formulario o mostrar una notificación
+                Swal.fire({
+                    title: `${resultado.detail}`,
+                    icon: "success"
+                });
+                // Limpiar campos después de guardar
                 setNombre('');
                 setRuc('');
                 setDireccion('');
                 setCorreo('');
                 setTelefono('');
-                // Cierra modal
-                // cerrarModal();
-                obtenerDatos();
+                obtenerDatos(); // Actualizar lista de proveedores
             } else {
-             //   console.error('Error en el envío:', resultado);
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon:"error"
-            
-                })
+                    icon: "error"
+                });
             }
         } catch (error) {
-
-            
-           // console.error('Error en la conexión con el servidor:', error);
-           Swal.fire({
-            title: `Hubo un error...`,
-            icon:"error"
-    
-            })
+            Swal.fire({
+                title: "Hubo un error...",
+                icon: "error"
+            });
         }
     };
 
-    const editar =  async (e) => {
+    const editar = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
     
+        // Validación de que todos los campos estén completos
+        if (!nombre || !ruc || !direccion || !correo || !telefono) {
+            Swal.fire({
+                title: "Todos los campos son obligatorios.",
+                icon: "error"
+            });
+            return; // Salir si hay campos vacíos
+        }
+    
+        // Validación de que RUC sea un número
+        if (isNaN(ruc)) {
+            Swal.fire({
+                title: "El RUC debe ser un número.",
+                icon: "error"
+            });
+            return; // Salir si RUC no es un número
+        }
+    
+        // Validación de que el teléfono sea un número
+        if (isNaN(telefono)) {
+            Swal.fire({
+                title: "El teléfono debe ser un número.",
+                icon: "error"
+            });
+            return; // Salir si teléfono no es un número
+        }
+    
+        // Validación de que el correo tenga un formato válido
+        const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        if (!emailRegex.test(correo)) {
+            Swal.fire({
+                title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
+                icon: "error"
+            });
+            return; // Salir si el formato de correo no es válido
+        }
+   
+    // Eliminar los espacios al inicio y al final del nombre
+    let nombreTrimmed = nombre.trim();
 
+    // Reemplazar múltiples espacios consecutivos por un solo espacio
+    nombreTrimmed = nombreTrimmed.replace(/\s+/g, ' ');
+
+
+        if (nombre !== nombreTrimmed) {
+            Swal.fire({
+                title: "El nombre no puede tener espacios en blanco al principio, al final o mas de uno.",
+                icon: "error"
+            });
+            return; // Salir si el nombre tiene espacios al principio o al final
+        }
+
+    
+    
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-            // Cuerpo del POST request
+    
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 ruc: ruc,
                 direccion: direccion,
                 correo: correo,
-                telefono: telefono,
-              /*   descripcion: descripcion, */
-                /* imagen: url */
-                //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
+                telefono: telefono
             });
-
+    
             const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
                 method: "PUT",
                 headers: headers,
                 body: cuerpo,
             });
-            
+    
             const response = await fetch(request);
             const resultado = await response.json();
-
-            if (!nombre || !ruc || !direccion || !correo || !telefono) {
-                /*setErrorMessage('Todos los campos son obligatorios.');*/
-                Swal.fire({
-                    title: "Todos los campos son obligatorios.",
-        
-                    icon: "error"
-                  });
-
-                return; // Salir si hay campos vacíos
-          }
-         
-
-            // Validación de que RUC sea un número
-            if (isNaN(ruc)) {
-                /*setErrorMessage('El RUC debe ser un número.');*/
-                Swal.fire({
-                    title: "El RUC debe ser un número",
-
-                    icon: "error"
-                });
-
-
-                return; // Salir si RUC no es un número
-            }
-
-            if (isNaN(telefono)) {
-                /*setErrorMessage('El telefono debe ser un número.');*/
-                Swal.fire({
-                    title: "El telefono debe ser un número.",
-
-                    icon: "error"
-                });
-                return; // Salir si RUC no es un número
-            }    
-
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-                Swal.fire({
-                    title: "El correo electrónico debe tener un formato válido (ejemplo@dominio.com).",
-                    icon: "error"
-                });
-                return; // Salir si el formato de correo no es válido
-            }
-                    
+    
             if (response.ok) {
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: 'success',
-                  })
-                // console.log('Datos enviados correctamente:', resultado);
-                // Aquí puedes resetear el formulario o mostrar una notificación
+                });
+                // Limpiar campos después de editar
                 setNombre('');
                 setRuc('');
                 setDireccion('');
                 setCorreo('');
                 setTelefono('');
-                // Cierra modal
-
                 cerrarModal();
-                //Recarga la tabla
-                obtenerDatos();                
+                obtenerDatos(); // Recargar la lista de proveedores
             } else {
-                // console.error('Error en el envío:', resultado);
                 Swal.fire({
                     title: `${resultado.detail}`,
                     icon: 'error',
-                })
+                });
             }
         } catch (error) {
-            // console.error('Error en la conexión con el servidor:', error);
             Swal.fire({
-                title: `${resultado.detail}`,
+                title: "Hubo un error...",
                 icon: 'error',
-            })
+            });
         }
     };
 
