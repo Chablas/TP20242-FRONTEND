@@ -32,7 +32,6 @@ import Contactenos from "../components/Contactenos.jsx";
 
 
 // Páginas
-
 function P_Store_Servicios_Overview() {
     return (
         <>
@@ -229,8 +228,9 @@ function App() {
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
-          
+    
             </Routes>
+
             <Footer/>
         </BrowserRouter>
     )
