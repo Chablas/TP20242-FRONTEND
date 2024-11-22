@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import imagen1 from "../images/categorias/audifonos.jfif";
 import imagen2 from "../images/categorias/laptops.jpg";
 import imagen3 from "../images/categorias/teclados.jfif";
-
+import Footer from "../components/Footer.jsx";
 export default function CategoryPreviews() {
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
 
@@ -48,14 +48,16 @@ export default function CategoryPreviews() {
                         </div>
                     </div>
                 </div>
+                <Footer/> 
             </div>
+         
         </>
     )
 }
 
 function StoreCategoryPreviewComponent(props) {
     return (
-        
+        <div >       
         <div className="group relative">
             <div
                 className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
@@ -70,6 +72,10 @@ function StoreCategoryPreviewComponent(props) {
                 </Link>
             </h3>
             <p className="text-base font-semibold text-gray-900">{props.descripcion}</p>
+   
         </div>
+      
+        </div>
+        
     )
 }

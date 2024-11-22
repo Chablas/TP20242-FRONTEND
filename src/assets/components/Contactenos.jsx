@@ -2,7 +2,7 @@
 // CONTACTANOS
 import React, { useRef } from "react";
 import emailjs from 'emailjs-com';
-
+import Footer from "../components/Footer.jsx";
 
 export default function Contactenos() {
   const refForm = useRef();
@@ -188,6 +188,7 @@ export default function Contactenos() {
 
         </div>
       </section>
+      <Footer/>
     </div>
   );
 }

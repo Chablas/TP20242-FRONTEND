@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import { Link } from "react-router-dom";
-
+import Footer from "../components/Footer.jsx";
 export default function ServicePreviews() {
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
 
@@ -42,6 +42,7 @@ export default function ServicePreviews() {
                         </div>
                     </div>
                 </div>
+                <Footer/>
             </div>
         </>
     );

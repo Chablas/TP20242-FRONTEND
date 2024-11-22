@@ -23,7 +23,7 @@ import Register from "../components/Register.jsx";
 import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 import DashboardServicios from "../components/DashboardServicios.jsx";
-import Footer from "../components/Footer.jsx";
+
 import ServicePreviews from "../components/StoreServicePreview.jsx";
 import StoreServiciosOverview from "../components/StoreServiciosOverview.jsx";
 import { UserProvider } from "../context/UserContext.jsx";
@@ -231,7 +231,7 @@ function App() {
     
             </Routes>
 
-            <Footer/>
+        
         </BrowserRouter>
     )
 }
