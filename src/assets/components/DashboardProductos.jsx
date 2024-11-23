@@ -13,7 +13,6 @@ export default function DashboardProductos() {
         setMarca('');
         setEspecificacionesTecnicas('');
         setCategoriaId('');
-        setStock(''); // Agregado para stock
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Bien';
     };
@@ -35,17 +34,37 @@ export default function DashboardProductos() {
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
-    const [stock, setStock] = useState(''); // Agregado el estado para stock
 
     const [bienes, setBienes] = useState([]);
     const [categorias, setCategorias] = useState([]);
+    const [almacenes, setAlmacenes] = useState([]); // Nuevo estado para almacenar los almacenes
+    const [stock, setStock] = useState([]); // Nuevo estado para almacenar el stock
     const [mostrarFilas, setMostrarFilas] = useState([]);
     const [categoriasOpciones, setCategoriasOpciones] = useState([]);
     const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
 
     const enviarDatos = async (e) => {
         e.preventDefault();
+
+        const mostrarAlerta = (titulo, tipo) => {
+            Swal.fire({ title: titulo, icon: tipo });
+        };
+
+        if ([nombre, informacion_general, precio, garantia, imagen, marca, especificaciones_tecnicas].some(campo => !campo)) {
+            return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
+        }
+
+        if (isNaN(precio) || precio <= 0) {
+            return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
+        }
+
+        const urlPattern = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/?].*)?$/i;
+        if (!urlPattern.test(imagen)) {
+            return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
+        }
+
         try {
+
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
 
@@ -62,12 +81,11 @@ export default function DashboardProductos() {
                 informacion_general: informacion_general,
                 precio: precio,
                 garantia: garantia,
-                estado: estado,
+                estado: estado, // Ahora es booleano
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
                 categoria_id: opcionSeleccionada,
-                stock: stock, // Se incluye stock en el cuerpo de la solicitud
             });
 
             const request = new Request("https://compusave-backend.onrender.com/post/bien", {
@@ -84,18 +102,16 @@ export default function DashboardProductos() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 })
-                // Limpiar el formulario
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
-                setEstado(false); // Cambiar estado a false por defecto
+                setEstado('');
                 setImagen('');
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                setStock(''); // Limpiar el campo stock
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -128,8 +144,7 @@ export default function DashboardProductos() {
                 imagen: imagen,
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
-                categoria_id: categoria_id,
-                stock: stock, // Incluir stock en el cuerpo de la solicitud
+                categoria_id: categoria_id
             });
             
             const request = new Request(`https://compusave-backend.onrender.com/put/bien/${id}`, {
@@ -146,18 +161,16 @@ export default function DashboardProductos() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 });
-                // Limpiar el formulario
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
-                setEstado(false);
+                setEstado('');
                 setImagen('');
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                setStock(''); // Limpiar el campo stock
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -192,18 +205,16 @@ export default function DashboardProductos() {
                     title: `${resultado.detail}`,
                     icon: "success"
                 });
-                // Limpiar el formulario
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
-                setEstado(false);
+                setEstado('');
                 setImagen('');
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                setStock(''); // Limpiar el campo stock
                 cerrarModal();
                 obtenerDatosYActualizarFilas();
             } else {
@@ -219,11 +230,13 @@ export default function DashboardProductos() {
             });
         }
     }
-    
+      
     const obtenerDatosYActualizarFilas = async () => {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+
+            // Obtener categorías
             const requestCategorias = new Request("https://compusave-backend.onrender.com/get/categorias", {
                 method: "GET",
                 headers: headers,
@@ -233,35 +246,65 @@ export default function DashboardProductos() {
             const categoriaOpciones = datosCategorias.map((x) => (
                 <CategoriaOption key={x.id} {...x} setCategoriaId={setCategoriaId} />
             ));
-            
             setCategorias(datosCategorias);
             setCategoriasOpciones(categoriaOpciones);
 
+            // Obtener almacenes
+            const requestAlmacenes = new Request("https://compusave-backend.onrender.com/get/almacenes", {
+                method: "GET",
+                headers: headers,
+            });
+            const responseAlmacenes = await fetch(requestAlmacenes);
+            const datosAlmacenes = await responseAlmacenes.json();
+            setAlmacenes(datosAlmacenes);
+
+            // Obtener stock
+            const requestStock = new Request("https://compusave-backend.onrender.com/get/stock", {
+                method: "GET",
+                headers: headers,
+            });
+            const responseStock = await fetch(requestStock);
+            const datosStock = await responseStock.json();
+            setStock(datosStock);
+
+            // Obtener bienes
             const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
                 method: "GET",
                 headers: headers,
             });
             const responseBienes = await fetch(requestBienes);
             const datosBienes = await responseBienes.json();
-            const bienesFilas = datosBienes.map((x, index) => (
-                <DashboardProductosFila
-                    key={x.id}
-                    {...x}
-                    setId={setId}
-                    setNombre={setNombre}
-                    setInformacionGeneral={setInformacionGeneral}
-                    setPrecio={setPrecio}
-                    setGarantia={setGarantia}
-                    setEstado={setEstado}
-                    setImagen={setImagen}
-                    setMarca={setMarca}
-                    setEspecificacionesTecnicas={setEspecificacionesTecnicas}
-                    setCategoriaId={setCategoriaId}
-                    eliminarDatos={eliminarDatos}
-                    categorias={datosCategorias}
-                    index={index + 1} // Pasar el índice como prop
-                />
-            ));
+
+            // Crear filas para mostrar los bienes
+            const bienesFilas = datosBienes.map((x, index) => {
+                const almacen = almacenes.find(almacen => almacen.id === x.almacen_id);
+                    // Buscar la cantidad en stock para el producto y almacen específicos
+                    const stockProducto = stock.find(s => s.producto_id === x.id && s.almacen_id === x.almacen_id);
+                    const cantidad = stockProducto ? stockProducto.cantidad : 'No disponible'; // Validar si existe stock
+                    const almacenNombre = almacen ? almacen.nombre : 'Almacén no encontrado'; // Validar si existe almacen
+                return (
+                    <DashboardProductosFila
+                        key={x.id}
+                        {...x}
+                        almacenNombre={almacen ? almacen.nombre : 'Almacén no encontrado'} // Nombre del almacén
+                        cantidad={cantidad} // Cantidad en stock
+                        setId={setId}
+                        setNombre={setNombre}
+                        setInformacionGeneral={setInformacionGeneral}
+                        setPrecio={setPrecio}
+                        setGarantia={setGarantia}
+                        setEstado={setEstado}
+                        setImagen={setImagen}
+                        setMarca={setMarca}
+                        setEspecificacionesTecnicas={setEspecificacionesTecnicas}
+                        setCategoriaId={setCategoriaId}
+                        eliminarDatos={eliminarDatos}
+                        categorias={datosCategorias}
+                        index={index + 1} // Pasar el índice como prop
+                    />
+                );
+            });
+
             setBienes(datosBienes);
             setMostrarFilas(bienesFilas);
 
@@ -326,10 +369,6 @@ export default function DashboardProductos() {
                                 {categoriasOpciones}
                             </select>
                         </div>
-                        <div className="mb-4">
-                            <label htmlFor="stockBien" className="block text-gray-700">Stock</label>
-                            <input id="stockBien" type="number" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
                             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={enviarDatos}>Guardar</button>
@@ -385,10 +424,6 @@ export default function DashboardProductos() {
                                 {categoriasOpciones}
                             </select>
                         </div>
-                        <div className="mb-4">
-                            <label htmlFor="stockBien" className="block text-gray-700">Stock</label>
-                            <input id="stockBien" type="number" value={stock} onChange={(e) => setStock(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
                             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={editarDatos}>Guardar</button>
@@ -419,7 +454,8 @@ export default function DashboardProductos() {
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">MARCA</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ESPECIFICACIONES TÉCNICAS</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">CATEGORÍA</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">STOCK</th> {/* Columna Stock */}
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">CANTIDAD</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ALMACEN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
@@ -448,7 +484,6 @@ function DashboardProductosFila(props) {
         props.setMarca(props.marca);
         props.setEspecificacionesTecnicas(props.especificaciones_tecnicas);
         props.setCategoriaId(props.categoria_id);
-        props.setStock(props.stock); // Asignar stock en el modal de edición
     };
 
     const eliminarDato = () => {
@@ -467,14 +502,16 @@ function DashboardProductosFila(props) {
             }
         });
     };
-
+    
+    // Buscar el nombre de la categoría
     for (const categoria of props.categorias) {
-        if (categoria.id == props.categoria_id) {
+        if (categoria.id === props.categoria_id) {
             n_categoria = categoria.nombre;
         }
     }
 
     return (
+        <>
         <tr className="border-b border-b-[#394050]">
             <td className="text-white font-light py-2 px-4">{props.index}</td>
             <td className="text-white font-light py-2 px-4">{props.nombre}</td>
@@ -490,18 +527,25 @@ function DashboardProductosFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{props.marca}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.especificaciones_tecnicas}</td>
             <td className="text-white font-light text-center py-2 px-4">{n_categoria}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.stock}</td> {/* Mostrar el stock */}
+            <td className="text-white font-light text-center py-2 px-4">
+                {/* Validación para mostrar la cantidad */}
+                {props.cantidad !== null ? props.cantidad : 'Cargando...'}
+            </td>
+            <td className="text-white font-light text-center py-2 px-4">
+                {/* Validación para mostrar el nombre del almacén */}
+                {props.almacenNombre || 'Cargando...'}
+            </td>
             <td className="text-white font-light text-center py-2 px-4">
                 <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirModalEdicion}>Editar</button>
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={eliminarDato}>Eliminar</button>
             </td>
         </tr>
-    );
+        </>
+    )
 }
 
 function CategoriaOption(props) {
     return (
-        <option value={props.id}>{props.nombre}</option>
-    );
+        <option value={props.id} >{props.nombre}</option>
+    )
 }
-
