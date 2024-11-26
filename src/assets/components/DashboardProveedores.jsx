@@ -327,6 +327,42 @@ export default function Proveedor() {
         }
     };
 
+    const [filasProductos, setFilasProductos] = useState([]); // Guardar las filas de productos
+    const [mostrarModalProductos, setMostrarModalProductos] = useState(false); // Controlar la visibilidad del modal
+    const [errorMessageProd, setErrorMessageProd] = useState(''); // Manejar errores
+
+    const mostrarProductos = async (proveedor_id) => {
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request(`https://compusave-backend.onrender.com/get/bienes_proveedor/${proveedor_id}`, {
+                method: "GET",
+                headers: headers,
+            });
+    
+            const response = await fetch(request);
+            const productos = await response.json();
+    
+            // Mapeo de los datos a filas para el modal
+            const filasProductos = productos.map((producto) => (
+                <tr key={producto.id} className="border-b border-gray-300">
+                    <td className="py-4 px-4 text-gray-300">{producto.id}</td>
+                    <td className="py-4 px-4 text-gray-300">{producto.precio}</td>
+                    <td className="py-4 px-4 text-gray-300">{producto.codigo}</td>
+                    <td className="py-4 px-4 text-gray-300">{producto.proveedor_id}</td>
+                    <td className="py-4 px-4 text-gray-300">{producto.bien_id}</td>
+                </tr>
+            ));
+    
+            setFilasProductos(filasProductos); // Guardar las filas para mostrarlas en el modal
+            setMostrarModalProductos(true); // Mostrar el modal
+        } catch (error) {
+            console.error("Error al obtener los productos:", error);
+            setErrorMessageProd("No se pudieron obtener los productos del proveedor.");
+        }
+    };
+
+
 
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
     
@@ -356,7 +392,7 @@ export default function Proveedor() {
                 setTelefono={setTelefono}               
                 
 
-
+                mostrarProductos={mostrarProductos}
                 eliminar={eliminar} 
                 index={index + 1} // Pasar el índice como prop
                     />
@@ -423,8 +459,42 @@ export default function Proveedor() {
                 </div>
             </div>
 
-
-
+            <div id="modalProductos" className={`fixed inset-0 bg-gray-900 bg-opacity-50 ${mostrarModalProductos ? '' : 'hidden'} flex justify-center items-center z-50 btnCerrarModal`}>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Productos del Proveedor</h2>
+                    <div className="overflow-y-auto max-h-96">
+                        <table className="min-w-full bg-[#1F2937] rounded-lg">
+                            <thead className="bg-[#374151]">
+                                <tr>
+                                    <th className="py-3 px-4 text-left font-semibold text-white">ID</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-white">Precio</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-white">Código</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-white">Proveedor</th>
+                                    <th className="py-3 px-4 text-left font-semibold text-white">Producto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filasProductos.length > 0 ? (
+                                    filasProductos
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-4 text-gray-400">No hay productos registrados.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="flex justify-end mt-4">
+                        <button
+                            type="button"
+                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            onClick={cerrarModal}
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
