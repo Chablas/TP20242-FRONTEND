@@ -1,6 +1,6 @@
-
-
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
+import Swal from "sweetalert2";
 
 export default function Proveedor() {
     // Abre el modal para agregar
@@ -20,8 +20,8 @@ export default function Proveedor() {
     // Abre el modal para editar Proveedor
 
     // Manejador del formulario
-    /*
-    const submit = () => {
+   
+/*     const submit = () => {
         alert('Proveedor registrada o editada');
         cerrarModal();
     }
@@ -29,7 +29,7 @@ export default function Proveedor() {
         e.preventDefault();
         
     });
-    */
+   */
     const [errorMessage, setErrorMessage] = useState('');
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
@@ -37,12 +37,10 @@ export default function Proveedor() {
     const [direccion, setDireccion] = useState('');
     const [correo, setCorreo] = useState('');
     const [telefono, setTelefono] = useState('');
-
+    const [mostrarFilas, setMostrarFilas] = useState([]);// Estado para almacenar la lista de almacenes
 
     const registrarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-        
-
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
@@ -59,7 +57,7 @@ export default function Proveedor() {
                 //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/post/proveedor", {
+            const request = new Request("https://compusave-backend.onrender.com/post/proveedores", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
@@ -148,7 +146,7 @@ export default function Proveedor() {
         }
     };
 
-    const editar =  async (e) => {
+    const  editar =  async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
     
 
@@ -168,7 +166,7 @@ export default function Proveedor() {
                 //falta agregar los valores de la BD (esperar hasta que se cree la tabla)
             });
 
-            const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
+            const request = new Request(`https://compusave-backend.onrender.com/put/proveedores/${id}`, {
                 method: "PUT",
                 headers: headers,
                 body: cuerpo,
@@ -181,7 +179,6 @@ export default function Proveedor() {
                 /*setErrorMessage('Todos los campos son obligatorios.');*/
                 Swal.fire({
                     title: "Todos los campos son obligatorios.",
-        
                     icon: "error"
                   });
 
@@ -252,75 +249,17 @@ export default function Proveedor() {
             })
         }
     };
-
-
-
-    //PROPUESTA
-
-    // const editar = async (e) => {
-    //     e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-    
-    //     try {
-    //         const headers = new Headers();
-    //         headers.append("Content-Type", "application/json");
-    
-    //         // Cuerpo del POST request con solo correo y teléfono
-    //         const cuerpo = JSON.stringify({
-    //             correo: correo,
-    //             telefono: telefono
-    //         });
-    
-    //         const request = new Request(`https://compusave-backend.onrender.com/put/proveedor/${id}`, {
-    //             method: "PUT",
-    //             headers: headers,
-    //             body: cuerpo,
-    //         });
-    
-    //         const response = await fetch(request);
-    //         const resultado = await response.json();
-            
-    //         if (response.ok) {
-    //             Swal.fire({
-    //                 title: `${resultado.detail}`,
-    //                 icon: 'success',
-    //             });
-    //             // Resetear los campos si es necesario
-    //             setCorreo('');
-    //             setTelefono('');
-    //             cerrarModal();
-    //             obtenerDatos(); // Recargar los datos después de la actualización
-    //         } else {
-    //             Swal.fire({
-    //                 title: `${resultado.detail}`,
-    //                 icon: 'error',
-    //             });
-    //         }
-    //     } catch (error) {
-    //         Swal.fire({
-    //             title: "Error en la conexión con el servidor", // Cambiado para evitar usar resultado en el catch
-    //             icon: 'error',
-    //         });
-    //     }
-    // };
-
     const eliminar = async (id) => {
-      
-
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-        
-
             const request = new Request(`https://compusave-backend.onrender.com/delete/proveedor/${id}`, {
                 method: "DELETE",
                 headers: headers,
       
             });
-
             const response = await fetch(request);
             const resultado = await response.json();
-            
             if (response.ok) {
                 Swal.fire({
                         title: `${resultado.detail}`,
@@ -342,11 +281,7 @@ export default function Proveedor() {
             console.error('Error en la conexión con el servidor:', error);
         }
     };
-
-
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
-    
-
     const obtenerDatos = async () => {
             
         try {
@@ -378,6 +313,65 @@ export default function Proveedor() {
         obtenerDatos();
     }, []);
 
+
+    const obtenerDatosYActualizarFilas = async () => {
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const request = new Request("https://compusave-backend.onrender.com/get/proveedores", {
+                method: "GET",
+                headers: headers,
+            });
+    
+            const response = await fetch(request);
+            const datos = await response.json();
+    
+            // Generamos las filas para el componente DashboardCategoriaFila
+            const proveedores = datos.map((x, index) => (
+                <DashboardProveedoresFila
+                    key={x.id}
+                    {...x}
+                    setId={setId}
+                    setNombre={setNombre}
+                    setDireccion={setDireccion}
+                    setRuc={setRuc}
+                    setCorreo={setCorreo}
+                    setTelefono={setTelefono}
+                    index={index + 1}
+                />
+            ));
+    
+            setMostrarFilas(proveedores);
+        } catch (error) {
+            console.error('Error al obtener a los Proveedores:', error);
+            Swal.fire({
+                title: `Hubo un error al obtener las Proveedores.`,
+                icon: "error"
+            });
+        }
+    };
+    
+    // Se ejecuta al cargar inicialmente la página
+    useEffect(() => {
+        obtenerDatosYActualizarFilas();
+    }, []);
+
+   // Función para exportar los datos a Excel
+   const exportToExcel = () => {
+    const data = mostrarFilas.map(row => ({
+        ID: row.key, // Asegúrate de utilizar la propiedad correcta, como `key` o `props.id`
+        Nombre: row.props.nombre,
+        Ruc: `${row.props.ruc}`,
+        Direccion: `${row.props.direccion}`,
+        Correo: row.props.correo,
+        Telefono: row.props.telefono,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Proveedores");
+    XLSX.writeFile(workbook, "Proveedores.xlsx");
+};    
 
 
 
@@ -471,6 +465,9 @@ export default function Proveedor() {
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModalAgregar}>
                         Agregar nuevo Proveedor
                     </button>
+                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={exportToExcel}>
+                        Exportar a Excel
+                    </button>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -508,12 +505,16 @@ export default function Proveedor() {
 }
 
 function DashboardProveedoresFila(props) {
-    const abrirModalEdicion = (id = 1) => {
-
-        
-        props.setId(id);
-        document.getElementById('modal').classList.remove('hidden');
-        document.getElementById('tituloModal').textContent = 'Editar Proveedor ' + id;
+    const abrirModalEdicion = () => {
+        document.getElementById('modalEditar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Editar Proveedor ' + props.id;  // Usar props.id
+        props.setId(props.id);
+        props.setNombre(props.nombre);
+        props.setRuc(props.ruc);
+        props.setDireccion(props.direccion);
+        props.setCorreo(props.correo);
+        props.setTelefono(props.telefono);
+    
     };
 
     // Simulación de eliminar categoría
@@ -522,6 +523,9 @@ function DashboardProveedoresFila(props) {
             alert('Proveedor ' + id + ' eliminado.');
             props.eliminar(id)
         }
+    };
+    const mostrarProveedor = (id = 1) => {
+        
     };
 
     return (
@@ -533,8 +537,10 @@ function DashboardProveedoresFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{props.correo}</td>
             <td className="text-white font-light text-center py-2 px-4">{props.telefono}</td>
             <td className="text-white font-light text-center py-2 px-4">
-                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={()=>abrirModalEdicion(props.id)}>Editar</button>
+                <button className="font-normal text-blue-500 py-1 px-2 rounded-md hover:text-white hover:bg-blue-500 ml-4" onClick={()=>mostrarProveedor(props.id)}>Mostrar</button>
+                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500 ml-4 " onClick={()=>abrirModalEdicion(props.id)}>Editar</button>
                 <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={()=>eliminarProveedor(props.id)}>Eliminar</button>
+                
             </td>
         </tr>
     )
