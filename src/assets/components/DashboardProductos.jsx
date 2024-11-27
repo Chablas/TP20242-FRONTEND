@@ -9,7 +9,7 @@ export default function DashboardProductos() {
         setPrecio('');
         setGarantia('');
         setEstado(false); // Cambiado a booleano
-        setImagen('');
+        setImagen(null);
         setMarca('');
         setEspecificacionesTecnicas('');
         setCategoriaId('');
@@ -30,7 +30,8 @@ export default function DashboardProductos() {
     const [precio, setPrecio] = useState('');
     const [garantia, setGarantia] = useState('');
     const [estado, setEstado] = useState(false); // Cambiado a booleano
-    const [imagen, setImagen] = useState('');
+    const [url, setUrl] = useState('');
+    const [imagen, setImagen] = useState(null);
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
@@ -45,86 +46,92 @@ export default function DashboardProductos() {
 
     const enviarDatos = async (e) => {
         e.preventDefault();
-
+        
         const mostrarAlerta = (titulo, tipo) => {
             Swal.fire({ title: titulo, icon: tipo });
         };
-
-        if ([nombre, informacion_general, precio, garantia, imagen, marca, especificaciones_tecnicas].some(campo => !campo)) {
+    
+        // Validaciones
+        if ([nombre, informacion_general, precio, garantia, marca, especificaciones_tecnicas].some(campo => !campo)) {
             return mostrarAlerta('Todos los campos son obligatorios.', 'warning');
         }
-
         if (isNaN(precio) || precio <= 0) {
             return mostrarAlerta('El precio debe ser un número positivo.', 'warning');
         }
-
-        const urlPattern = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/?].*)?$/i;
-        if (!urlPattern.test(imagen)) {
-            return mostrarAlerta('La imagen debe ser una URL válida.', 'warning');
-        }
-
+        
         try {
-
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
-            if (opcionSeleccionada === "") {
-                Swal.fire({
-                    title: "Por favor seleccione una categoría.",
-                    icon: "error"
-                });
-                return;
-            }
-
+    
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
                 precio: precio,
                 garantia: garantia,
-                estado: estado, // Ahora es booleano
-                imagen: imagen,
+                estado: estado, 
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
                 categoria_id: opcionSeleccionada,
+                imagen: "sin_imagen" // Enviar una cadena vacía o valor temporal para el campo "imagen"
             });
-
+    
+            // Enviar los datos del producto (sin imagen cargada por ahora)
             const request = new Request("https://compusave-backend.onrender.com/post/bien", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
-            
+    
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                })
-                setId('');
-                setNombre('');
-                setInformacionGeneral('');
-                setPrecio('');
-                setGarantia('');
-                setEstado('');
-                setImagen('');
-                setMarca('');
-                setEspecificacionesTecnicas('');
-                setCategoriaId('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+                // Si el producto fue creado correctamente, verificar si hay imagen seleccionada
+                if (!imagen) {
+                    Swal.fire({
+                        title: "Por favor seleccione una imagen.",
+                        icon: "error"
+                    });
+                    return;
+                }
+    
+                // Preparar la imagen para subirla
+                const formData = new FormData();
+                formData.append("file", imagen);
+    
+                // Enviar la imagen cargada usando el id del producto recién creado
+                const request2 = new Request(`https://compusave-backend.onrender.com/put/bien/subir_imagen/${resultado.detail}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+    
+                const response2 = await fetch(request2);
+                const resultado2 = await response2.json();
+    
+                if (response2.ok) {
+                    Swal.fire({
+                        title: `Producto registrado exitosamente con la imagen`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                } else {
+                    Swal.fire({
+                        title: `Error al subir la imagen: ${resultado2.detail}`,
+                        icon: "error"
+                    });
+                }
             } else {
                 Swal.fire({
-                    title: `${resultado.detail}`,
+                    title: `Error al crear el producto: ${resultado.detail}`,
                     icon: "error"
-                })
+                });
             }
         } catch (error) {
             Swal.fire({
-                title: `Hubo un error...`,
+                title: `Error: ${error.message}`,
                 icon: "error"
-            })
+            });
         }
     };
 
@@ -235,7 +242,7 @@ export default function DashboardProductos() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
+    
             // Obtener categorías
             const requestCategorias = new Request("https://compusave-backend.onrender.com/get/categorias", {
                 method: "GET",
@@ -248,7 +255,7 @@ export default function DashboardProductos() {
             ));
             setCategorias(datosCategorias);
             setCategoriasOpciones(categoriaOpciones);
-
+    
             // Obtener almacenes
             const requestAlmacenes = new Request("https://compusave-backend.onrender.com/get/almacenes", {
                 method: "GET",
@@ -257,7 +264,7 @@ export default function DashboardProductos() {
             const responseAlmacenes = await fetch(requestAlmacenes);
             const datosAlmacenes = await responseAlmacenes.json();
             setAlmacenes(datosAlmacenes);
-
+    
             // Obtener stock
             const requestStock = new Request("https://compusave-backend.onrender.com/get/stock", {
                 method: "GET",
@@ -266,7 +273,7 @@ export default function DashboardProductos() {
             const responseStock = await fetch(requestStock);
             const datosStock = await responseStock.json();
             setStock(datosStock);
-
+    
             // Obtener bienes
             const requestBienes = new Request("https://compusave-backend.onrender.com/get/bienes", {
                 method: "GET",
@@ -274,19 +281,21 @@ export default function DashboardProductos() {
             });
             const responseBienes = await fetch(requestBienes);
             const datosBienes = await responseBienes.json();
-
+    
             // Crear filas para mostrar los bienes
             const bienesFilas = datosBienes.map((x, index) => {
+                // Buscar el nombre del almacén
                 const almacen = almacenes.find(almacen => almacen.id === x.almacen_id);
-                    // Buscar la cantidad en stock para el producto y almacen específicos
-                    const stockProducto = stock.find(s => s.producto_id === x.id && s.almacen_id === x.almacen_id);
-                    const cantidad = stockProducto ? stockProducto.cantidad : 'No disponible'; // Validar si existe stock
-                    const almacenNombre = almacen ? almacen.nombre : 'Almacén no encontrado'; // Validar si existe almacen
+                // Buscar la cantidad en stock para el producto y el almacén específicos
+                const stockProducto = stock.find(s => s.producto_id === x.id && s.almacen_id === x.almacen_id);
+                const cantidad = stockProducto ? stockProducto.cantidad : 'No disponible'; // Validar si existe stock
+                const almacenNombre = almacen ? almacen.nombre : 'Almacén no encontrado'; // Validar si existe almacén
+    
                 return (
                     <DashboardProductosFila
                         key={x.id}
                         {...x}
-                        almacenNombre={almacen ? almacen.nombre : 'Almacén no encontrado'} // Nombre del almacén
+                        almacenNombre={almacenNombre} // Nombre del almacén
                         cantidad={cantidad} // Cantidad en stock
                         setId={setId}
                         setNombre={setNombre}
@@ -304,10 +313,10 @@ export default function DashboardProductos() {
                     />
                 );
             });
-
+    
             setBienes(datosBienes);
             setMostrarFilas(bienesFilas);
-
+    
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
@@ -352,7 +361,7 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="file" id="imagenBien" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
@@ -364,7 +373,7 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="categoriaIdBien" className="block text-gray-700">Categoría</label>
-                            <select id="categoriaIdBien" className="w-full px-4 py-2 border rounded-lg" value={opcionSeleccionada} onChange={e =>setOpcionSeleccionada(e.target.value)} required>
+                            <select id="categoriaIdBien" value={categoria_id ? categoria_id : ''} onChange={(e) =>setOpcionSeleccionada(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required>
                                 <option value="">Seleccionar una categoría</option>
                                 {categoriasOpciones}
                             </select>
