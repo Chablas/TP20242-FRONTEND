@@ -40,14 +40,79 @@ export default function DashboardServicios() {
     const [bienes, setBienes] = useState([]);
     const [mostrarFilas, setMostrarFilas] = useState([]);
 
+    const validarURL = (valor) => {
+        const patronURL = /^(https?:\/\/)[^\s$.?#].[^\s]*$/;
+        if (valor.trim() !== "" && !patronURL.test(valor)) {
+            Swal.fire({
+                title: "URL inválida",
+                text: "Por favor, ingrese una URL válida que comience con http:// o https://",
+                icon: "warning",
+            });
+        }
+    };
+    
+    // Función para verificar si el precio es un número válido
+    const PrecioNumero = (valor) => {
+        if (isNaN(valor)) {
+            Swal.fire({
+                title: "Precio inválido",
+                text: "El precio debe ser un número válido.",
+                icon: "warning",
+            });
+            return false;
+        }
+        return true;
+    };
 
+    // Función para verificar si el precio es mayor a 0
+    const PrecioPositivo = (valor) => {
+        if (parseFloat(valor) <= 0) {
+            Swal.fire({
+                title: "Precio inválido",
+                text: "El precio debe ser mayor que cero.",
+                icon: "warning",
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validarPrecio = (valor) => {
+        // Validar que el precio sea un número y mayor que cero
+        const isNumeroValido = PrecioNumero(valor);
+        const isPositivoValido = PrecioPositivo(valor);
+    
+        // Si alguna de las validaciones falla, retornamos false
+        if (!isNumeroValido || !isPositivoValido) {
+            return false;
+        }
+        return true;
+    };
+    
+    
     const enviarDatos = async (e) => {
         e.preventDefault();
+        
+        // Validar URL antes de proceder
+        const patronURL = /^(https?:\/\/)[^\s$.?#].[^\s]*$/;
+        if (!patronURL.test(imagen)) {
+            Swal.fire({
+                title: "URL inválida",
+                text: "Por favor, corrija la URL antes de registrar.",
+                icon: "error",
+            });
+            return; // Detiene el envío si la URL es inválida
+        }
+        
+        // Validar precio antes de proceder
+        if (!validarPrecio(precio)) {
+            return; // Detiene el envío si el precio no es válido
+        }
+    
         try {
-
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
+    
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 informacion_general: informacion_general,
@@ -60,27 +125,28 @@ export default function DashboardServicios() {
                 servicio_no_incluye: servicio_no_incluye,
                 restricciones: restricciones,
             });
-
+    
             const request = new Request("https://compusave-backend.onrender.com/post/servicio", {
                 method: "POST",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
-            
+    
             if (response.ok) {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon: "success"
-                })
+                    icon: "success",
+                });
+                // Resetear campos
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
-                setEstado('');
+                setEstado(false);
                 setImagen('');
                 setCondicionesPrevias("");
                 setServicioIncluye('');
@@ -91,16 +157,16 @@ export default function DashboardServicios() {
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
-                    icon: "error"
-                })
+                    icon: "error",
+                });
             }
         } catch (error) {
             Swal.fire({
                 title: `Hubo un error...`,
-                icon: "error"
-            })
+                icon: "error",
+            });
         }
-    };
+    };    
 
     const editarDatos = async (e) => {
         e.preventDefault();
@@ -269,8 +335,22 @@ export default function DashboardServicios() {
                             <textarea id="informacionGeneralBien" value={informacion_general} onChange={(e) => setInformacionGeneral(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></textarea>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="precioBien" className="block text-gray-700">Precio</label>
-                            <input id="precioBien" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="precioBienPUT" className="block text-gray-700">Precio</label>
+                            <input 
+                                id="precioBienPUT" 
+                                type="text" 
+                                value={precio} 
+                                onChange={(e) => setPrecio(e.target.value)} 
+                                onBlur={() => {
+                                    // Ejecutar ambas validaciones con la función de validación general
+                                    if (!validarPrecio(precio)) {
+                                        return; // Detener si alguna validación falla
+                                    }
+                                }} 
+                                maxLength="1000" 
+                                className="w-full px-4 py-2 border rounded-lg" 
+                                required 
+                            />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="garantiaBien" className="block text-gray-700">Garantía</label>
@@ -285,9 +365,18 @@ export default function DashboardServicios() {
                             </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
+                                    <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
+                                    <input
+                                        id="imagenBien"
+                                        type="text"
+                                        value={imagen}
+                                        onChange={(e) => setImagen(e.target.value)} // Actualiza el valor normalmente
+                                        onBlur={() => validarURL(imagen)} // Valida cuando se pierde el foco
+                                        maxLength="1000"
+                                        className="w-full px-4 py-2 border rounded-lg"
+                                        required
+                                    />
+                                </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBien" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBien" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
@@ -326,7 +415,21 @@ export default function DashboardServicios() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="precioBienPUT" className="block text-gray-700">Precio</label>
-                            <input id="precioBienPUT" type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input 
+                                id="precioBienPUT" 
+                                type="text" 
+                                value={precio} 
+                                onChange={(e) => setPrecio(e.target.value)} 
+                                onBlur={() => {
+                                    // Ejecutar ambas validaciones con la función de validación general
+                                    if (!validarPrecio(precio)) {
+                                        return; // Detener si alguna validación falla
+                                    }
+                                }} 
+                                maxLength="1000" 
+                                className="w-full px-4 py-2 border rounded-lg" 
+                                required 
+                            />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="garantiaBienPUT" className="block text-gray-700">Garantía</label>
@@ -341,9 +444,18 @@ export default function DashboardServicios() {
                             </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBienPUT" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
-                        </div>
+                                    <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
+                                    <input
+                                        id="imagenBienPUT"
+                                        type="text"
+                                        value={imagen}
+                                        onChange={(e) => setImagen(e.target.value)} // Actualiza el valor normalmente
+                                        onBlur={() => validarURL(imagen)} // Valida cuando se pierde el foco
+                                        maxLength="1000"
+                                        className="w-full px-4 py-2 border rounded-lg"
+                                        required
+                                    />
+                                </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBienPUT" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBienPUT" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
