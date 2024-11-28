@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'; 
-import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
+import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 
-export default function Categoria() {
+export default function DashboardStocks() {
     const abrirModal = () => {
+        setId('');
+        setProductoId('');
+        setAlmacenId('');
         document.getElementById('modalAgregar').classList.remove('hidden');
-        document.getElementById('tituloModal').textContent = 'Nuevo Stock';
+        document.getElementById('tituloModal').textContent = 'Registrar Bien';
     };
 
     const abrirHistorialMovimientos = () => {
@@ -15,37 +17,44 @@ export default function Categoria() {
 
     const cerrarModal = () => {
         const modales = document.querySelectorAll("div.btnCerrarModal");
-        modales.forEach(modal => modal.classList.add('hidden'));
+        for (const modal of modales) {
+            modal.classList.add('hidden');
+        }
     };
-    const [errorMessage, setErrorMessage] = useState('');
+
     const [id, setId] = useState('');
-    const [nombre_producto, setNombreProducto] = useState('');
-    const [nombre_almacen, setNombreAlmacen] = useState('');
     const [producto_id, setProductoId] = useState('');
     const [almacen_id, setAlmacenId] = useState('');
     const [cantidad, setCantidad] = useState('');
-    const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
-    const [historial, setHistorial] = useState([]);
-    // const [tipo_mov, setTipoMov] = useState('');    
-    // const [creado, setCreado] = useState('');
 
+    const [stocks, setStocks] = useState([]);
+    const [productos, setProductos] = useState([]);
+    const [almacenes, setAlmacenes] = useState([]);
     const [mostrarFilas, setMostrarFilas] = useState([]);
-       
+    const [productosOpciones, setProductosOpciones] = useState([]);
+    const [almacenesOpciones, setAlmacenesOpciones] = useState([]);
+    const [almacenSeleccionado, setAlmacenSeleccionado] = useState('');
+    const [productoSeleccionado, setProductoSeleccionado] = useState('');
+    const [historial, setHistorial] = useState([]);
 
-
-    // REGISTRA STOCK
-    const registrarStock = async (e) => {
+    const registrarStock  = async (e) => {
         e.preventDefault();
-
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            
-            //Cuerpo del POST request
+
+            if (productoSeleccionado === "" || almacenSeleccionado === "") {
+                Swal.fire({
+                    title: "Por favor seleccione un producto y un almacén.",
+                    icon: "error"
+                });
+                return;
+            }
+
             const cuerpo = JSON.stringify({
-                producto_id: producto_id,
-                almacen_id: almacen_id,
-                cantidad: cantidad
+                cantidad: cantidad,
+                almacen_id: almacenSeleccionado,
+                producto_id: productoSeleccionado,
             });
 
             const request = new Request("https://compusave-backend.onrender.com/put/stock/aumentar", {
@@ -66,10 +75,9 @@ export default function Categoria() {
                 setProductoId('');
                 setAlmacenId('');
                 setCantidad('');
-                setHistorial('');
-                obtenerHistoriales('');
+                setHistorial([]);
                 cerrarModal();
-                obtenerDatos();
+                obtenerDatosYActualizarFilas();
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -77,64 +85,182 @@ export default function Categoria() {
                 });
             }
         } catch (error) {
+            console.error(error);  // Muestra el error para depuración
             Swal.fire({
-                title: "Hubo un error...",
+                title: `Hubo un error: ${error.message}`,
                 icon: "error"
             });
         }
     };
-// ELIMINA STOCK
+
     const eliminarStock = async (e) => {
         e.preventDefault();
-
+    
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            
-            //Cuerpo del POST request
+    
             const cuerpo = JSON.stringify({
+                cantidad: cantidad,
                 producto_id: producto_id,
                 almacen_id: almacen_id,
-                cantidad: cantidad
             });
-
+    
             const request = new Request("https://compusave-backend.onrender.com/put/stock/disminuir", {
                 method: "PUT",
                 headers: headers,
                 body: cuerpo,
             });
-
+    
             const response = await fetch(request);
             const resultado = await response.json();
             
             if (response.ok) {
                 Swal.fire({
-                    title: `${resultado.detail}`,
+                    title: `${resultado.detail || 'Operación exitosa'}`,
                     icon: "success"
                 });
                 setId('');
                 setProductoId('');
+                setNombreProducto('');
                 setAlmacenId('');
+                setNombreAlmacen('');
                 setCantidad('');
-                setHistorial('');
-                obtenerHistoriales('');
+                setHistorial([]); // Limpiar correctamente el historial
+                obtenerHistoriales();
                 cerrarModal();
-                obtenerDatos();
+                obtenerDatosYActualizarFilas();
             } else {
                 Swal.fire({
-                    title: `${resultado.detail}`,
+                    title: `${resultado.detail || 'Error desconocido'}`,
                     icon: "error"
                 });
             }
         } catch (error) {
+            console.error(error);  // Log para depuración
             Swal.fire({
-                title: "Hubo un error...",
+                title: `Hubo un error: ${error.message || 'Error desconocido'}`,
                 icon: "error"
             });
         }
     };
+    
+    // const obtenerHistoriales = async () => {
+    //     try {
+    //         const headers = new Headers();
+    //         headers.append("Content-Type", "application/json");
+    
+    //         const request = new Request("https://compusave-backend.onrender.com/get/historiales_movimientos", {
+    //             method: "GET",
+    //             headers: headers,
+    //         });
+    
+    //         const response = await fetch(request);
+    //         const resultado = await response.json();
+    
+    //         const historiales = resultado.map((x, index) => {
+    //             // Ajustar el formato de la fecha
+    //             let fechaFormateada = new Date(x.created_at).toLocaleString(); // Simplificado
+    
+    //             return (
+    //                 <tr key={x.id}>
+    //                     <td className="px-4 py-2 border">{index + 1}</td>
+    //                     <td className="px-4 py-2 border">{x.producto_id}</td>
+    //                     <td className="px-4 py-2 border">{x.almacen_id}</td>
+    //                     <td className="px-4 py-2 border">{x.cantidad}</td>
+    //                     <td className="px-4 py-2 border">{x.tipo_movimiento}</td>
+    //                     <td className="px-4 py-2 border">{fechaFormateada}</td>
+    //                 </tr>
+    //             );
+    //         });
+    
+    //         setHistorial(historiales);
+    //     } catch (error) {
+    //         Swal.fire({
+    //             title: "Hubo un error al obtener el historial...",
+    //             icon: "error",
+    //         });
+    //     }
+    // };
 
-    // Obtener todos los almacenes que tiene el producto
+    // const obtenerHistoriales = async () => {
+    //     try {
+    //         const headers = new Headers();
+    //         headers.append("Content-Type", "application/json");
+    //         const requestAlmacenes = new Request("https://compusave-backend.onrender.com/get/almacenes", {
+    //             method: "GET",
+    //             headers: headers,
+    //         });
+    //         const responseAlmacenes = await fetch(requestAlmacenes);
+    //         const datosAlmacenes = await responseAlmacenes.json();
+    //         const almacenesOpciones = datosAlmacenes.map((x) => (
+    //             <AlmacenOption key={x.id} {...x} setAlmacenId={setAlmacenId} />
+    //         ));
+    
+    //         setAlmacenes(datosAlmacenes);
+    //         setAlmacenesOpciones(almacenesOpciones);
+    
+    //         headers.append("Content-Type", "application/json");
+    //         const requestProductos = new Request("https://compusave-backend.onrender.com/get/bienes", {
+    //             method: "GET",
+    //             headers: headers,
+    //         });
+    //         const responseProductos = await fetch(requestProductos);
+    //         const datosProductos = await responseProductos.json();
+    //         const productoOpciones = datosProductos.map((x) => (
+    //             <ProductoOption key={x.id} {...x} setProductoId={setProductoId} />
+    //         ));
+    
+    //         setProductos(datosProductos);
+    //         setProductosOpciones(productoOpciones);
+    
+    //         // Obtener stock
+    //         const requestStock = new Request(`https://compusave-backend.onrender.com/get/stock/${id}`, {
+    //             method: "GET",
+    //             headers: headers,
+    //         });
+    //         const responseStock = await fetch(requestStock);
+    //         const datosStock = await responseStock.json();
+
+            
+    //         const historiales = datosStock.map((x, index) => {
+    //             // Ajustar el formato de la fecha
+    //             let fechaFormateada = new Date(x.created_at).toLocaleString(); // Simplificado
+    //             let n_almacen;
+    //             let n_producto;
+
+    //             for (const producto of props.productos) {
+    //                 if (producto.id == props.producto_id) {
+    //                     n_producto = producto.nombre;
+    //                 }
+    //             }
+            
+    //             for (const almacen of props.almacenes) {
+    //                 if (almacen.id == props.almacen_id) {
+    //                     n_almacen = almacen.nombre;
+    //                 }
+    //             }            
+    
+    //             return (
+    //                 <tr key={x.id}>
+    //                     <td className="px-4 py-2 border">{index + 1}</td>
+    //                     <td className="px-4 py-2 border">{x.n_almacen}</td>
+    //                     <td className="px-4 py-2 border">{x.n_producto}</td>
+    //                     <td className="px-4 py-2 border">{x.cantidad}</td>
+    //                     <td className="px-4 py-2 border">{x.tipo_movimiento}</td>
+    //                     <td className="px-4 py-2 border">{fechaFormateada}</td>
+    //                 </tr>
+    //             );
+    //         });
+    
+    //         setHistorial(historiales);
+    //     } catch (error) {
+    //         Swal.fire({
+    //             title: "Hubo un error al obtener el historial...",
+    //             icon: "error",
+    //         });
+    //     }
+    // };
 
     const obtenerHistoriales = async () => {
         try {
@@ -147,24 +273,32 @@ export default function Categoria() {
             });
     
             const response = await fetch(request);
+            if (!response.ok) {
+                throw new Error(`Error al obtener datos: ${response.statusText}`);
+            }
             const resultado = await response.json();
     
             const historiales = resultado.map((x, index) => {
+                // Buscar nombre del producto
+                const n_producto = props.productos.find(producto => producto.id === x.producto_id)?.nombre || "Producto desconocido";
+    
+                // Buscar nombre del almacén
+                const n_almacen = props.almacenes.find(almacen => almacen.id === x.almacen_id)?.nombre || "Almacén desconocido";
+    
                 // Ajustar el formato de la fecha
                 let fechaFormateada = "Fecha inválida";
                 if (x.created_at) {
-                    const fechaISO = x.created_at.replace(" ", "T"); // Convertir a formato ISO
-                    const fecha = new Date(fechaISO);
+                    const fecha = new Date(x.created_at);
                     if (!isNaN(fecha)) {
-                        fechaFormateada = fecha.toLocaleString(); // Mostrar fecha local
+                        fechaFormateada = fecha.toLocaleString(); // Formato local
                     }
                 }
     
                 return (
                     <tr key={x.id}>
                         <td className="px-4 py-2 border">{index + 1}</td>
-                        <td className="px-4 py-2 border">{x.producto_id}</td>
-                        <td className="px-4 py-2 border">{x.almacen_id}</td>
+                        <td className="px-4 py-2 border">{n_producto}</td>
+                        <td className="px-4 py-2 border">{n_almacen}</td>
                         <td className="px-4 py-2 border">{x.cantidad}</td>
                         <td className="px-4 py-2 border">{x.tipo_movimiento}</td>
                         <td className="px-4 py-2 border">{fechaFormateada}</td>
@@ -176,112 +310,88 @@ export default function Categoria() {
         } catch (error) {
             Swal.fire({
                 title: "Hubo un error al obtener el historial...",
+                text: error.message,
                 icon: "error",
             });
         }
     };
+    
     // Se ejecuta al cargar inicialmente la página
     useEffect(() => {
         obtenerHistoriales();
     }, []);
-
-
-    const obtenerDatos = async () => {
+    
+    const obtenerDatosYActualizarFilas = async () => {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            const request = new Request("https://compusave-backend.onrender.com/get/stock", {
+            const requestAlmacenes = new Request("https://compusave-backend.onrender.com/get/almacenes", {
                 method: "GET",
                 headers: headers,
             });
-            const response = await fetch(request);
-            const datos = await response.json();
-
-            const stock = datos.map((x, index) => {
-                return <DashboardStockFila 
-                setId={setId} 
-                // setProductoId ={setProductoId}
-                // setAlmacenId = {setAlmacenId}
-                setCantidad ={setCantidad}
-                index={index + 1} // Pasar el índice como prop
-                key={x.id} 
-                {...x} 
-                />
-            });
-
-            setMostrar(stock);
-            obtenerDatos2();
-            obtenerDatos3();
-        } catch (error) {
-            console.error("Error al obtener los datos:", error);
-        }
-    };
-
-    const obtenerDatos2 = async () => {
-        try {
-            const headers = new Headers();
+            const responseAlmacenes = await fetch(requestAlmacenes);
+            const datosAlmacenes = await responseAlmacenes.json();
+            const almacenesOpciones = datosAlmacenes.map((x) => (
+                <AlmacenOption key={x.id} {...x} setAlmacenId={setAlmacenId} />
+            ));
+    
+            setAlmacenes(datosAlmacenes);
+            setAlmacenesOpciones(almacenesOpciones);
+    
             headers.append("Content-Type", "application/json");
-            const request = new Request("https://compusave-backend.onrender.com/get/bienes", {
+            const requestProductos = new Request("https://compusave-backend.onrender.com/get/bienes", {
                 method: "GET",
                 headers: headers,
             });
-            const response = await fetch(request);
-            const datos = await response.json();
-
-            const stock = datos.map((x, index) => {
-                return <DashboardStockFila 
-                // setId={setId} 
-                setProductoId ={setProductoId}
-                // setAlmacenId = {setAlmacenId}
-                // setCantidad ={setCantidad}
-                index={index + 1} // Pasar el índice como prop
-                key={x.id} 
-                {...x} 
-                />
-            });
-
-            setMostrar(stock);
-        } catch (error) {
-            console.error("Error al obtener los datos:", error);
-        }
-    };
-
-
-    const obtenerDatos3 = async () => {
-        try {
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            const request = new Request("https://compusave-backend.onrender.com/get/almacenes", {
+            const responseProductos = await fetch(requestProductos);
+            const datosProductos = await responseProductos.json();
+            const productoOpciones = datosProductos.map((x) => (
+                <ProductoOption key={x.id} {...x} setProductoId={setProductoId} />
+            ));
+    
+            setProductos(datosProductos);
+            setProductosOpciones(productoOpciones);
+    
+            // Obtener stock
+            const requestStock = new Request(`https://compusave-backend.onrender.com/get/stock/${id}`, {
                 method: "GET",
                 headers: headers,
             });
-            const response = await fetch(request);
-            const datos = await response.json();
-
-            const stock = datos.map((x, index) => {
-                return <DashboardStockFila 
-                // setId={setId} 
-                // setProductoId ={setProductoId}
-                setAlmacenId = {setAlmacenId}
-                // setCantidad ={setCantidad}
-                index={index + 1} // Pasar el índice como prop
-                key={x.id} 
-                {...x} 
+            const responseStock = await fetch(requestStock);
+            const datosStock = await responseStock.json();
+            const stocksFilas = datosStock.map((x, index) => (
+                <DashboardStocksFila 
+                    key={x.id} 
+                    {...x} 
+                    setId={setId}
+                    setCantidad={setCantidad}
+                    setProductoId={setProductoId}
+                    setAlmacenId={setAlmacenId}
+                    almacenes={datosAlmacenes}
+                    productos={datosProductos}
+                    index={index + 1}
                 />
-            });
-
-            setMostrar(stock);
+            ));
+    
+            setStocks(datosStock);
+            setMostrarFilas(stocksFilas);
+    
         } catch (error) {
-            console.error("Error al obtener los datos:", error);
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            });
         }
     };
-
+    
 
     
     // Se ejecuta al cargar inicialmente la página
     useEffect(() => {
-        obtenerDatos();
+        obtenerDatosYActualizarFilas();
     }, []);
+
+    
     
     // Función para exportar los datos a Excel
     const exportToExcel = () => {
@@ -294,34 +404,37 @@ export default function Categoria() {
     
         const worksheet = XLSX.utils.json_to_sheet(data);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Categorías");
-        XLSX.writeFile(workbook, "Categorias.xlsx");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Stocks");
+        XLSX.writeFile(workbook, "Stocks.xlsx");
     };    
 
     return (
         <>
-            
-
-            {/* Modal para añadir stock */}
             <div id="modalAgregar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Nuevo Stock</h2>
-                    <form id="formularioCategoria">
+                    <form id="formularioStock" onSubmit={registrarStock}>
                         <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Producto Id</label>
-                            <input type="text" value={producto_id} onChange={(e) => setProductoId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="nombrebien" className="block text-gray-700">Nombre de Producto</label>
+                            <select id="nombrebien" className="w-full px-4 py-2 border rounded-lg" value={productoSeleccionado} onChange={e => setProductoSeleccionado(e.target.value)} >
+                                <option value="">Seleccionar un Producto</option>
+                                {productosOpciones}
+                            </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="descripcionCategoria" className="block text-gray-700">Almacen Id</label>
-                            <input value={almacen_id} onChange={(e) => setAlmacenId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></input>
+                            <label htmlFor="nombreAlmacen" className="block text-gray-700">Nombre de Almacen</label>
+                            <select id="nombreAlmacen" className="w-full px-4 py-2 border rounded-lg" value={almacenSeleccionado} onChange={e => setAlmacenSeleccionado(e.target.value)} >
+                                <option value="">Seleccionar un Almacen</option>
+                                {almacenesOpciones}
+                            </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Cantidad</label>
+                            <label htmlFor="cantidadStock" className="block text-gray-700">Cantidad</label>
                             <input type="text" onChange={(e) => setCantidad(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={registrarStock}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -331,27 +444,32 @@ export default function Categoria() {
             <div id="modalEditar" className="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                     <h2 id="tituloModal" className="text-xl font-bold mb-4">Restar Stock</h2>
-                    <form id="formularioCategoria">
+                    <form id="formularioStock" onSubmit={eliminarStock}>
                         <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Producto Id</label>
-                            <input type="text" value={producto_id} onChange={(e) => setProductoId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <label htmlFor="nombrebienPUT" className="block text-gray-700">Nombre de Producto</label>
+                            <select id="nombrebienPUT" className="w-full px-4 py-2 border rounded-lg" value={productoSeleccionado} onChange={e => setProductoSeleccionado(e.target.value)} required>
+                                <option value="">Seleccionar un Producto</option>
+                                {productosOpciones}
+                            </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="descripcionCategoria" className="block text-gray-700">Almacen Id</label>
-                            <input value={almacen_id} onChange={(e) => setAlmacenId(e.target.value)} className="w-full px-4 py-2 border rounded-lg" rows="4" required></input>
+                            <label htmlFor="nombreAlmacenPUT" className="block text-gray-700">Nombre de Almacen</label>
+                            <select id="nombreAlmacenPUT" className="w-full px-4 py-2 border rounded-lg" value={almacenSeleccionado} onChange={e => setAlmacenSeleccionado(e.target.value)} required>
+                                <option value="">Seleccionar un Almacen</option>
+                                {almacenesOpciones}
+                            </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="nombreCategoria" className="block text-gray-700">Cantidad</label>
+                            <label htmlFor="cantidadStock" className="block text-gray-700">Cantidad</label>
                             <input type="text" onChange={(e) => setCantidad(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={eliminarStock}>Guardar</button>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
-
             
             {/* Modal para ver historial de movimientos */}
             <div id="modalHistorial" className="bg-red fixed inset-0 pt-96 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 btnCerrarModal overflow-auto">
@@ -373,8 +491,8 @@ export default function Categoria() {
                         <thead className="bg-white p-6 rounded-lg shadow-lg max-w-md  ">
                             <tr className=''>
                                 <th className="text-sm font-bold mb-4 ">ID</th>
-                                <th className="text-sm font-bold mb-4 ">PRODUCTO ID</th>
-                                <th className="text-sm font-bold mb-4 ">ALMACEN ID</th>
+                                <th className="text-sm font-bold mb-4 ">PRODUCTO</th>
+                                <th className="text-sm font-bold mb-4 ">ALMACEN</th>
                                 <th className="text-sm font-bold mb-4 ">CANTIDAD</th>
                                 <th className="text-sm font-bold mb-4 ">TIPO DE MOVIMIENTO</th>
                                 <th className="text-sm font-bold mb-4 ">CREADO</th>
@@ -384,12 +502,8 @@ export default function Categoria() {
                             {historial}
                         </tbody>
                     </table>
-
-
                 </div>
             </div>
-
-
 
 
             <main className="p-6">
@@ -413,61 +527,77 @@ export default function Categoria() {
                         <thead className="bg-[#394050]">
                             <tr>
                                 <th className="py-3 px-4 text-left font-semibold text-gray-300">ID</th>
-                                <th className="py-3 px-4 text-center text-left font-semibold text-gray-300">PRODUCTO ID</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ALMACEN ID</th>
+                                <th className="py-3 px-4 text-center text-left font-semibold text-gray-300">PRODUCTO</th>
+                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ALMACEN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">CANTIDAD</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {mostrar}
+                            {mostrarFilas}
                         </tbody>
                     </table>
                 </div>
             </main>
         </>
-    );
-    
-    function DashboardStockFila(props) {
-        const abrirAgregarStock = () => {
-            document.getElementById('modalAgregar').classList.remove('hidden');
-            document.getElementById('tituloModal').textContent = 'Añadir Stock ';
-            props.setId(props.id);
-            props.setProductoId(props.producto_id);
-            props.setAlmacenId(props.almacen_id);
-            // props.setProductoId(props.nombre_producto);
-            // props.setAlmacenId(props.nombre_almacen);
-            props.setCantidad(props.cantidad);
-        };
+    )
+}    
 
-        const abrirDisminuirStock = () => {
-            document.getElementById('modalEditar').classList.remove('hidden');
-            document.getElementById('tituloModal').textContent = 'Disminuir Stock ';
-            props.setId(props.id);
-            props.setProductoId(props.producto_id);
-            props.setAlmacenId(props.almacen_id);
-            // props.setProductoId(props.nombre_producto);
-            // props.setAlmacenId(props.nombre_almacen);
-            props.setCantidad(props.cantidad);
-        };
-    
-        return (
-            <>
-            <tr className="border-b border-b-[#394050] w-1/2">
-                <td className="text-white font-light py-2 px-4 " >{props.index}</td>
-                <td className="text-white font-light text-center py-2 px-4 ">{props.producto_id}</td>
-                <td className="text-white font-light text-center py-2 px-4 ">{props.almacen_id}</td>
-                {/* <td className="text-white font-light text-center py-2 px-4 ">{props.nombre_producto}</td>
-                <td className="text-white font-light text-center py-2 px-4 ">{props.nombre_almacen}</td> */}
-                <td className="text-white font-light text-center py-2 px-4  truncate max-w-xs break-words">{props.cantidad}</td>
-                <td className="text-white font-light text-center py-2 px-4 ">
-                    <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirAgregarStock}>Aumentar</button>
-                    <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={abrirDisminuirStock}>Disminuir</button>
-                </td>
-            </tr>
-            
-            </>
-        )
+function DashboardStocksFila(props) {
+    let n_almacen;
+    let n_producto;
+    const abrirAgregarStock = () => {
+        document.getElementById('modalAgregar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Añadir Stock ';
+        props.setId(props.id);
+        props.setProductoId(props.producto_id);
+        props.setAlmacenId(props.almacen_id);
+        props.setCantidad(props.cantidad);
+    };
+
+    const abrirDisminuirStock = () => {
+        document.getElementById('modalEditar').classList.remove('hidden');
+        document.getElementById('tituloModal').textContent = 'Disminuir Stock ';
+        props.setId(props.id);
+        props.setProductoId(props.producto_id);
+        props.setAlmacenId(props.almacen_id);
+        props.setCantidad(props.cantidad);
+    };
+
+    for (const producto of props.productos) {
+        if (producto.id == props.producto_id) {
+            n_producto = producto.nombre;
+        }
     }
 
-}    
+    for (const almacen of props.almacenes) {
+        if (almacen.id == props.almacen_id) {
+            n_almacen = almacen.nombre;
+        }
+    }
+
+    return (
+        <tr className="border-b border-b-[#394050] w-1/2">
+            <td className="text-white font-light py-2 px-4">{props.index}</td>
+            <td className="text-white font-light text-center py-2 px-4">{n_producto}</td>
+            <td className="text-white font-light text-center py-2 px-4">{n_almacen}</td>
+            <td className="text-white font-light text-center py-2 px-4 truncate max-w-xs break-words">{props.cantidad}</td>
+            <td className="text-white font-light text-center py-2 px-4">
+                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirAgregarStock}>Aumentar</button>
+                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={abrirDisminuirStock}>Disminuir</button>
+            </td>
+        </tr>
+    );
+}
+
+function AlmacenOption(props) {
+    return (
+        <option value={props.id}>{props.nombre}</option>
+    );
+}
+
+function ProductoOption(props) {
+    return (
+        <option value={props.id}>{props.nombre}</option>
+    );
+}
