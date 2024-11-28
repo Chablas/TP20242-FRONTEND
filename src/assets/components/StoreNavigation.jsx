@@ -75,6 +75,7 @@ export default function StoreNavigation() {
                                     <div className="flex h-full space-x-8">
                                         <Link to="/categorias" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Productos</Link>
                                         <Link to="/servicios" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Servicios</Link>
+                                        <Link to="/Contactenos" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Contactenos</Link>
                                         <a href="/nosotros" className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Empresa</a>
                                     </div>
                                 </div>

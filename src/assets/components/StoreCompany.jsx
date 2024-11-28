@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Footer from "../components/Footer.jsx";
 function StoreCompany() {
   // Componente QuienesSomos
   const QuienesSomos = () => (
@@ -52,7 +52,7 @@ function StoreCompany() {
           </p>
         </div>
       </div>
-  
+      
     </div>
   );
   
@@ -118,11 +118,12 @@ function StoreCompany() {
   
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="">
       <h1 className="text-2xl font-bold">Nuestra Empresa</h1>
       <QuienesSomos />
       <VisionyMision />
       <ClientesSatisfechos />
+      <Footer/>
     </div>
   );
 }

@@ -11,7 +11,8 @@ import imagen4 from "../images/inicio/tarjeta_grafica.jpg"
 import imagen5 from "../images/inicio/teclado.jfif"
 import imagen6 from "../images/inicio/cpu.png"
 import imagen7 from "../images/inicio/ram.jpg"
-
+import WhatsappButtom from "../iconP/WhatsappButtom.jsx";
+import Footer from "../components/Footer.jsx";
 export default function PromoSections() {
     return (
         <>
@@ -80,12 +81,13 @@ export default function PromoSections() {
     </a>
 
 </div>
+
                            
-                            </div>
+                            </div><WhatsappButtom/> 
                         </div>
-                    </div>
+                    </div>  
                 </div>
-            </div >
+            </div ><Footer/>
             {/* (FIN) COMPONENTE TAILWIND CSS PROMO SECTIONS / WITH IMAGE TILES */}
         </>
     )

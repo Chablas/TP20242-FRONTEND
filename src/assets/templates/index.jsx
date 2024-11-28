@@ -23,14 +23,15 @@ import Register from "../components/Register.jsx";
 import RestorePassword from "../components/RestorePassword.jsx";
 import DashboardAlmacen from "../components/DashboardAlmacen.jsx";
 import DashboardServicios from "../components/DashboardServicios.jsx";
-import Footer from "../components/Footer.jsx";
+
 import ServicePreviews from "../components/StoreServicePreview.jsx";
 import StoreServiciosOverview from "../components/StoreServiciosOverview.jsx";
 import { UserProvider } from "../context/UserContext.jsx";
+import Contactenos from "../components/Contactenos.jsx";
+
 
 
 // Páginas
-
 function P_Store_Servicios_Overview() {
     return (
         <>
@@ -50,6 +51,17 @@ function P_Store_Index() {
         </>
     )
 }
+
+function P_Store_Contactenos() {
+    return (
+        <>
+            <StoreNavigation />
+            <Contactenos/>
+            <BarraLateralCarritoCompras />
+        </>
+    )
+}
+
 
 function P_Store_Productos_Categorias() {
     return (
@@ -196,7 +208,7 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<P_Store_Index />} />
-                
+                <Route path="/Contactenos" element={<P_Store_Contactenos />} />
                 <Route path="/nosotros" element={<P_Store_Company />} />                
                 <Route path="/login" element={<P_Login />} />
                 <Route path="/register" element={<P_Register/>} />
@@ -216,10 +228,10 @@ function App() {
                 <Route path="/dashboard/usuarios" element={<P_Dashboard_Usuarios />}/>
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
-            
-                
+    
             </Routes>
-            <Footer/>
+
+        
         </BrowserRouter>
     )
 }
