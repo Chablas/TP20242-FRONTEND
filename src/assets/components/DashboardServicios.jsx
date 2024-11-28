@@ -31,7 +31,7 @@ export default function DashboardServicios() {
     const [precio, setPrecio] = useState('');
     const [garantia, setGarantia] = useState('');
     const [estado, setEstado] = useState(false);
-    const [imagen, setImagen] = useState('');
+    const [imagen, setImagen] = useState(null);
     const [condiciones_previas, setCondicionesPrevias] = useState('');
     const [servicio_incluye, setServicioIncluye] = useState('');
     const [servicio_no_incluye, setServicioNoIncluye] = useState('');
@@ -94,15 +94,6 @@ export default function DashboardServicios() {
         e.preventDefault();
         
         // Validar URL antes de proceder
-        const patronURL = /^(https?:\/\/)[^\s$.?#].[^\s]*$/;
-        if (!patronURL.test(imagen)) {
-            Swal.fire({
-                title: "URL inválida",
-                text: "Por favor, corrija la URL antes de registrar.",
-                icon: "error",
-            });
-            return; // Detiene el envío si la URL es inválida
-        }
         
         // Validar precio antes de proceder
         if (!validarPrecio(precio)) {
@@ -119,7 +110,7 @@ export default function DashboardServicios() {
                 precio: precio,
                 garantia: garantia,
                 estado: estado,
-                imagen: imagen,
+                imagen: "imagen",
                 condiciones_previas: condiciones_previas,
                 servicio_incluye: servicio_incluye,
                 servicio_no_incluye: servicio_no_incluye,
@@ -136,10 +127,8 @@ export default function DashboardServicios() {
             const resultado = await response.json();
     
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success",
-                });
+                const formData = new FormData();
+                formData.append("file", imagen);
                 // Resetear campos
                 setId('');
                 setNombre('');
@@ -147,13 +136,33 @@ export default function DashboardServicios() {
                 setPrecio('');
                 setGarantia('');
                 setEstado(false);
-                setImagen('');
                 setCondicionesPrevias("");
                 setServicioIncluye('');
                 setServicioNoIncluye('');
                 setRestricciones('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/servicio/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/servicio/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Servicio registrado exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -181,7 +190,7 @@ export default function DashboardServicios() {
                 precio: precio,
                 garantia: garantia,
                 estado: Boolean(estado),
-                imagen: imagen,
+                imagen: "imagen",
                 condiciones_previas: condiciones_previas,
                 servicio_incluye: servicio_incluye,
                 servicio_no_incluye: servicio_no_incluye,
@@ -198,10 +207,8 @@ export default function DashboardServicios() {
             const resultado = await response.json();
             
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                });
+                const formData = new FormData();
+                formData.append("file", imagen);
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
@@ -213,8 +220,29 @@ export default function DashboardServicios() {
                 setServicioIncluye('');
                 setServicioNoIncluye('');
                 setRestricciones('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/servicio/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/servicio/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Servicio actualizado exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -365,18 +393,9 @@ export default function DashboardServicios() {
                             </select>
                         </div>
                         <div className="mb-4">
-                                    <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                                    <input
-                                        id="imagenBien"
-                                        type="text"
-                                        value={imagen}
-                                        onChange={(e) => setImagen(e.target.value)} // Actualiza el valor normalmente
-                                        onBlur={() => validarURL(imagen)} // Valida cuando se pierde el foco
-                                        maxLength="1000"
-                                        className="w-full px-4 py-2 border rounded-lg"
-                                        required
-                                    />
-                                </div>
+                            <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBien" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBien" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
@@ -444,18 +463,9 @@ export default function DashboardServicios() {
                             </select>
                         </div>
                         <div className="mb-4">
-                                    <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
-                                    <input
-                                        id="imagenBienPUT"
-                                        type="text"
-                                        value={imagen}
-                                        onChange={(e) => setImagen(e.target.value)} // Actualiza el valor normalmente
-                                        onBlur={() => validarURL(imagen)} // Valida cuando se pierde el foco
-                                        maxLength="1000"
-                                        className="w-full px-4 py-2 border rounded-lg"
-                                        required
-                                    />
-                                </div>
+                            <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
+                        </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBienPUT" className="block text-gray-700">Condiciones Previas</label>
                             <input id="marcaBienPUT" type="text" value={condiciones_previas} onChange={(e) => setCondicionesPrevias(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />

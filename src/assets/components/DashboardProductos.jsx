@@ -30,7 +30,7 @@ export default function DashboardProductos() {
     const [precio, setPrecio] = useState('');
     const [garantia, setGarantia] = useState('');
     const [estado, setEstado] = useState(false); // Cambiado a booleano
-    const [imagen, setImagen] = useState('');
+    const [imagen, setImagen] = useState(null);
     const [marca, setMarca] = useState('');
     const [especificaciones_tecnicas, setEspecificacionesTecnicas] = useState('');
     const [categoria_id, setCategoriaId] = useState('');
@@ -61,7 +61,7 @@ export default function DashboardProductos() {
                 precio: precio,
                 garantia: garantia,
                 estado: estado, // Ahora es booleano
-                imagen: imagen,
+                imagen: "imagen",
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
                 categoria_id: opcionSeleccionada,
@@ -77,22 +77,41 @@ export default function DashboardProductos() {
             const resultado = await response.json();
             
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                })
+                const formData = new FormData();
+                formData.append("file", imagen);
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
                 setEstado('');
-                setImagen('');
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/bien/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/bien/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Producto registrado exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -120,7 +139,7 @@ export default function DashboardProductos() {
                 precio: precio,
                 garantia: garantia,
                 estado: Boolean(estado),
-                imagen: imagen,
+                imagen: "imagen",
                 marca: marca,
                 especificaciones_tecnicas: especificaciones_tecnicas,
                 categoria_id: categoria_id
@@ -136,22 +155,40 @@ export default function DashboardProductos() {
             const resultado = await response.json();
             
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                });
+                const formData = new FormData();
+                formData.append("file", imagen);
                 setId('');
                 setNombre('');
                 setInformacionGeneral('');
                 setPrecio('');
                 setGarantia('');
                 setEstado('');
-                setImagen('');
                 setMarca('');
                 setEspecificacionesTecnicas('');
                 setCategoriaId('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/bien/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/bien/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Producto actualizado exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -302,7 +339,7 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBien" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBien" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBien" className="block text-gray-700">Marca</label>
@@ -357,7 +394,7 @@ export default function DashboardProductos() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="imagenBienPUT" className="block text-gray-700">Imagen</label>
-                            <input id="imagenBienPUT" type="text" value={imagen} onChange={(e) => setImagen(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="marcaBienPUT" className="block text-gray-700">Marca</label>
