@@ -18,6 +18,7 @@ export default function Categoria() {
     const [descripcion, setDescripcion] = useState('');
     const [url, setUrl] = useState('');
     const [mostrarFilas, setMostrarFilas] = useState([]);
+    const [imagen, setImagen] = useState(null);
 
     const enviarDatos = async (e) => {
         e.preventDefault();
@@ -28,7 +29,7 @@ export default function Categoria() {
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
-                imagen: url
+                imagen: "url"
             });
 
             const request = new Request("https://compusave-backend.onrender.com/post/categoria", {
@@ -41,16 +42,38 @@ export default function Categoria() {
             const resultado = await response.json();
             
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                });
+                const formData = new FormData();
+                formData.append("file", imagen);
                 setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/categoria/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/categoria/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Categoría registrada exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
+
+                
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -76,7 +99,7 @@ export default function Categoria() {
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
-                imagen: url
+                imagen: "url"
             });
     
             const request = new Request(`https://compusave-backend.onrender.com/put/categoria/${id}`, {
@@ -89,16 +112,36 @@ export default function Categoria() {
             const resultado = await response.json();
     
             if (response.ok) {
-                Swal.fire({
-                    title: `${resultado.detail}`,
-                    icon: "success"
-                });
+                const formData = new FormData();
+                formData.append("file", imagen);
                 setId('');
                 setNombre('');
                 setDescripcion('');
                 setUrl('');
-                cerrarModal();
-                obtenerDatosYActualizarFilas();
+
+                const headers2 = new Headers();
+                headers2.append("Content-Type", "application/json");
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/categoria/${resultado.detail}`, {
+                    method: "GET",
+                    headers: headers2,
+                });
+        
+                const response2 = await fetch(request2);
+                const datos = await response2.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/put/categoria/subir_imagen/${datos.id}`, {
+                    method: "PUT",
+                    body: formData,
+                });
+                const response3 = await fetch(request3);
+                const resultado3 = await response3.json();
+                if (response3.ok) {
+                    Swal.fire({
+                        title: `Categoría actualizada exitosamente`,
+                        icon: "success"
+                    });
+                    cerrarModal();
+                    obtenerDatosYActualizarFilas();
+                }
             } else {
                 Swal.fire({
                     title: `${resultado.detail}`,
@@ -224,7 +267,7 @@ export default function Categoria() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
-                            <input type="text" id="nombreCategoria" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
@@ -247,7 +290,7 @@ export default function Categoria() {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="nombreCategoria" className="block text-gray-700">Imagen</label>
-                            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} maxLength="1000" className="w-full px-4 py-2 border rounded-lg" required />
+                            <input type="file" id="nombreCategoria" accept="image/*" onChange={(e) => setImagen(e.target.files[0])} className="w-full px-4 py-2 border rounded-lg" required />
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onClick={cerrarModal}>Cancelar</button>
