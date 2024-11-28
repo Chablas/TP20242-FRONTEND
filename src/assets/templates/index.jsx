@@ -29,6 +29,7 @@ import StoreServiciosOverview from "../components/StoreServiciosOverview.jsx";
 import { UserProvider } from "../context/UserContext.jsx";
 import Contactenos from "../components/Contactenos.jsx";
 
+import Stock from "../components/DashboardStock.jsx"
 
 
 // Páginas
@@ -132,6 +133,16 @@ function P_Dashboard_Proveedores() {
     )
 }
 
+function P_Dashboard_Stock() {
+    return (
+        <>
+            <DashboardNav />
+            <Stock />
+        </>
+    )
+}
+
+
 function P_Dashboard_Categorias() {
     return (
         <>
@@ -229,6 +240,9 @@ function App() {
                 <Route path="/dashboard/servicios" element={<P_Dashboard_Servicios />}/>
                 <Route path="/dashboard/almacen" element={<P_Dashboard_Almacen />}/>
     
+                <Route path="/dashboard/stock" element={<P_Dashboard_Stock />}/>
+            
+                
             </Routes>
 
         
