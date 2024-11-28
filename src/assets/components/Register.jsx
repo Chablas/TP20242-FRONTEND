@@ -19,13 +19,19 @@ export default function Register() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
   const handleSubmit = async () => {
     setError("");
 
     if (!emailRegex.test(email)) {
       setError("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      setError("La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una minúscula y un número.");
       return;
     }
 
@@ -64,10 +70,6 @@ export default function Register() {
   const handleDialogClose = () => {
     setDialogOpen(false);
     navigate("/login");
-  };
-
-  const handleTestDialogOpen = () => {
-    setDialogOpen(true);
   };
 
   return (
@@ -150,17 +152,6 @@ export default function Register() {
                 Ya tienes una cuenta? <Link to="/login" className="text-purple-600 hover:underline ml-1 whitespace-nowrap font-semibold">Inicia sesión aquí</Link>
               </p>
             </form>
-
-            {/*
-            <div className="!mt-4">
-              <button
-                type="button"
-                onClick={handleTestDialogOpen}
-                className="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
-              >
-                Probar Modal
-              </button>
-            </div>*/}
           </div>
         </div>
       </div>
