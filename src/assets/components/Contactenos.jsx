@@ -1,21 +1,25 @@
 "use client";
-// CONTACTANOS
 import React, { useRef } from "react";
 import emailjs from 'emailjs-com';
 import Footer from "../components/Footer.jsx";
 
 export default function Contactenos() {
   const refForm = useRef();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const serviceId = "service_vm9d5nw";
     const tempateId = "template_1i2h1vo";
-    const apikey = "tdcKsih27QA1IwtLH"; //POST
+    const apikey = "1EFHl-ZHJbDH2Ve3i"; //POST
     emailjs
       .sendForm(serviceId, tempateId, refForm.current, apikey) //recibe los datos
-      .then((result) => console.log(result.text)) //si recibe muestra el texto
+      .then((result) => {
+        console.log(result.text); //si recibe muestra el texto
+        refForm.current.reset(); // Limpiar los campos después de un envío exitoso
+      })
       .catch((error) => console.error(error)); //sino recibe muestra el error en la consola
   };
+
   return (
     <div className="bg-white w-screen">
       {/* Sección de encabezado */}
@@ -26,7 +30,6 @@ export default function Contactenos() {
           </h1>
           <div className="absolute -botto m-4 left-1/2 transform -translate-x-1/2 w-1/3 h-[1.5px] bg-black"></div>
         </div>
-    
       </div>
 
       {/* Sección de formulario */}
@@ -180,15 +183,13 @@ export default function Contactenos() {
                     Enviar
                   </button>
                 </div>
-
                 <div className="mt-4 text-center text-lg font-semibold"></div>
               </div>
             </div>
           </form>
-
         </div>
       </section>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
