@@ -8,8 +8,8 @@ export default function Contactenos() {
   const refForm = useRef();
   const handleSubmit = (event) => {
     event.preventDefault();
-    const serviceId = "service_4kv157c";
-    const tempateId = "template_wna8k2d";
+    const serviceId = "service_vm9d5nw";
+    const tempateId = "template_1i2h1vo";
     const apikey = "tdcKsih27QA1IwtLH"; //POST
     emailjs
       .sendForm(serviceId, tempateId, refForm.current, apikey) //recibe los datos
