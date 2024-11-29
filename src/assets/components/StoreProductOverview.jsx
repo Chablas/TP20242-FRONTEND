@@ -3,7 +3,41 @@ import { useParams, Link } from 'react-router-dom';
 
 export default function StoreServiciosOverview() {
     const { id } = useParams();
-    const [producto, setServicio] = useState(null);
+    const [producto, setProducto] = useState(null);
+
+    const añadirCarrito = async (e) => {
+        e.preventDefault();
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            const cuerpo = JSON.stringify({
+                producto_id: producto.id,
+                cantidad: 1,
+            });
+
+            const request = new Request("https://compusave-backend.onrender.com/put/carrito_items/1", {
+                method: "PUT",
+                headers: headers,
+                body: cuerpo,
+            });
+
+            const response = await fetch(request);
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                Swal.fire({
+                    title: `Producto registrado exitosamente`,
+                    icon: "success"
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: `Hubo un error...`,
+                icon: "error"
+            })
+        }
+    };
 
     useEffect(() => {
         if (!id) {
@@ -18,7 +52,7 @@ export default function StoreServiciosOverview() {
                 
                 const servicio = datos.find(item => item.id === parseInt(id));
 
-                setServicio(servicio);
+                setProducto(servicio);
             } catch (error) {
                 console.error("Error al obtener los datos:", error);
             }
@@ -106,7 +140,7 @@ export default function StoreServiciosOverview() {
 
                         {/* Botón Añadir al carrito */}
                         <form className="mt-10">
-                            <button type="submit" className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            <button type="submit" onClick={añadirCarrito} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 Añadir al carrito
                             </button>
                         </form>

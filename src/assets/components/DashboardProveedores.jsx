@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
+import DashboardProveedoresFila from "./DashboardProveedoresFila";
 import Swal from "sweetalert2";
+import * as XLSX from 'xlsx';
 
 export default function Proveedor() {
+    
     // Abre el modal para agregar
     const abrirModalAgregar = () => {
         document.getElementById('modalAgregar').classList.remove('hidden');
@@ -25,8 +27,8 @@ export default function Proveedor() {
     // Abre el modal para editar Proveedor
 
     // Manejador del formulario
-   
-/*     const submit = () => {
+    /*
+    const submit = () => {
         alert('Proveedor registrada o editada');
         cerrarModal();
     }
@@ -34,7 +36,7 @@ export default function Proveedor() {
         e.preventDefault();
         
     });
-   */
+    */
     const [errorMessage, setErrorMessage] = useState('');
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
@@ -42,7 +44,8 @@ export default function Proveedor() {
     const [direccion, setDireccion] = useState('');
     const [correo, setCorreo] = useState('');
     const [telefono, setTelefono] = useState('');
-    const [mostrarFilas, setMostrarFilas] = useState([]);// Estado para almacenar la lista de almacenes
+    const [mostrarFilas, setMostrarFilas] = useState([]);
+
 
     const registrarDatos = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -284,17 +287,25 @@ export default function Proveedor() {
             });
         }
     };
+
     const eliminar = async (id) => {
+      
+
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+
+        
+
             const request = new Request(`https://compusave-backend.onrender.com/delete/proveedor/${id}`, {
                 method: "DELETE",
                 headers: headers,
       
             });
+
             const response = await fetch(request);
             const resultado = await response.json();
+            
             if (response.ok) {
                 Swal.fire({
                         title: `${resultado.detail}`,
@@ -355,6 +366,8 @@ export default function Proveedor() {
 
 
     const [mostrar, setMostrar] = useState([]); // Estado para guardar los datos
+    
+
     const obtenerDatos = async () => {
             
         try {
@@ -367,16 +380,26 @@ export default function Proveedor() {
             const response = await fetch(request);
             const datos = await response.json();
 
-            const proveedores = datos.map((x, index) => {
-                return <DashboardProveedoresFila 
-                setId={setId} 
-                eliminar={eliminar}
-                index={index + 1} // Pasar el índice como prop
+            const proveedores = datos.map((x,index) => {
+                return (
+                <DashboardProveedoresFila 
                 key={x.id} 
                 {...x} 
-                />
-            });
+                setId={setId} 
+                setNombre={setNombre}
+                setRuc={setRuc}                 
+                setDireccion={setDireccion}
+                setCorreo={setCorreo} 
+                setTelefono={setTelefono}               
+                
 
+                mostrarProductos={mostrarProductos}
+                eliminar={eliminar} 
+                index={index + 1} // Pasar el índice como prop
+                    />
+                );
+            });
+            setMostrarFilas(proveedores);
             setMostrar(proveedores);
         } catch (error) {
             console.error("Error al obtener los datos:", error);
@@ -387,66 +410,21 @@ export default function Proveedor() {
     }, []);
 
 
-    const obtenerDatosYActualizarFilas = async () => {
-        try {
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            const request = new Request("https://compusave-backend.onrender.com/get/proveedores", {
-                method: "GET",
-                headers: headers,
-            });
+    const exportToExcel = () => {
+        const data = mostrarFilas.map(row => ({
+            ID: row.key, // Asegúrate de utilizar la propiedad correcta, como `key` o `props.id`
+            Nombre: row.props.nombre,
+            Ruc: `${row.props.ruc}`,
+            Direccion: `${row.props.direccion}`,
+            Correo: row.props.correo,
+            Telefono: row.props.telefono,
+        }));
     
-            const response = await fetch(request);
-            const datos = await response.json();
-    
-            // Generamos las filas para el componente DashboardCategoriaFila
-            const proveedores = datos.map((x, index) => (
-                <DashboardProveedoresFila
-                    key={x.id}
-                    {...x}
-                    setId={setId}
-                    setNombre={setNombre}
-                    setDireccion={setDireccion}
-                    setRuc={setRuc}
-                    setCorreo={setCorreo}
-                    setTelefono={setTelefono}
-                    index={index + 1}
-                />
-            ));
-    
-            setMostrarFilas(proveedores);
-        } catch (error) {
-            console.error('Error al obtener a los Proveedores:', error);
-            Swal.fire({
-                title: `Hubo un error al obtener las Proveedores.`,
-                icon: "error"
-            });
-        }
-    };
-    
-    // Se ejecuta al cargar inicialmente la página
-    useEffect(() => {
-        obtenerDatosYActualizarFilas();
-    }, []);
-
-   // Función para exportar los datos a Excel
-   const exportToExcel = () => {
-    const data = mostrarFilas.map(row => ({
-        ID: row.key, // Asegúrate de utilizar la propiedad correcta, como `key` o `props.id`
-        Nombre: row.props.nombre,
-        Ruc: `${row.props.ruc}`,
-        Direccion: `${row.props.direccion}`,
-        Correo: row.props.correo,
-        Telefono: row.props.telefono,
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Proveedores");
-    XLSX.writeFile(workbook, "Proveedores.xlsx");
-};    
-
-
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Proveedores");
+        XLSX.writeFile(workbook, "Proveedores.xlsx");
+    }; 
 
     
     return (
@@ -608,47 +586,5 @@ export default function Proveedor() {
                 </div>
             </main>
         </>
-    )
-}
-
-function DashboardProveedoresFila(props) {
-    const abrirModalEdicion = () => {
-        document.getElementById('modalEditar').classList.remove('hidden');
-        document.getElementById('tituloModal').textContent = 'Editar Proveedor ' + props.id;  // Usar props.id
-        props.setId(props.id);
-        props.setNombre(props.nombre);
-        props.setRuc(props.ruc);
-        props.setDireccion(props.direccion);
-        props.setCorreo(props.correo);
-        props.setTelefono(props.telefono);
-    
-    };
-
-    // Simulación de eliminar categoría
-    const eliminarProveedor = (id = 1) => {
-        if (confirm('¿Estás seguro de eliminar al Proveedor ' + id + '?')) {
-            alert('Proveedor ' + id + ' eliminado.');
-            props.eliminar(id)
-        }
-    };
-    const mostrarProveedor = (id = 1) => {
-        
-    };
-
-    return (
-        <tr className="border-b border-b-[#394050]">
-            <td className="text-white font-light py-2 px-4">{props.index}</td>
-            <td className="text-white font-light py-2 px-4">{props.nombre}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.ruc}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.direccion}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.correo}</td>
-            <td className="text-white font-light text-center py-2 px-4">{props.telefono}</td>
-            <td className="text-white font-light text-center py-2 px-4">
-                <button className="font-normal text-blue-500 py-1 px-2 rounded-md hover:text-white hover:bg-blue-500 ml-4" onClick={()=>mostrarProveedor(props.id)}>Mostrar</button>
-                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500 ml-4 " onClick={()=>abrirModalEdicion(props.id)}>Editar</button>
-                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={()=>eliminarProveedor(props.id)}>Eliminar</button>
-                
-            </td>
-        </tr>
     )
 }
