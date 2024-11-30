@@ -1,10 +1,16 @@
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import logo from "../images/logo.jpg";
+import { UserContext } from "../context/UserContext";
 
 export default function StoreNavigation() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [token, setToken] = useContext(UserContext);
+
+    const manejarCerrarSesion = () => {
+        setToken(null);
+    }
 
     const handleOpenCart = () => {
         const slideOver = document.getElementById('slide-over');
@@ -81,11 +87,17 @@ export default function StoreNavigation() {
                                 </div>
 
                                 <div className="ml-auto flex items-center">
-                                    <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                                    {!token && <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                                        
                                         <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-gray-800">Iniciar Sesión</Link>
                                         <span className="h-6 w-px bg-gray-200" aria-hidden="true"></span>
                                         <Link to="/register" className="text-sm font-medium text-gray-700 hover:text-gray-800">Crear cuenta</Link>
-                                    </div>
+                                    </div>}
+
+                                    {token && <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                                        <button onClick={manejarCerrarSesion} className="text-sm font-medium text-gray-700 hover:text-gray-800">Cerrar Sesión</button>
+                                    </div>}
+                                    
 
                                     <div className="flex lg:ml-6">
                                         <a href="#" className="p-2 text-gray-400 hover:text-gray-500">
