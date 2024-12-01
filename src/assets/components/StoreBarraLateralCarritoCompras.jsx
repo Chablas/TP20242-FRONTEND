@@ -1,11 +1,83 @@
 /* Cosas de React */
-import React, { useEffect } from "react"
-
-/* Imágenes */
-import imagen8 from "../images/productos/1/12.jpg"
-import imagen9 from "../images/productos/2/21.jpg"
+import React, { useEffect, useContext, useState } from "react"
+import { UserContext } from "../context/UserContext";
 
 export default function BarraLateralCarritoCompras() {
+    const [token, setToken] = useContext(UserContext);
+    const [mostrar, setMostrar] = useState([]);
+
+    const obtenerDatosCarrito = async () => {
+        try {
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+            const request0 = new Request("https://compusave-backend.onrender.com/auth/validar_usuario/yo", {
+                method: "GET",
+                headers: headers,
+            })
+            const response0 = await fetch(request0);
+            const datos0 = await response0.json();
+
+            const request = new Request(`https://compusave-backend.onrender.com/get/carritos_items/${datos0.id}`, {
+                method: "GET",
+                headers: headers,
+            });
+    
+            const response = await fetch(request);
+            const datos = await response.json();
+
+            const request1 = new Request(`https://compusave-backend.onrender.com/get/bienes`, {
+                method: "GET",
+                headers: headers,
+            });
+            const response1 = await fetch(request1);
+            const datos1 = await response1.json();
+
+            const request2 = new Request(`https://compusave-backend.onrender.com/get/categorias`, {
+                method: "GET",
+                headers: headers,
+            });
+            const response2 = await fetch(request2);
+            const datos2 = await response2.json();
+
+            const filtradoDatos = datos1.filter((x)=>{
+                for (const producto of datos) {
+                    if (producto.producto_id == x.producto_id) {
+                        return true;
+                    }
+                }
+            })
+
+            let infoCompleta = filtradoDatos.map((x)=>{
+                for (const dato of datos) {
+                    if (dato.producto_id == x.producto_id) {
+                        return {...x, cantidad: dato.cantidad};
+                    }
+                }
+                
+            })
+
+            infoCompleta = infoCompleta.map((x)=>{
+                for (const dato of datos2) {
+                    if (dato.id == x.categoria_id) {
+                        return {...x, categoria: dato.nombre};
+                    }
+                }
+            })
+            
+            const mostrar = infoCompleta.map((x) => (
+                <CarritoItems
+                    key={x.id}
+                    {...x}
+                />
+            ))
+            setMostrar(mostrar);
+    
+        } catch (error) {
+            console.error('Error al obtener los datos del carrito:', error);
+        }
+    };
+
     const handleCloseCart = () => {
         const slideOver = document.getElementById('slide-over');
         slideOver.classList.remove('block');
@@ -18,37 +90,17 @@ export default function BarraLateralCarritoCompras() {
         if (slideOver) {
             slideOver.classList.add('hidden');
         }
+        obtenerDatosCarrito();
     }, []);
     return (
         <>
-            
             {/* (INICIO) COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER */}
             <div id="slide-over" className="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-                {/*
-            Background backdrop, show/hide based on slide-over state.
-
-            Entering: "ease-in-out duration-500"
-            From: "opacity-0"
-            To: "opacity-100"
-            Leaving: "ease-in-out duration-500"
-            From: "opacity-100"
-            To: "opacity-0"
-            */}
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
                 <div className="fixed inset-0 overflow-hidden">
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                            {/*
-                        Slide-over panel, show/hide based on slide-over state.
-
-                        Entering: "transform transition ease-in-out duration-500 sm:duration-700"
-                        From: "translate-x-full"
-                        To: "translate-x-0"
-                        Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
-                        From: "translate-x-0"
-                        To: "translate-x-full"
-                        */}
                             <div className="pointer-events-auto w-screen max-w-md">
                                 <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
@@ -73,66 +125,7 @@ export default function BarraLateralCarritoCompras() {
                                         <div className="mt-8">
                                             <div className="flow-root">
                                                 <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                                    <li className="flex py-6">
-                                                        <div
-                                                            className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src={imagen8}
-                                                                alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
-                                                                className="h-full w-full object-cover object-center" />
-                                                        </div>
-
-                                                        <div className="ml-4 flex flex-1 flex-col">
-                                                            <div>
-                                                                <div
-                                                                    className="flex justify-between text-base font-medium text-gray-900">
-                                                                    <h3>
-                                                                        <a href="#">Teclado Gamer Xtrike Me Kb-306 Sp Rgb Backlit</a>
-                                                                    </h3>
-                                                                    <p className="ml-4">S/69.90</p>
-                                                                </div>
-                                                                <p className="mt-1 text-sm text-gray-500">Teclados</p>
-                                                            </div>
-                                                            <div className="flex flex-1 items-end justify-between text-sm">
-                                                                <p className="text-gray-500">Cantidad: 1</p>
-
-                                                                <div className="flex">
-                                                                    <button type="button"
-                                                                        className="font-medium text-indigo-600 hover:text-indigo-500">Quitar</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    <li className="flex py-6">
-                                                        <div
-                                                            className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img src={imagen9}
-                                                                alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
-                                                                className="h-full w-full object-cover object-center" />
-                                                        </div>
-
-                                                        <div className="ml-4 flex flex-1 flex-col">
-                                                            <div>
-                                                                <div
-                                                                    className="flex justify-between text-base font-medium text-gray-900">
-                                                                    <h3>
-                                                                        <a href="#">Teclado Gamer Xtrike Me Kb-280 Sp Rgb Backlit</a>
-                                                                    </h3>
-                                                                    <p className="ml-4">S/59.90</p>
-                                                                </div>
-                                                                <p className="mt-1 text-sm text-gray-500">Teclados</p>
-                                                            </div>
-                                                            <div className="flex flex-1 items-end justify-between text-sm">
-                                                                <p className="text-gray-500">Cantidad: 1</p>
-
-                                                                <div className="flex">
-                                                                    <button type="button"
-                                                                        className="font-medium text-indigo-600 hover:text-indigo-500">Quitar</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-
-                                                    {/* More products... */}
+                                                    {mostrar}
                                                 </ul>
                                             </div>
                                         </div>
@@ -169,3 +162,36 @@ export default function BarraLateralCarritoCompras() {
     )
 }
 
+function CarritoItems(props) {
+    return (
+        <li className="flex py-6">
+            <div
+                className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                <img src={`https://storage.googleapis.com/tallerdeproyectoscompusave/${props.imagen}`}
+                    alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
+                    className="h-full w-full object-cover object-center" />
+            </div>
+
+            <div className="ml-4 flex flex-1 flex-col">
+                <div>
+                    <div
+                        className="flex justify-between text-base font-medium text-gray-900">
+                        <h3>
+                            <a href="#">{props.nombre}</a>
+                        </h3>
+                        <p className="ml-4">S/{props.precio}</p>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">{props.categoria}</p>
+                </div>
+                <div className="flex flex-1 items-end justify-between text-sm">
+                    <p className="text-gray-500">Cantidad: {props.cantidad}</p>
+
+                    <div className="flex">
+                        <button type="button"
+                            className="font-medium text-indigo-600 hover:text-indigo-500">Quitar</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    )
+}

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState, useContext } from 'react'; 
 import * as XLSX from 'xlsx'; // Importar SheetJS para exportar a Excel
 import Swal from "sweetalert2";
+import { UserContext } from "../context/UserContext";
 
 export default function Categoria() {
     const abrirModal = () => {
@@ -19,6 +20,7 @@ export default function Categoria() {
     const [url, setUrl] = useState('');
     const [mostrarFilas, setMostrarFilas] = useState([]);
     const [imagen, setImagen] = useState(null);
+    const [token, setToken] = useContext(UserContext);
 
     const enviarDatos = async (e) => {
         e.preventDefault();
@@ -26,6 +28,8 @@ export default function Categoria() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+
             const cuerpo = JSON.stringify({
                 nombre: nombre,
                 descripcion: descripcion,
@@ -58,9 +62,12 @@ export default function Categoria() {
         
                 const response2 = await fetch(request2);
                 const datos = await response2.json();
+                const headers3 = new Headers();
+                headers3.append("Authorization", "Bearer " + token);
                 const request3 = new Request(`https://compusave-backend.onrender.com/put/categoria/subir_imagen/${datos.id}`, {
                     method: "PUT",
                     body: formData,
+                    headers: headers3,
                 });
                 const response3 = await fetch(request3);
                 const resultado3 = await response3.json();
@@ -95,6 +102,7 @@ export default function Categoria() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
     
             const cuerpo = JSON.stringify({
                 nombre: nombre,
@@ -128,9 +136,12 @@ export default function Categoria() {
         
                 const response2 = await fetch(request2);
                 const datos = await response2.json();
+                const headers3 = new Headers();
+                headers3.append("Authorization", "Bearer " + token);
                 const request3 = new Request(`https://compusave-backend.onrender.com/put/categoria/subir_imagen/${datos.id}`, {
                     method: "PUT",
                     body: formData,
+                    headers: headers3,
                 });
                 const response3 = await fetch(request3);
                 const resultado3 = await response3.json();
@@ -161,6 +172,7 @@ export default function Categoria() {
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
             const request = new Request(`https://compusave-backend.onrender.com/delete/categoria/${id}`, {
                 method: "DELETE",
                 headers: headers,
