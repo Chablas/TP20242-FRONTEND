@@ -1,10 +1,12 @@
 /* Cosas de React */
 import React, { useEffect, useContext, useState } from "react"
 import { UserContext } from "../context/UserContext";
+import carritoVacioLogo from  "../images/carrito/carritoVacio.jpg"
 
 export default function BarraLateralCarritoCompras() {
     const [token, setToken] = useContext(UserContext);
     const [mostrar, setMostrar] = useState([]);
+    const [total, setTotal] = useState(null);
 
     const obtenerDatosCarrito = async () => {
         try {
@@ -18,13 +20,22 @@ export default function BarraLateralCarritoCompras() {
             const response0 = await fetch(request0);
             const datos0 = await response0.json();
 
-            const request = new Request(`https://compusave-backend.onrender.com/get/carritos_items/${datos0.id}`, {
-                method: "GET",
-                headers: headers,
-            });
+            if (token) {
+                const request = new Request(`https://compusave-backend.onrender.com/get/carritos_items/${datos0.id}`, {
+                    method: "GET",
+                    headers: headers,
+                });
+                const response = await fetch(request);
+                const datos = await response.json();
     
-            const response = await fetch(request);
-            const datos = await response.json();
+                const request3 = new Request(`https://compusave-backend.onrender.com/get/carrito/total/${datos0.id}`, {
+                    method: "GET",
+                    headers: headers,
+                });
+                const response3 = await fetch(request3);
+                const datos3 = await response3.json();
+                setTotal(datos3);
+            }
 
             const request1 = new Request(`https://compusave-backend.onrender.com/get/bienes`, {
                 method: "GET",
@@ -125,7 +136,16 @@ export default function BarraLateralCarritoCompras() {
                                         <div className="mt-8">
                                             <div className="flow-root">
                                                 <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                                    {mostrar}
+                                                    {token && mostrar}
+                                                    {!token && 
+                                                    <div>
+                                                        <div className="flex justify-center">
+                                                            <img src={carritoVacioLogo} />
+                                                        </div>
+                                                        <div className="flex justify-center">
+                                                            <p className="text-purple-800">Carrito vacío</p>
+                                                        </div>
+                                                    </div>}
                                                 </ul>
                                             </div>
                                         </div>
@@ -134,7 +154,8 @@ export default function BarraLateralCarritoCompras() {
                                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                                         <div className="flex justify-between text-base font-medium text-gray-900">
                                             <p>Subtotal</p>
-                                            <p>S/262.00</p>
+                                            {token && <p>{total}</p>}
+                                            {!token && <p>0</p>}
                                         </div>
                                         <p className="mt-0.5 text-sm text-gray-500">Envío e IGV calculados en Checkout.</p>
                                         <div className="mt-6">

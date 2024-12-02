@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState, useContext } from 'react'; 
 import { useParams, Link } from 'react-router-dom';
+import { UserContext } from "../context/UserContext";
 
 export default function StoreServiciosOverview() {
     const { id } = useParams();
     const [producto, setProducto] = useState(null);
+    const [token, setToken] = useContext(UserContext);
 
     const añadirCarrito = async (e) => {
         e.preventDefault();
         try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append("Authorization", "Bearer " + token);
+
+            const request0 = new Request("https://compusave-backend.onrender.com/auth/validar_usuario/yo", {
+                method: "GET",
+                headers: headers,
+            })
+
+            const response0 = await fetch(request0);
+            const datos0 = await response0.json();
 
             const cuerpo = JSON.stringify({
-                producto_id: producto.id,
+                producto_id: producto.producto_id,
                 cantidad: 1,
             });
 
-            const request = new Request("https://compusave-backend.onrender.com/put/carrito_items/1", {
+            const request = new Request(`https://compusave-backend.onrender.com/put/carritos_items/añadir/${datos0.id}`, {
                 method: "PUT",
                 headers: headers,
                 body: cuerpo,
@@ -24,18 +35,8 @@ export default function StoreServiciosOverview() {
 
             const response = await fetch(request);
             const resultado = await response.json();
-            
-            if (response.ok) {
-                Swal.fire({
-                    title: `Producto registrado exitosamente`,
-                    icon: "success"
-                });
-            }
+
         } catch (error) {
-            Swal.fire({
-                title: `Hubo un error...`,
-                icon: "error"
-            })
         }
     };
 
@@ -140,9 +141,16 @@ export default function StoreServiciosOverview() {
 
                         {/* Botón Añadir al carrito */}
                         <form className="mt-10">
+                            {!token && 
+                            <Link to="/login">
+                                <button type="submit" className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    Añadir al carrito
+                                </button>
+                            </Link>}
+                            {token && 
                             <button type="submit" onClick={añadirCarrito} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 Añadir al carrito
-                            </button>
+                            </button>}
                         </form>
                     </div>
 
@@ -158,11 +166,11 @@ export default function StoreServiciosOverview() {
                             </div>
                         </div>
                         
-                        <div class="mt-10">
-                            <h2 class="text-sm font-medium text-gray-900">Especificaciones Técnicas</h2>
+                        <div className="mt-10">
+                            <h2 className="text-sm font-medium text-gray-900">Especificaciones Técnicas</h2>
 
-                            <div class="mt-4 space-y-6">
-                                <p class="text-sm text-gray-600">{producto.especificaciones_tecnicas}</p>
+                            <div className="mt-4 space-y-6">
+                                <p className="text-sm text-gray-600">{producto.especificaciones_tecnicas}</p>
                             </div>
                         </div>
 
