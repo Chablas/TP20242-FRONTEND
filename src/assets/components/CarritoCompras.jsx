@@ -1,31 +1,27 @@
 import React, { useEffect, useState, useContext } from "react";
-import { UserContext } from "../context/UserContext"; // Asegúrate de tener configurado el contexto correctamente
-import carritoVacioLogo from "../images/carrito/carritoVacio.jpg"; // Asegúrate de tener la imagen correcta
+import { UserContext } from "../context/UserContext";
+import carritoVacioLogo from "../images/carrito/carritoVacio.jpg";
 
 const CarritoCompras = () => {
-  const [token, setToken] = useContext(UserContext); // Obtenemos el token desde el contexto
-  const [productos, setProductos] = useState([]); // Estado para los productos del carrito
-  const [total, setTotal] = useState(0); // Estado para el total del carrito
+  const [token, setToken] = useContext(UserContext);
+  const [productos, setProductos] = useState([]);
+  const [total, setTotal] = useState(0);
 
-  // Función para obtener los datos del carrito desde el backend
   const obtenerDatosCarrito = async () => {
     try {
-      if (!token) return; // Si no hay token, no hacemos la solicitud
+      if (!token) return;
 
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
-      headers.append("Authorization", `Bearer ${token}`); // Agregamos el token en las cabeceras
+      headers.append("Authorization", `Bearer ${token}`);
 
-      // Validamos el usuario
       const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
       const userData = await userResponse.json();
       const userId = userData.id;
 
-      // Obtenemos los productos del carrito
       const carritoResponse = await fetch(`https://compusave-backend.onrender.com/get/carritos_items/${userId}`, { headers });
       const carritoItems = await carritoResponse.json();
 
-      // Obtenemos los bienes y categorías
       const [bienesResponse, categoriasResponse] = await Promise.all([
         fetch("https://compusave-backend.onrender.com/get/bienes", { headers }),
         fetch("https://compusave-backend.onrender.com/get/categorias", { headers }),
@@ -34,7 +30,6 @@ const CarritoCompras = () => {
       const bienes = await bienesResponse.json();
       const categorias = await categoriasResponse.json();
 
-      // Combinamos los datos del carrito con los bienes y categorías
       const productosCompletos = carritoItems.map(item => {
         const bien = bienes.find(b => b.producto_id === item.producto_id);
         const categoria = categorias.find(c => c.id === bien.categoria_id);
@@ -46,130 +41,145 @@ const CarritoCompras = () => {
         };
       });
 
-      setProductos(productosCompletos); // Actualizamos los productos en el estado
+      setProductos(productosCompletos);
 
-      // Obtenemos el total del carrito
       const totalResponse = await fetch(`https://compusave-backend.onrender.com/get/carrito/total/${userId}`, { headers });
       const totalData = await totalResponse.json();
-      setTotal(totalData.total); // Actualizamos el total en el estado
+      setTotal(totalData.total);
     } catch (error) {
       console.error("Error al obtener los datos del carrito:", error);
     }
   };
 
-  // Función para añadir un producto al carrito
+  const actualizarEstadoCarrito = (productoId, cambioCantidad, precio) => {
+    setProductos(prevProductos =>
+      prevProductos.map(prod =>
+        prod.producto_id === productoId
+          ? { ...prod, cantidad: prod.cantidad + cambioCantidad }
+          : prod
+      )
+    );
+    setTotal(prevTotal => prevTotal + cambioCantidad * precio); // Actualizamos el total de forma optimista
+  };
+  
   const añadirProducto = async (productoId) => {
+    const producto = productos.find(prod => prod.producto_id === productoId);
+    if (!producto || !token) return;
+  
+    // Actualización optimista
+    actualizarEstadoCarrito(productoId, 1, producto.precio);
+  
     try {
-      if (!token) return; // Si no hay token, no hacemos la solicitud
-
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       headers.append("Authorization", `Bearer ${token}`);
-
+  
       const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
       const userData = await userResponse.json();
       const userId = userData.id;
-
+  
       const response = await fetch(
-        `https://compusave-backend.onrender.com/put/carritos_items/añadir/${userId}`, // Endpoint para añadir producto
+        `https://compusave-backend.onrender.com/put/carritos_items/añadir/${userId}`,
         {
           method: "PUT",
-          headers: headers,
+          headers,
           body: JSON.stringify({
             producto_id: productoId,
-            cantidad: 1, // Aumentamos la cantidad
+            cantidad: 1,
           }),
         }
       );
-
-      if (response.ok) {
-        console.log("Producto añadido correctamente.");
-        await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
-      } else {
+  
+      if (!response.ok) {
         console.error("Error al añadir producto:", response.statusText);
+        actualizarEstadoCarrito(productoId, -1, producto.precio); // Revertimos si hay error
       }
     } catch (error) {
       console.error("Error al añadir producto:", error);
+      actualizarEstadoCarrito(productoId, -1, producto.precio); // Revertimos si hay error
     }
   };
-
-  // Función para eliminar un producto del carrito
-// Función para eliminar todo el producto (toda la cantidad) del carrito
-const eliminarProducto = async (productoId, cantidad) => {
-  try {
-    if (!token) return; // Si no hay token, no hacemos la solicitud
-
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Authorization", `Bearer ${token}`);
-
-    const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
-    const userData = await userResponse.json();
-    const userId = userData.id;
-
-    const response = await fetch(
-      `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`, // Endpoint para quitar producto
-      {
-        method: "PUT",
-        headers: headers,
-        body: JSON.stringify({
-          producto_id: productoId,
-          cantidad: cantidad, // Enviamos la cantidad completa que debe eliminarse
-        }),
-      }
-    );
-
-    if (response.ok) {
-      console.log("Producto eliminado correctamente.");
-      await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
-    } else {
-      console.error("Error al eliminar producto:", response.statusText);
-    }
-  } catch (error) {
-    console.error("Error al eliminar producto:", error);
-  }
-};
-
-
-  // Función para quitar uno de los productos
+  
   const quitarProducto = async (productoId) => {
+    const producto = productos.find(prod => prod.producto_id === productoId);
+    if (!producto || !token || producto.cantidad === 0) return;
+  
+    // Actualización optimista
+    actualizarEstadoCarrito(productoId, -1, producto.precio);
+  
     try {
-      if (!token) return; // Si no hay token, no hacemos la solicitud
-
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       headers.append("Authorization", `Bearer ${token}`);
-
+  
       const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
       const userData = await userResponse.json();
       const userId = userData.id;
-
+  
       const response = await fetch(
-        `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`, // Endpoint para quitar producto
+        `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`,
         {
           method: "PUT",
-          headers: headers,
+          headers,
           body: JSON.stringify({
             producto_id: productoId,
-            cantidad: -1, // Disminuimos la cantidad
+            cantidad: 1,
           }),
         }
       );
-
-      if (response.ok) {
-        console.log("Producto quitado correctamente.");
-        await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
-      } else {
+  
+      if (!response.ok) {
         console.error("Error al quitar producto:", response.statusText);
+        actualizarEstadoCarrito(productoId, 1, producto.precio); // Revertimos si hay error
       }
     } catch (error) {
       console.error("Error al quitar producto:", error);
+      actualizarEstadoCarrito(productoId, 1, producto.precio); // Revertimos si hay error
     }
   };
+  
+  const eliminarProducto = async (productoId, cantidad) => {
+    const producto = productos.find(prod => prod.producto_id === productoId);
+    if (!producto || !token) return;
+  
+    // Actualización optimista
+    setProductos(prevProductos => prevProductos.filter(prod => prod.producto_id !== productoId));
+    setTotal(prevTotal => prevTotal - producto.precio * cantidad);
+  
+    try {
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`);
+  
+      const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+      const userData = await userResponse.json();
+      const userId = userData.id;
+  
+      const response = await fetch(
+        `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`,
+        {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({
+            producto_id: productoId,
+            cantidad,
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        console.error("Error al eliminar producto:", response.statusText);
+        await obtenerDatosCarrito(); // Revertimos si hay error
+      }
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+      await obtenerDatosCarrito(); // Revertimos si hay error
+    }
+  };  
 
   useEffect(() => {
-    obtenerDatosCarrito(); // Cargamos los datos del carrito al montar el componente
-  }, [token]); // Ejecutamos la función cada vez que el token cambie
+    obtenerDatosCarrito();
+  }, [token]);
 
   return (
     <div className="bg-gray-100 min-h-screen">

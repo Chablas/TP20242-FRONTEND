@@ -57,13 +57,21 @@ export default function BarraLateralCarritoCompras() {
     };
 
     const eliminarProducto = async (productoId) => {
-        try {
-            if (!token) return;
+        const producto = productos.find(prod => prod.producto_id === productoId);
+        if (!producto || !token) return;
     
+        // Guardar el estado actual para revertir si hay un error
+        const estadoAnterior = [...productos];
+        const totalAnterior = total;
+    
+        // Actualización optimista
+        setProductos(prevProductos => prevProductos.filter(prod => prod.producto_id !== productoId));
+        setTotal(prevTotal => prevTotal - producto.precio * producto.cantidad);
+    
+        try {
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
             headers.append("Authorization", `Bearer ${token}`);
-            
             const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
             const userData = await userResponse.json();
             const userId = userData.id;
@@ -75,21 +83,23 @@ export default function BarraLateralCarritoCompras() {
                     headers: headers,
                     body: JSON.stringify({
                         producto_id: productoId,
-                        cantidad: 1, // Producto a eliminar
+                        cantidad: producto.cantidad, // Elimina todo el producto
                     }),
                 }
             );
     
-            if (response.ok) {
-                console.log("Producto eliminado correctamente.");
-                await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
-            } else {
-                console.error("Error al eliminar producto:", response.statusText);
+            if (!response.ok) {
+                throw new Error("Error en la eliminación del producto.");
             }
         } catch (error) {
             console.error("Error al eliminar producto:", error);
+    
+            // Revertir cambios en caso de error
+            setProductos(estadoAnterior);
+            setTotal(totalAnterior);
         }
     };
+    
     
 
     const handleCloseCart = () => {
