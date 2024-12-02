@@ -34,56 +34,56 @@ export default function BarraLateralCarritoCompras() {
                 });
                 const response3 = await fetch(request3);
                 const datos3 = await response3.json();
-                setTotal(datos3);
-            }
+                setTotal(datos3.total);
 
-            const request1 = new Request(`https://compusave-backend.onrender.com/get/bienes`, {
-                method: "GET",
-                headers: headers,
-            });
-            const response1 = await fetch(request1);
-            const datos1 = await response1.json();
-
-            const request2 = new Request(`https://compusave-backend.onrender.com/get/categorias`, {
-                method: "GET",
-                headers: headers,
-            });
-            const response2 = await fetch(request2);
-            const datos2 = await response2.json();
-
-            const filtradoDatos = datos1.filter((x)=>{
-                for (const producto of datos) {
-                    if (producto.producto_id == x.producto_id) {
-                        return true;
-                    }
-                }
-            })
-
-            let infoCompleta = filtradoDatos.map((x)=>{
-                for (const dato of datos) {
-                    if (dato.producto_id == x.producto_id) {
-                        return {...x, cantidad: dato.cantidad};
-                    }
-                }
-                
-            })
-
-            infoCompleta = infoCompleta.map((x)=>{
-                for (const dato of datos2) {
-                    if (dato.id == x.categoria_id) {
-                        return {...x, categoria: dato.nombre};
-                    }
-                }
-            })
-            
-            const mostrar = infoCompleta.map((x) => (
-                <CarritoItems
-                    key={x.id}
-                    {...x}
-                />
-            ))
-            setMostrar(mostrar);
+                const request1 = new Request(`https://compusave-backend.onrender.com/get/bienes`, {
+                    method: "GET",
+                    headers: headers,
+                });
+                const response1 = await fetch(request1);
+                const datos1 = await response1.json();
     
+                const request2 = new Request(`https://compusave-backend.onrender.com/get/categorias`, {
+                    method: "GET",
+                    headers: headers,
+                });
+                const response2 = await fetch(request2);
+                const datos2 = await response2.json();
+    
+                const filtradoDatos = datos1.filter((x)=>{
+                    for (const producto of datos) {
+                        if (producto.producto_id == x.producto_id) {
+                            return true;
+                        }
+                    }
+                })
+    
+                let infoCompleta = filtradoDatos.map((x)=>{
+                    for (const dato of datos) {
+                        if (dato.producto_id == x.producto_id) {
+                            return {...x, cantidad: dato.cantidad};
+                        }
+                    }
+                    
+                })
+    
+                infoCompleta = infoCompleta.map((x)=>{
+                    for (const dato of datos2) {
+                        if (dato.id == x.categoria_id) {
+                            return {...x, categoria: dato.nombre};
+                        }
+                    }
+                })
+                
+                const mostrar = infoCompleta.map((x) => (
+                    <CarritoItems
+                        key={x.id}
+                        {...x}
+                        eliminarProducto={eliminarProducto}
+                    />
+                ))
+                setMostrar(mostrar);
+            }
         } catch (error) {
             console.error('Error al obtener los datos del carrito:', error);
         }
@@ -95,6 +95,41 @@ export default function BarraLateralCarritoCompras() {
         slideOver.classList.add('hidden');
     };
 
+    const eliminarProducto = async (productoId) => {
+        try {
+            if (!token) return;
+    
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append("Authorization", `Bearer ${token}`);
+            
+            const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+            const userData = await userResponse.json();
+            const userId = userData.id;
+    
+            const response = await fetch(
+                `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`, // Endpoint para quitar producto
+                {
+                    method: "PUT",
+                    headers: headers,
+                    body: JSON.stringify({
+                        producto_id: productoId,
+                        cantidad: 1, // Producto a eliminar
+                    }),
+                }
+            );
+    
+            if (response.ok) {
+                console.log("Producto eliminado correctamente.");
+                await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
+            } else {
+                console.error("Error al eliminar producto:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error al eliminar producto:", error);
+        }
+    };
+
     useEffect(() => {
         // El carrito debe estar cerrado al cargar
         const slideOver = document.getElementById('slide-over');
@@ -102,7 +137,7 @@ export default function BarraLateralCarritoCompras() {
             slideOver.classList.add('hidden');
         }
         obtenerDatosCarrito();
-    }, []);
+    }, [token]);
     return (
         <>
             {/* (INICIO) COMPONENTE TAILWIND CSS SHOPPING CARTS / SLIDE-OVER */}
@@ -208,8 +243,7 @@ function CarritoItems(props) {
                     <p className="text-gray-500">Cantidad: {props.cantidad}</p>
 
                     <div className="flex">
-                        <button type="button"
-                            className="font-medium text-indigo-600 hover:text-indigo-500">Quitar</button>
+                        <button type="button" onClick={() => props.eliminarProducto(props.producto_id)} className="font-medium text-indigo-600 hover:text-indigo-500">Quitar</button>
                     </div>
                 </div>
             </div>
