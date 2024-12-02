@@ -1,79 +1,175 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from "react";
+import { UserContext } from "../context/UserContext"; // Asegúrate de tener configurado el contexto correctamente
+import carritoVacioLogo from "../images/carrito/carritoVacio.jpg"; // Asegúrate de tener la imagen correcta
 
 const CarritoCompras = () => {
-  const [carrito, setCarrito] = useState([]);
+  const [token, setToken] = useContext(UserContext); // Obtenemos el token desde el contexto
+  const [productos, setProductos] = useState([]); // Estado para los productos del carrito
+  const [total, setTotal] = useState(0); // Estado para el total del carrito
 
-  // Función para agregar un producto al carrito
-  const agregarAlCarrito = (nombre, precio, cantidad = 1) => {
-    const productoExistente = carrito.find(p => p.nombre === nombre);
-    if (productoExistente) {
-      setCarrito(
-        carrito.map(p =>
-          p.nombre === nombre ? { ...p, cantidad: p.cantidad + cantidad } : p
-        )
-      );
-    } else {
-      setCarrito([...carrito, { nombre, precio, cantidad }]);
+  // Función para obtener los datos del carrito desde el backend
+  const obtenerDatosCarrito = async () => {
+    try {
+      if (!token) return; // Si no hay token, no hacemos la solicitud
+
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`); // Agregamos el token en las cabeceras
+
+      // Validamos el usuario
+      const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
+      // Obtenemos los productos del carrito
+      const carritoResponse = await fetch(`https://compusave-backend.onrender.com/get/carritos_items/${userId}`, { headers });
+      const carritoItems = await carritoResponse.json();
+
+      // Obtenemos los bienes y categorías
+      const [bienesResponse, categoriasResponse] = await Promise.all([
+        fetch("https://compusave-backend.onrender.com/get/bienes", { headers }),
+        fetch("https://compusave-backend.onrender.com/get/categorias", { headers }),
+      ]);
+
+      const bienes = await bienesResponse.json();
+      const categorias = await categoriasResponse.json();
+
+      // Combinamos los datos del carrito con los bienes y categorías
+      const productosCompletos = carritoItems.map(item => {
+        const bien = bienes.find(b => b.producto_id === item.producto_id);
+        const categoria = categorias.find(c => c.id === bien.categoria_id);
+
+        return {
+          ...bien,
+          cantidad: item.cantidad,
+          categoria: categoria?.nombre || "Sin categoría",
+        };
+      });
+
+      setProductos(productosCompletos); // Actualizamos los productos en el estado
+
+      // Obtenemos el total del carrito
+      const totalResponse = await fetch(`https://compusave-backend.onrender.com/get/carrito/total/${userId}`, { headers });
+      const totalData = await totalResponse.json();
+      setTotal(totalData.total); // Actualizamos el total en el estado
+    } catch (error) {
+      console.error("Error al obtener los datos del carrito:", error);
     }
-    actualizarResumenCompra();
   };
 
-  // Función para mostrar productos en el carrito
-  const mostrarProductosEnCarrito = () => {
-    return carrito.map((producto, index) => (
-      <div key={index} className="flex justify-between items-center py-4 border-b">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            className="mr-4 w-6 h-6 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-            onChange={(e) => eliminarCheckbox(index, e.target.checked)}
-          />
-          <img src="" alt={producto.nombre} className="w-20 h-20 object-cover mr-4" />
-          <div>
-            <h3 className="font-semibold text-lg">{producto.nombre}</h3>
-            <p className="text-gray-600">Cantidad: {producto.cantidad}</p>
-          </div>
-        </div>
-        <p className="text-lg font-semibold">
-          S/ {(producto.precio * producto.cantidad).toFixed(2)}
-        </p>
-        <button
-          id={`btn-eliminar-${index}`}
-          className="text-red-600 hidden"
-          onClick={() => eliminarDelCarrito(index)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    ));
-  };
+  // Función para añadir un producto al carrito
+  const añadirProducto = async (productoId) => {
+    try {
+      if (!token) return; // Si no hay token, no hacemos la solicitud
 
-  // Función para manejar la selección de productos
-  const eliminarCheckbox = (index, checked) => {
-    const btnEliminar = document.getElementById(`btn-eliminar-${index}`);
-    if (btnEliminar) {
-      btnEliminar.classList.toggle('hidden', !checked);
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`);
+
+      const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
+      const response = await fetch(
+        `https://compusave-backend.onrender.com/put/carritos_items/añadir/${userId}`, // Endpoint para añadir producto
+        {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify({
+            producto_id: productoId,
+            cantidad: 1, // Aumentamos la cantidad
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Producto añadido correctamente.");
+        await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
+      } else {
+        console.error("Error al añadir producto:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error al añadir producto:", error);
     }
   };
 
   // Función para eliminar un producto del carrito
-  const eliminarDelCarrito = (index) => {
-    setCarrito(carrito.filter((_, i) => i !== index));
+// Función para eliminar todo el producto (toda la cantidad) del carrito
+const eliminarProducto = async (productoId, cantidad) => {
+  try {
+    if (!token) return; // Si no hay token, no hacemos la solicitud
+
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", `Bearer ${token}`);
+
+    const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+    const userData = await userResponse.json();
+    const userId = userData.id;
+
+    const response = await fetch(
+      `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`, // Endpoint para quitar producto
+      {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify({
+          producto_id: productoId,
+          cantidad: cantidad, // Enviamos la cantidad completa que debe eliminarse
+        }),
+      }
+    );
+
+    if (response.ok) {
+      console.log("Producto eliminado correctamente.");
+      await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
+    } else {
+      console.error("Error al eliminar producto:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+  }
+};
+
+
+  // Función para quitar uno de los productos
+  const quitarProducto = async (productoId) => {
+    try {
+      if (!token) return; // Si no hay token, no hacemos la solicitud
+
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`);
+
+      const userResponse = await fetch("https://compusave-backend.onrender.com/auth/validar_usuario/yo", { headers });
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
+      const response = await fetch(
+        `https://compusave-backend.onrender.com/put/carritos_items/quitar/${userId}`, // Endpoint para quitar producto
+        {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify({
+            producto_id: productoId,
+            cantidad: -1, // Disminuimos la cantidad
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Producto quitado correctamente.");
+        await obtenerDatosCarrito(); // Actualiza el carrito para reflejar el cambio
+      } else {
+        console.error("Error al quitar producto:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error al quitar producto:", error);
+    }
   };
 
-  // Actualización del resumen de la compra
-  const actualizarResumenCompra = () => {
-    let subtotal = carrito.reduce((acc, producto) => acc + producto.precio * producto.cantidad, 0);
-    const envio = 20.00;
-    const impuestos = subtotal * 0.18;
-    const total = subtotal + envio + impuestos;
-    document.getElementById('subtotal').innerText = `S/ ${subtotal.toFixed(2)}`;
-    document.getElementById('envio').innerText = `S/ ${envio.toFixed(2)}`;
-    document.getElementById('impuestos').innerText = `S/ ${impuestos.toFixed(2)}`;
-    document.getElementById('total').innerText = `S/ ${total.toFixed(2)}`;
-  };
+  useEffect(() => {
+    obtenerDatosCarrito(); // Cargamos los datos del carrito al montar el componente
+  }, [token]); // Ejecutamos la función cada vez que el token cambie
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -82,37 +178,66 @@ const CarritoCompras = () => {
           <div className="w-full lg:w-3/4">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-bold">Tu Carrito de Compras</h1>
-              <p id="cantidad-productos" className="text-lg text-gray-700">
-                ({carrito.reduce((acc, prod) => acc + prod.cantidad, 0)} productos seleccionados)
+              <p className="text-lg text-gray-700">
+                ({productos.reduce((acc, prod) => acc + prod.cantidad, 0)} productos seleccionados)
               </p>
             </div>
             <div id="lista-productos" className="bg-white shadow-md rounded-lg overflow-hidden mb-6 p-4">
-              {mostrarProductosEnCarrito()}
-            </div>
-
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Productos que te pueden interesar</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {[
-                  { nombre: "Producto Recomendado 1", precio: 200 },
-                  { nombre: "Producto Recomendado 2", precio: 250 },
-                  { nombre: "Producto Recomendado 3", precio: 180 },
-                  { nombre: "Producto Recomendado 4", precio: 220 },
-                  { nombre: "Producto Recomendado 5", precio: 230 }
-                ].map((producto, index) => (
-                  <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden p-4">
-                    <img src="" alt={producto.nombre} className="w-full h-32 object-cover mb-4" />
-                    <h3 className="text-lg font-semibold">{producto.nombre}</h3>
-                    <p className="text-gray-600 mb-2">S/ {producto.precio.toFixed(2)}</p>
+              {productos.length > 0 ? (
+                productos.map((producto, index) => (
+                  <div key={index} className="flex justify-between items-center py-4 border-b">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="mr-4 w-6 h-6 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        onChange={(e) => {
+                          const btnEliminar = document.getElementById(`btn-eliminar-${index}`);
+                          if (btnEliminar) {
+                            btnEliminar.classList.toggle('hidden', !e.target.checked);
+                          }
+                        }}
+                      />
+                      <img src={`https://storage.googleapis.com/tallerdeproyectoscompusave/${producto.imagen}`|| ""} alt={producto.nombre} className="w-20 h-20 object-cover mr-4" />
+                      <div>
+                        <h3 className="font-semibold text-lg">{producto.nombre}</h3>
+                        <p className="text-gray-600">Categoría: {producto.categoria}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        className="text-xl text-purple-600"
+                        onClick={() => quitarProducto(producto.producto_id)}
+                      >
+                        -
+                      </button>
+                      <p className="mx-4 text-lg font-semibold">{producto.cantidad}</p>
+                      <button
+                        className="text-xl text-purple-600"
+                        onClick={() => añadirProducto(producto.producto_id)}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-lg font-semibold">
+                      S/ {(producto.precio * producto.cantidad).toFixed(2)}
+                    </p>
                     <button
-                      onClick={() => agregarAlCarrito(producto.nombre, producto.precio)}
-                      className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700"
+                      id={`btn-eliminar-${index}`}
+                      className="text-red-600 hidden"
+                      onClick={() => eliminarProducto(producto.producto_id, producto.cantidad)}
                     >
-                      Añadir al Carrito
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="flex justify-center items-center">
+                  <img src={carritoVacioLogo} alt="Carrito vacío" className="w-32 h-32" />
+                  <p className="text-xl font-semibold">Tu carrito está vacío</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -121,20 +246,20 @@ const CarritoCompras = () => {
             <div className="bg-white shadow-md rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-gray-600">Subtotal</p>
-                <p id="subtotal" className="text-lg font-semibold">S/ 0.00</p>
+                <p className="text-lg font-semibold">S/ {(total).toFixed(2)}</p>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <p className="text-gray-600">Envío</p>
-                <p id="envio" className="text-lg font-semibold">S/ 20.00</p>
+                <p className="text-lg font-semibold">S/ 20.00</p>
               </div>
               <div className="flex justify-between items-center mb-4">
                 <p className="text-gray-600">Impuestos</p>
-                <p id="impuestos" className="text-lg font-semibold">S/ 0.00</p>
+                <p className="text-lg font-semibold">S/ {(total * 0.18).toFixed(2)}</p>
               </div>
               <hr />
               <div className="flex justify-between items-center mt-4">
                 <p className="text-xl font-semibold">Total</p>
-                <p id="total" className="text-xl font-semibold">S/ 20.00</p>
+                <p className="text-xl font-semibold">S/ {(total + 20.00 + total * 0.18).toFixed(2)}</p>
               </div>
               <button className="w-full mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-800">
                 Proceder al Pago
