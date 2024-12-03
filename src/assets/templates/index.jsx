@@ -31,7 +31,6 @@ import Contactenos from "../components/Contactenos.jsx";
 
 import Stock from "../components/DashboardStock.jsx"
 
-
 // Páginas
 function P_Store_Servicios_Overview() {
     return (
@@ -248,12 +247,6 @@ function App() {
         
         </BrowserRouter>
     )
-}
-
-function RutasProductos() {
-    const header = new Headers();
-    header.append("Content-Type", "application/json")
-    return 
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

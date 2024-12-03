@@ -1,11 +1,53 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import carritoVacioLogo from "../images/carrito/carritoVacio.jpg";
+// MercadoPago
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 
 const CarritoCompras = () => {
   const [token, setToken] = useContext(UserContext);
   const [productos, setProductos] = useState([]);
   const [total, setTotal] = useState(0);
+  const [preferenceId, setPreferenceId] = useState(null);
+
+  initMercadoPago("APP_USR-6d1e1ef3-7049-4ad0-9831-bb26c08572a4", {locale:"es-PE"});
+
+  const createPreference = async () => {
+    try {
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`);
+
+      let cuerpo = [];
+      for (const item of productos) {
+        cuerpo.push({
+          title: item.nombre,
+          quantity: item.cantidad,
+          price: item.precio,
+        });
+      }
+      console.log(cuerpo);
+
+      cuerpo = JSON.stringify(cuerpo);
+
+      const response  = await fetch("https://compusave-backend.onrender.com/post/crear_preferencia", {
+        method: "POST",
+        headers: headers,
+        body: cuerpo,
+      })
+      const resultado = await response.json();
+      return resultado.detail;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const manejarCompra = async () => {
+    const id = await createPreference();
+    if (id) {
+      setPreferenceId(id);
+    }
+  }
 
   const obtenerDatosCarrito = async () => {
     try {
@@ -271,9 +313,10 @@ const CarritoCompras = () => {
                 <p className="text-xl font-semibold">Total</p>
                 <p className="text-xl font-semibold">S/ {(total + 20.00 + total * 0.18).toFixed(2)}</p>
               </div>
-              <button className="w-full mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-800">
+              <button onClick={manejarCompra} className="w-full mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-800">
                 Proceder al Pago
               </button>
+              {preferenceId && <Wallet initialization={{preferenceId: preferenceId}} />}
             </div>
           </div>
         </div>
