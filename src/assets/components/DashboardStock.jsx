@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
+import * as XLSX from 'xlsx';
 
 export default function DashboardStocks() {
     const abrirModal = () => {
@@ -145,123 +146,6 @@ export default function DashboardStocks() {
         }
     };
     
-    // const obtenerHistoriales = async () => {
-    //     try {
-    //         const headers = new Headers();
-    //         headers.append("Content-Type", "application/json");
-    
-    //         const request = new Request("https://compusave-backend.onrender.com/get/historiales_movimientos", {
-    //             method: "GET",
-    //             headers: headers,
-    //         });
-    
-    //         const response = await fetch(request);
-    //         const resultado = await response.json();
-    
-    //         const historiales = resultado.map((x, index) => {
-    //             // Ajustar el formato de la fecha
-    //             let fechaFormateada = new Date(x.created_at).toLocaleString(); // Simplificado
-    
-    //             return (
-    //                 <tr key={x.id}>
-    //                     <td className="px-4 py-2 border">{index + 1}</td>
-    //                     <td className="px-4 py-2 border">{x.producto_id}</td>
-    //                     <td className="px-4 py-2 border">{x.almacen_id}</td>
-    //                     <td className="px-4 py-2 border">{x.cantidad}</td>
-    //                     <td className="px-4 py-2 border">{x.tipo_movimiento}</td>
-    //                     <td className="px-4 py-2 border">{fechaFormateada}</td>
-    //                 </tr>
-    //             );
-    //         });
-    
-    //         setHistorial(historiales);
-    //     } catch (error) {
-    //         Swal.fire({
-    //             title: "Hubo un error al obtener el historial...",
-    //             icon: "error",
-    //         });
-    //     }
-    // };
-
-    // const obtenerHistoriales = async () => {
-    //     try {
-    //         const headers = new Headers();
-    //         headers.append("Content-Type", "application/json");
-    //         const requestAlmacenes = new Request("https://compusave-backend.onrender.com/get/almacenes", {
-    //             method: "GET",
-    //             headers: headers,
-    //         });
-    //         const responseAlmacenes = await fetch(requestAlmacenes);
-    //         const datosAlmacenes = await responseAlmacenes.json();
-    //         const almacenesOpciones = datosAlmacenes.map((x) => (
-    //             <AlmacenOption key={x.id} {...x} setAlmacenId={setAlmacenId} />
-    //         ));
-    
-    //         setAlmacenes(datosAlmacenes);
-    //         setAlmacenesOpciones(almacenesOpciones);
-    
-    //         headers.append("Content-Type", "application/json");
-    //         const requestProductos = new Request("https://compusave-backend.onrender.com/get/bienes", {
-    //             method: "GET",
-    //             headers: headers,
-    //         });
-    //         const responseProductos = await fetch(requestProductos);
-    //         const datosProductos = await responseProductos.json();
-    //         const productoOpciones = datosProductos.map((x) => (
-    //             <ProductoOption key={x.id} {...x} setProductoId={setProductoId} />
-    //         ));
-    
-    //         setProductos(datosProductos);
-    //         setProductosOpciones(productoOpciones);
-    
-    //         // Obtener stock
-    //         const requestStock = new Request(`https://compusave-backend.onrender.com/get/stock/${id}`, {
-    //             method: "GET",
-    //             headers: headers,
-    //         });
-    //         const responseStock = await fetch(requestStock);
-    //         const datosStock = await responseStock.json();
-
-            
-    //         const historiales = datosStock.map((x, index) => {
-    //             // Ajustar el formato de la fecha
-    //             let fechaFormateada = new Date(x.created_at).toLocaleString(); // Simplificado
-    //             let n_almacen;
-    //             let n_producto;
-
-    //             for (const producto of props.productos) {
-    //                 if (producto.id == props.producto_id) {
-    //                     n_producto = producto.nombre;
-    //                 }
-    //             }
-            
-    //             for (const almacen of props.almacenes) {
-    //                 if (almacen.id == props.almacen_id) {
-    //                     n_almacen = almacen.nombre;
-    //                 }
-    //             }            
-    
-    //             return (
-    //                 <tr key={x.id}>
-    //                     <td className="px-4 py-2 border">{index + 1}</td>
-    //                     <td className="px-4 py-2 border">{x.n_almacen}</td>
-    //                     <td className="px-4 py-2 border">{x.n_producto}</td>
-    //                     <td className="px-4 py-2 border">{x.cantidad}</td>
-    //                     <td className="px-4 py-2 border">{x.tipo_movimiento}</td>
-    //                     <td className="px-4 py-2 border">{fechaFormateada}</td>
-    //                 </tr>
-    //             );
-    //         });
-    
-    //         setHistorial(historiales);
-    //     } catch (error) {
-    //         Swal.fire({
-    //             title: "Hubo un error al obtener el historial...",
-    //             icon: "error",
-    //         });
-    //     }
-    // };
-
     const obtenerHistoriales = async () => {
         try {
             const headers = new Headers();
@@ -308,11 +192,7 @@ export default function DashboardStocks() {
     
             setHistorial(historiales);
         } catch (error) {
-            Swal.fire({
-                title: "Hubo un error al obtener el historial...",
-                text: error.message,
-                icon: "error",
-            });
+
         }
     };
     
@@ -397,9 +277,9 @@ export default function DashboardStocks() {
     const exportToExcel = () => {
         const data = mostrarFilas.map(row => ({
             ID: row.key, // Asegúrate de utilizar la propiedad correcta, como `key` o `props.id`
-            Nombre: row.props.nombre,
-            Descripción: row.props.descripcion,
-            Imagen: row.props.imagen
+            Producto: row.props.producto_id,
+            Almacen: row.props.almacen_id,
+            Cantidad: row.props.cantidad
         }));
     
         const worksheet = XLSX.utils.json_to_sheet(data);
@@ -512,14 +392,6 @@ export default function DashboardStocks() {
                     <button className="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-400 mb-4" onClick={abrirModal}>
                         Agregar stock
                     </button>
-
-                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={abrirHistorialMovimientos}>
-                        Ver Historial
-                    </button>
-
-                    <button className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-400 ml-4" onClick={exportToExcel}>
-                        Exportar a Excel
-                    </button>
                 </div>
     
                 <div className="overflow-x-auto">
@@ -530,7 +402,6 @@ export default function DashboardStocks() {
                                 <th className="py-3 px-4 text-center text-left font-semibold text-gray-300">PRODUCTO</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">ALMACEN</th>
                                 <th className="py-3 px-4 text-center font-semibold text-gray-300">CANTIDAD</th>
-                                <th className="py-3 px-4 text-center font-semibold text-gray-300">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -582,10 +453,6 @@ function DashboardStocksFila(props) {
             <td className="text-white font-light text-center py-2 px-4">{n_producto}</td>
             <td className="text-white font-light text-center py-2 px-4">{n_almacen}</td>
             <td className="text-white font-light text-center py-2 px-4 truncate max-w-xs break-words">{props.cantidad}</td>
-            <td className="text-white font-light text-center py-2 px-4">
-                <button className="font-normal text-yellow-400 py-1 px-2 rounded-md hover:text-white hover:bg-yellow-500" onClick={abrirAgregarStock}>Aumentar</button>
-                <button className="font-normal text-red-500 py-1 px-2 rounded-md hover:text-white hover:bg-red-500 ml-4" onClick={abrirDisminuirStock}>Disminuir</button>
-            </td>
         </tr>
     );
 }
