@@ -8,6 +8,7 @@ import Twitter from "../icons/Twitter";
 import Instagram from "../icons/Instagram";
 import Contactos from "../icons/Contactos";
 import Clientes from "../icons/Clientes";
+import logazo from "../images/logo.jpg"
 
 const Footer = () => {
     return (
@@ -18,7 +19,7 @@ const Footer = () => {
                     <div>
                         <div className="flex items-center mb-2">
                             <img 
-                                src="/src/assets/images/logo.jpg" 
+                                src={logazo} 
                                 alt="Logo"
                                 className="w-7 mr-2" 
                             />
