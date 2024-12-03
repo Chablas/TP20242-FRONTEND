@@ -1,0 +1,6 @@
+projectKey=compufinalfront
+serverUrl=http://localhost:9000
+serverVersion=10.7.0.96327
+dashboardUrl=http://localhost:9000/dashboard?id=compufinalfront
+ceTaskId=7eee501b-de4c-4936-bb5d-59f7cc961bbc
+ceTaskUrl=http://localhost:9000/api/ce/task?id=7eee501b-de4c-4936-bb5d-59f7cc961bbc

@@ -5,9 +5,14 @@ import { UserContext } from "../context/UserContext";
 
 export default function Categoria() {
     const abrirModal = () => {
+        setId(''); // Restablece el ID
+        setNombre(''); // Restablece el nombre
+        setDescripcion(''); // Restablece la descripción
+        setImagen(null); // Restablece la imagen
         document.getElementById('modalAgregar').classList.remove('hidden');
         document.getElementById('tituloModal').textContent = 'Registrar Categoría';
     };
+    
 
     const cerrarModal = () => {
         const modales = document.querySelectorAll("div.btnCerrarModal");

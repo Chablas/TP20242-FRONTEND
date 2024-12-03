@@ -67,6 +67,8 @@ export default function DashboardProductos() {
                 categoria_id: opcionSeleccionada,
             });
 
+            console.log(cuerpo);
+
             const request = new Request("https://compusave-backend.onrender.com/post/bien", {
                 method: "POST",
                 headers: headers,
