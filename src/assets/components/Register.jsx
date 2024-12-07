@@ -53,7 +53,11 @@ export default function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
-
+      const response0 = await fetch("https://compusave-backend.onrender.com/email/bienvenida", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({email: [userData.email]}),
+      });
       if (response.status === 200) {
         setDialogOpen(true);
       } else if (response.status === 400) {

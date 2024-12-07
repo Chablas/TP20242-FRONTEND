@@ -20,10 +20,11 @@ const CarritoCompras = () => {
 
       let cuerpo = [];
       for (const item of productos) {
+        let costo = item.precio + (item.precio * 0.18)
         cuerpo.push({
           title: item.nombre,
           quantity: item.cantidad,
-          price: item.precio,
+          price: costo,
         });
       }
       console.log(cuerpo);
@@ -302,7 +303,7 @@ const CarritoCompras = () => {
               </div>
               <div className="flex justify-between items-center mb-2">
                 <p className="text-gray-600">Envío</p>
-                <p className="text-lg font-semibold">S/ 20.00</p>
+                <p className="text-lg font-semibold">Gratis</p>
               </div>
               <div className="flex justify-between items-center mb-4">
                 <p className="text-gray-600">Impuestos</p>
@@ -311,7 +312,7 @@ const CarritoCompras = () => {
               <hr />
               <div className="flex justify-between items-center mt-4">
                 <p className="text-xl font-semibold">Total</p>
-                <p className="text-xl font-semibold">S/ {(total + 20.00 + total * 0.18).toFixed(2)}</p>
+                <p className="text-xl font-semibold">S/ {(total + total * 0.18).toFixed(2)}</p>
               </div>
               <button onClick={manejarCompra} className="w-full mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-800">
                 Proceder al Pago
